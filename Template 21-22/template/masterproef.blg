@@ -1,0 +1,53 @@
+This is BibTeX, Version 0.99d (TeX Live 2021/W32TeX)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: masterproef.aux
+A level-1 auxiliary file: intro.aux
+A level-1 auxiliary file: chap-1.aux
+A level-1 auxiliary file: chap-2.aux
+A level-1 auxiliary file: chap-n.aux
+A level-1 auxiliary file: conclusion.aux
+A level-1 auxiliary file: app-A.aux
+A level-1 auxiliary file: app-n.aux
+The style file: abbrv.bst
+Database file #1: references.bib
+You've used 3 entries,
+            2118 wiz_defined-function locations,
+            520 strings with 4193 characters,
+and the built_in function-call counts, 710 in all, are:
+= -- 64
+> -- 27
+< -- 0
++ -- 12
+- -- 8
+* -- 27
+:= -- 129
+add.period$ -- 11
+call.type$ -- 3
+change.case$ -- 11
+chr.to.int$ -- 0
+cite$ -- 3
+duplicate$ -- 31
+empty$ -- 67
+format.name$ -- 8
+if$ -- 149
+int.to.chr$ -- 0
+int.to.str$ -- 3
+missing$ -- 4
+newline$ -- 20
+num.names$ -- 6
+pop$ -- 23
+preamble$ -- 1
+purify$ -- 10
+quote$ -- 0
+skip$ -- 21
+stack$ -- 0
+substring$ -- 16
+swap$ -- 3
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 8
+warning$ -- 0
+while$ -- 6
+width$ -- 4
+write$ -- 35
