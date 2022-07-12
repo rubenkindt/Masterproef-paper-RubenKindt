@@ -1,0 +1,7 @@
+
+
+#LaTeX files to ignore
+*.aux
+*.log
+*masterproef.fdb_latexmk
+*masterproef.synctex.gz
