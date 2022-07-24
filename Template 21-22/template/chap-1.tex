@@ -1,6 +1,6 @@
 %Ideas 
 %context
-%	what is CP and family, \ref{freuder1997pursuit}
+%	what is CP and family, \cite{freuder1997pursuit}
 %	usage
 %	what could go wrong
 %
@@ -8,7 +8,7 @@
 %bit of history around fuzzing or CP?
 % first study in fall of 1988 paper in 1990
 % miller 2020 heeft hiervoor de start aan bronnen, pagina 2 middel of linker kolomn
-%	generation based, mutation based | White grey, back box | directed fuzzing, coverage-based fuzzing \ref{11Fuzzingasurvey}
+%	generation based, mutation based | White grey, back box | directed fuzzing, coverage-based fuzzing \cite{11Fuzzingasurvey}
 %
 %
 %Chapter about (psuedo-)randomness
@@ -18,19 +18,19 @@
 %	binary search will not work all the time
 %	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
 %		start with halfs then *2
-%		always search further with same granularity but with removed part until all options with that granularity searched \ref{zeller2009programs} p111
-%		this uses no knowledge from input structure and program structure \ref{zeller2009programs} p112
+%		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
+%		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
 %	delta debugging
-%		time spend searching vs simplified ratio is important as mentioned in \ref{mansur2020detecting}
-%		and needs to preserve satisfiability as mentioned in \ref{mansur2020detecting}
+%		time spend searching vs simplified ratio is important as mentioned in \cite{mansur2020detecting}
+%		and needs to preserve satisfiability as mentioned in \cite{mansur2020detecting}
 %		^ possibly a big deal to find critical bugs
 %
-%	with knowadge of input, syntax \ref{zeller2009programs}
-%	of by bigger entities like lines of words \ref{zeller2009programs}
+%	with knowadge of input, syntax \cite{zeller2009programs}
+%	of by bigger entities like lines of words \cite{zeller2009programs}
 %	 for speed
 %
-%	alt approach like \ref{mansur2020detecting} try finding the bug again with less resources avail
-%	or isolaytion \ref{zeller2009programs} p 285 
+%	alt approach like \cite{mansur2020detecting} try finding the bug again with less resources avail
+%	or isolaytion \cite{zeller2009programs} p 285 
 %		I think it may fail if multiple parts are relevant
 %		I think it could detect for example the CPMpy import as a bug cause as the min diff that causes the bug
 %
@@ -38,22 +38,22 @@
 %		MUs good for only whole constraints while 
 %		delta debugging goes for partial structures
 %
-%	section on how CPMpy works and convorts for other solvers \ref{CP2021 Tutorial "CPMpy, a Numpy-based CP Modeling Environment} and \ref{https://github.com/CPMpy/cpmpy/} and where errors could occure, whitch ones are in/out of scope
+%	section on how CPMpy works and convorts for other solvers \cite{CP2021 Tutorial "CPMpy, a Numpy-based CP Modeling Environment} and \cite{https://github.com/CPMpy/cpmpy/} and where errors could occure, whitch ones are in/out of scope
 %
-%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \ref{13manes2019survey}
-%	isolation vs simplifying \ref{zeller2009programs} p 285
+%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \cite{13manes2019survey}
+%	isolation vs simplifying \cite{zeller2009programs} p 285
 %
 %
 %avoiding inf loops -> timeouts
-%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \ref{zeller2002simplifying}
+%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
 %	 can be sloved with stack trace comparison
 %
-%section on minimalisation vs isolation \ref{zeller2002simplifying} p12
+%section on minimalisation vs isolation \cite{zeller2002simplifying} p12
 %	for speed take smaller inputs
 %	Isolation will require a lot more things to track but is faster
 %	
 %Chapter around fuzzing
-%	\ref{mathis2019parser} states 3 optins traditional, stochastic and syntax driven.
+%	\cite{mathis2019parser} states 3 optins traditional, stochastic and syntax driven.
 %
 %chapter results
 %chapter comparison to other fuzzers
