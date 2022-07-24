@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2022.3.6)  12 JUL 2022 10:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2022.3.6)  24 JUL 2022 10:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -760,18 +760,160 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 
 ]
-Overfull \hbox (0.86812pt too wide) in paragraph at lines 88--88
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+[]|\T1/lmr/m/n/10.95 (+20) delta-
+ []
+
+
+Overfull \hbox (13.54976pt too wide) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (-20) debugging
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) catig-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) o-rize
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) gram-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) mer
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) based
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+11) fuzzing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) black-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) box
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+11) fuzzing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) gray
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) box
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+11) fuzzing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) white
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) box
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+11) fuzzing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) hi-er-ar-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) chi-cal
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) delta-
+ []
+
+
+Overfull \hbox (13.54976pt too wide) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (-20) debugging
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) 1-
+ []
+
+
+Overfull \hbox (4.01045pt too wide) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (-20) minimal
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) gram-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+20) based
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 99--99
+\T1/lmr/m/n/10.95 (+11) fuzzing
+ []
+
+
+LaTeX Warning: Citation `h2g2' on page vi undefined on input line 99.
+
+
+Overfull \hbox (0.86812pt too wide) in paragraph at lines 99--99
 []|\T1/lmr/m/n/10.95 (-20) ``The Answer to the Ultimate Question of Life, the U
 niverse, and Everything''
  []
 
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
 [6
+
+] [7] [8
 
 ]
 \openout2 = `intro.aux'.
 
 (./intro.tex [1
-
 
 
 ])
@@ -790,7 +932,14 @@ Package microtype Info: Character `029' is missing
 \openout2 = `chap-2.aux'.
 
 (./chap-2.tex
-<logokul.pdf, id=247, 159.33528pt x 56.90298pt>
+
+LaTeX Warning: Citation `wiki' on page 5 undefined on input line 10.
+
+
+LaTeX Warning: Citation `pratchett06:_good_omens' on page 5 undefined on input 
+line 11.
+
+<logokul.pdf, id=250, 159.33528pt x 56.90298pt>
 File: logokul.pdf Graphic file (type pdf)
 <use logokul.pdf>
 Package pdftex.def Info: logokul.pdf  used on input line 18.
@@ -839,7 +988,11 @@ Underfull \vbox (badness 1308) has occurred while \output is active []
 ] [16]
 \openout2 = `app-A.aux'.
 
-(./app-A.tex [17
+(./app-A.tex
+
+LaTeX Warning: Citation `h2g2' on page 17 undefined on input line 5.
+
+[17
 
 
 ]) [18]
@@ -852,6 +1005,9 @@ Underfull \vbox (badness 1308) has occurred while \output is active []
 
 ]) [20] (./masterproef.bbl
 bibitemlist
+
+LaTeX Warning: Empty `thebibliography' environment on input line 3.
+
 ) [21
 
 
@@ -869,15 +1025,18 @@ bibitemlist
 
 (./masterproef.aux (./intro.aux) (./chap-1.aux) (./chap-2.aux) (./chap-n.aux) (
 ./conclusion.aux) (./app-A.aux) (./app-n.aux))
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `masterproef.out' has not changed.
 (rerunfilecheck)             Checksum: 0FB871835A5381E6AA4CEF2CAE04D3F9;3912.
  ) 
 Here is how much of TeX's memory you used:
- 14862 strings out of 478994
- 224543 string characters out of 5862208
- 880547 words of memory out of 5000000
- 31836 multiletter control sequences out of 15000+600000
- 475849 words of font info for 137 fonts, out of 8000000 for 9000
+ 14856 strings out of 478994
+ 224455 string characters out of 5862208
+ 880450 words of memory out of 5000000
+ 31833 multiletter control sequences out of 15000+600000
+ 475719 words of font info for 136 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  83i,12n,88p,285b,599s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/texlive/2021/tex
@@ -891,10 +1050,10 @@ f-dist/fonts/type1/public/lm/lmbx12.pfb><c:/texlive/2021/texmf-dist/fonts/type1
 s/type1/public/lm/lmss10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/
 lmtt10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb><c:/
 texlive/2021/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
-Output written on masterproef.pdf (29 pages, 269387 bytes).
+Output written on masterproef.pdf (31 pages, 264597 bytes).
 PDF statistics:
- 403 PDF objects out of 1000 (max. 8388607)
- 351 compressed objects within 4 object streams
- 87 named destinations out of 1000 (max. 500000)
+ 401 PDF objects out of 1000 (max. 8388607)
+ 349 compressed objects within 4 object streams
+ 86 named destinations out of 1000 (max. 500000)
  38139 words of extra memory for PDF output out of 42996 (max. 10000000)
 

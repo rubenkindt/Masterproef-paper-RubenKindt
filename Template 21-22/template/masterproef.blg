@@ -10,44 +10,48 @@ A level-1 auxiliary file: app-A.aux
 A level-1 auxiliary file: app-n.aux
 The style file: abbrv.bst
 Database file #1: references.bib
-You've used 3 entries,
+Warning--I didn't find a database entry for "h2g2"
+Warning--I didn't find a database entry for "wiki"
+Warning--I didn't find a database entry for "pratchett06:_good_omens"
+You've used 0 entries,
             2118 wiz_defined-function locations,
-            520 strings with 4193 characters,
-and the built_in function-call counts, 710 in all, are:
-= -- 64
-> -- 27
+            507 strings with 3823 characters,
+and the built_in function-call counts, 18 in all, are:
+= -- 0
+> -- 0
 < -- 0
-+ -- 12
-- -- 8
-* -- 27
-:= -- 129
-add.period$ -- 11
-call.type$ -- 3
-change.case$ -- 11
++ -- 0
+- -- 0
+* -- 2
+:= -- 7
+add.period$ -- 0
+call.type$ -- 0
+change.case$ -- 0
 chr.to.int$ -- 0
-cite$ -- 3
-duplicate$ -- 31
-empty$ -- 67
-format.name$ -- 8
-if$ -- 149
+cite$ -- 0
+duplicate$ -- 0
+empty$ -- 1
+format.name$ -- 0
+if$ -- 1
 int.to.chr$ -- 0
-int.to.str$ -- 3
-missing$ -- 4
-newline$ -- 20
-num.names$ -- 6
-pop$ -- 23
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 3
+num.names$ -- 0
+pop$ -- 0
 preamble$ -- 1
-purify$ -- 10
+purify$ -- 0
 quote$ -- 0
-skip$ -- 21
+skip$ -- 1
 stack$ -- 0
-substring$ -- 16
-swap$ -- 3
+substring$ -- 0
+swap$ -- 0
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 8
+type$ -- 0
 warning$ -- 0
-while$ -- 6
-width$ -- 4
-write$ -- 35
+while$ -- 0
+width$ -- 0
+write$ -- 2
+(There were 3 warnings)
