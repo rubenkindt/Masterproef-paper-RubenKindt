@@ -1,6 +1,34 @@
 \chapter{Simplifying crashes}
 \label{cha:2}
-\lipsum[77]
+
+chapeter on simplifying the crashes
+%	binary search will not work all the time
+%	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
+%		start with halfs then *2
+%		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
+%		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
+%	delta debugging
+%		time spend searching vs simplified ratio is important as mentioned in \cite{mansur2020detecting}
+%		and needs to preserve satisfiability as mentioned in \cite{mansur2020detecting}
+%		^ possibly a big deal to find critical bugs
+%
+%	with knowadge of input, syntax \cite{zeller2009programs}
+%	of by bigger entities like lines of words \cite{zeller2009programs}
+%	 for speed
+%
+%	alt approach like \cite{mansur2020detecting} try finding the bug again with less resources avail
+%	or isolaytion \cite{zeller2009programs} p 285 
+%		I think it may fail if multiple parts are relevant
+%		I think it could detect for example the CPMpy import as a bug cause as the min diff that causes the bug
+%
+%	sub section on MUS/minimum unsat subset vs delta debugging
+%		MUs good for only whole constraints while 
+%		delta debugging goes for partial structures
+%
+
+%
+%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \cite{13manes2019survey}
+%	isolation vs simplifying \cite{zeller2009programs} p 285
 
 \section{The First Topic of this Chapter}
 \lipsum[78]
