@@ -7,7 +7,9 @@ Template 21-22/template/*.aux
 *.fdb_latexmk
 *masterproef.fdb_latexmk
 
+#tep/partial bib files
 *.blg
+*.bbl
 
 *.log
 Template 21-22/template/masterproef.log
@@ -21,3 +23,12 @@ Template 21-22/template/masterproef.synctex.gz
 
 #never untrack .tex files
 !*.tex
+
+#never untrack .pdf files
+!*.pdf
+
+#others
+*.fls
+*.lot
+*.lof
+*.out
