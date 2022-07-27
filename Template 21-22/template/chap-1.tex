@@ -1,53 +1,16 @@
 %Ideas 
-%context
-%	what is CP and family internal differences, \cite{freuder1997pursuit}
-%	usage
-%	what could go wrong, cost of bugs
 %
 %
-%bit of history around fuzzing or CP?
-% first study in fall of 1988 paper in 1990
-% miller 2020 heeft hiervoor de start aan bronnen, pagina 2 middel of linker kolomn
-%	generation based, mutation based | White grey, back box | directed fuzzing, coverage-based fuzzing \cite{11Fuzzingasurvey}
 %
 %
 %Chapter about (psuedo-)randomness
-%seed selection problem, inf seeds which one do we use
 %
-%chapeter on simplifying the crashes
-%	binary search will not work all the time
-%	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
-%		start with halfs then *2
-%		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
-%		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
-%	delta debugging
-%		time spend searching vs simplified ratio is important as mentioned in \cite{mansur2020detecting}
-%		and needs to preserve satisfiability as mentioned in \cite{mansur2020detecting}
-%		^ possibly a big deal to find critical bugs
 %
-%	with knowadge of input, syntax \cite{zeller2009programs}
-%	of by bigger entities like lines of words \cite{zeller2009programs}
-%	 for speed
 %
-%	alt approach like \cite{mansur2020detecting} try finding the bug again with less resources avail
-%	or isolaytion \cite{zeller2009programs} p 285 
-%		I think it may fail if multiple parts are relevant
-%		I think it could detect for example the CPMpy import as a bug cause as the min diff that causes the bug
-%
-%	sub section on MUS/minimum unsat subset vs delta debugging
-%		MUs good for only whole constraints while 
-%		delta debugging goes for partial structures
-%
-%	section on how CPMpy works and convorts for other solvers \cite{CP2021 Tutorial "CPMpy, a Numpy-based CP Modeling Environment} and \cite{https://github.com/CPMpy/cpmpy/} and where errors could occure, whitch ones are in/out of scope
-%
-%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \cite{13manes2019survey}
-%	isolation vs simplifying \cite{zeller2009programs} p 285
-%
-%if inf seed set, reducing it is better with the following technique (the min seed subset without any code coverage loss) \cite{14rebert2014seedselecting}
+
 %
 %avoiding inf loops -> timeouts
-%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
-%	 can be sloved with stack trace comparison
+
 %
 %section on minimalisation vs isolation \cite{zeller2002simplifying} p12
 %	for speed take smaller inputs
@@ -62,6 +25,9 @@
 
 \chapter{The First Chapter}
 \label{cha:1}
+
+%if inf seed set, reducing it is better with the following technique (the min seed subset without any code coverage loss) \cite{14rebert2014seedselecting}
+%seed selection problem, inf seeds which one do we use
 A chapter is a logical unit. It normally starts with an introduction, which
 you are reading now. The last topic of the chapter holds the conclusion.
 
