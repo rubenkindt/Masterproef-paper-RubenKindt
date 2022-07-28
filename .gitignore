@@ -32,3 +32,6 @@ Template 21-22/template/masterproef.synctex.gz
 *.lot
 *.lof
 *.out
+*.toc
+*.xml
+*.bcf
