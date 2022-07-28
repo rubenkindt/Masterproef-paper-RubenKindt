@@ -14,21 +14,23 @@ you are reading now. The last topic of the chapter holds the conclusion.
 %subsection about (psuedo-)randomness
 
 
-\section{History}
-The rise of fuzzing came when Miller gave a classroom assignment \cite{FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
+\section{History} \todo{fix title}
+The rise of fuzzing came when Miller gave a classroom assignment \cite{21FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{4originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
 In the last Thirty years the technique of fuzzing has changed significantly and various classifications have come forward \cite{12Fuzzingasurvey} \cite{13manes2019survey}. Three most used classifications are: 
 how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
 
-\todo{valid, semi-valid, noncence explaation}
+\todo{valid, semi-valid, noncence explanation}
 
 %generation or mutatuion
 %black, gray white box
 %lexical, sematic, constraint, random
 
 \section{Generation of mutation}
-A fuzzer can construct input for a PUT in two ways, it can generate input itself or it can take an existing input and modify it, which are often called seeds. While Generation is more common than modifying when it comes to in smaller inputs the opposite is true. This is cause by the fact that generating semi-valid input becomes a lot harder the longer it becomes. For example generating the word "Fuzzing" by uniformly random sampling using ASCII, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger inputs.
+A fuzzer can construct input for a PUT in two ways, it can generate input itself or it can take an existing input and modify it, which are often called seeds. While Generation is more common than modifying when it comes to in smaller inputs the opposite is true for larger inputs. This is cause by the fact that generating semi-valid input becomes a lot harder the longer the input becomes. For example generating the word "Fuzzing" by uniformly random sampling using ASCII, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger semi-valid inputs. With mutation we can start of with larger and valid input and make modifications to create semi-valid inputs. With this last technique the diversity of the seeding inputs does become quite important. Ideally we would have an unlimited diverse set of inputs, but due to limited computation and available inputs we sometimes need to take a subset. In a paper by Rebert et al. \cite{14rebert2014seedselecting} they say that seed selection algorithms can help and compare random seed selection to the minimal subset of seeds with the highest code coverage among other seed selection algorithms. 
 
-\section{Seed selection}
+\section{white, grey or black box fuzzing}
+\section{input structure}
+%lexical, sementical, constraint or random
 
 \subsection{AFL++}
 
@@ -49,10 +51,10 @@ A fuzzer can construct input for a PUT in two ways, it can generate input itself
 %  third one.
 %\end{quote}
 
-
-
 \subsection{Another item}
+%oracle problem? see holy grail
 
+%somewhere a ref to later chapter input simplification (minimisation differantioation)
 
 \section{Conclusion}
 The final section of the chapter gives an overview of the important results
