@@ -15,13 +15,23 @@ you are reading now. The last topic of the chapter holds the conclusion.
 
 
 \section{History}
-The big start of fuzzing came when Miller gave a classroom assignment \cite{FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
+The rise of fuzzing came when Miller gave a classroom assignment \cite{FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
+In the last Thirty years the technique of fuzzing has changed significantly and various classifications have come forward \cite{12Fuzzingasurvey} \cite{13manes2019survey}. Three most used classifications are: 
+how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
 
-\section{Types of Fuzzers}
+\todo{valid, semi-valid, noncence explaation}
+
+%generation or mutatuion
+%black, gray white box
+%lexical, sematic, constraint, random
+
+\section{Generation of mutation}
+A fuzzer can construct input for a PUT in two ways, it can generate input itself or it can take an existing input and modify it, which are often called seeds. While Generation is more common than modifying when it comes to in smaller inputs the opposite is true. This is cause by the fact that generating semi-valid input becomes a lot harder the longer it becomes. For example generating the word "Fuzzing" by uniformly random sampling using ASCII, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger inputs.
+
+\section{Seed selection}
 
 \subsection{AFL++}
 
-\section{Seed selection}
 %Please don't abuse enumerations: short enumerations shouldn't use
 %``\verb|itemize|'' or ``\texttt{enumerate}'' environments.
 %So \emph{never write}: 
