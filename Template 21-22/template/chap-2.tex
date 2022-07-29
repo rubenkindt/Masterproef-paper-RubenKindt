@@ -1,198 +1,69 @@
-\chapter{Simplifying crashes}
-\label{cha:2}
+\chapter{Fuzzing}
+\label{cha:2:fuzzing}
+A chapter is a logical unit. It normally starts with an introduction, which
+you are reading now. The last topic of the chapter holds the conclusion.
+\todo{intro chapter 1}
 
-%chapter on simplifying the crashes
-%	binary search will not work all the time
-%	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
-%		start with halfs then *2
-%		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
-%		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
-%	delta debugging
-%		time spend searching vs simplified ratio is important as mentioned in \cite{mansur2020detecting}
-%		and needs to preserve satisfiability as mentioned in \cite{mansur2020detecting}
-%		^ possibly a big deal to find critical bugs
+%if inf seed set, reducing it is better with the following technique (the min seed subset without any code coverage loss) \cite{14rebert2014seedselecting}
+%seed selection problem, inf seeds which one do we use
+%other fuzzers internal workings
+%Chapter around fuzzing
+%	\cite{mathis2019parser} states 3 optins traditional, stochastic and syntax driven.
+%avoiding inf loops -> timeouts
 %
-%	with knowledge of input, syntax \cite{zeller2009programs}
-%	of by bigger entities like lines of words \cite{zeller2009programs}
-%	 for speed
-%
-%	alt approach like \cite{mansur2020detecting} try finding the bug again with less resources avail
-%	or isolaytion \cite{zeller2009programs} p 285 
-%		I think it may fail if multiple parts are relevant
-%		I think it could detect for example the CPMpy import as a bug cause as the min diff that causes the bug
-%
-%	sub section on MUS/minimum unsat subset vs delta debugging
-%		MUs good for only whole constraints while 
-%		delta debugging goes for partial structures
-%
-%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \cite{13manes2019survey}
-%	isolation vs simplifying \cite{zeller2009programs} p 285
-%
-%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
-%	 can be solved with stack trace comparison
-%
-%section on minimalisation vs isolation \cite{zeller2002simplifying} p12
-%	for speed take smaller inputs
-%	Isolation will require a lot more things to track but is faster
+%subsection about (psuedo-)randomness
 
 
+\section{History} \todo{fix title}
+The rise of fuzzing came when Miller gave a classroom assignment \cite{21FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{4originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
+In the last Thirty years the technique of fuzzing has changed significantly and various classifications have come forward \cite{12Fuzzingasurvey} \cite{13manes2019survey}. Three most used classifications are: 
+how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
 
-\section{The First Topic of this Chapter}
-\lipsum[78]
 
-\subsection{An item}
-A master's thesis is never an isolated work. This means that your text must
-contain references. On-line documents\cite{wiki} as well as
-books\cite{pratchett06:_good_omens} can be referenced.
+%generation or mutatuion
+%black, gray white box
+%lexical, sematic, constraint, random
 
-\section{Figures}
-Figures are used to add illustrations to the text. The \fref{fig:logo} shows
-the KU~Leuven logo as an illustration.
-\begin{figure}
-  \centering
-  \includegraphics{logokul}
-  \caption{The KU~Leuven logo.}
-  \label{fig:logo}
-\end{figure}
+\section{Generation of mutation}
+A fuzzer can construct input for a PUT in two ways, it can generate input itself or it can take an existing input and modify it, which are often called seeds. While Generation is more common than modifying when it comes to in smaller inputs the opposite is true for larger inputs. This is cause by the fact that generating semi-valid input becomes a lot harder the longer the input becomes. For example generating the word "Fuzzing" by uniformly random sampling using ASCII, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger semi-valid inputs. With mutation we can start of with larger and valid input and make modifications to create semi-valid inputs. With this last technique the diversity of the seeding inputs does become quite important. Ideally we would have an unlimited diverse set of inputs, but due to limited computation and available inputs we sometimes need to take a subset. In a paper by Rebert et al. \cite{14rebert2014seedselecting} they say that seed selection algorithms can help and compare random seed selection to the minimal subset of seeds with the highest code coverage among other seed selection algorithms. 
 
-\section{Tables}
-Tables are used to present data neatly arranged. A table is normally
-not a spreadsheet! Compare \tref{tab:wrong} en \tref{tab:ok}: which table do
-you prefer?
+\section{Input structure}
+%lexical, sementical, constraint or random
+While we have discussed the bigger scope on how inputs are created, let us go into more detail. As we have seen before fuzzing started mainly with Miller's assignment, that random generation of inputs falls under 'dumb' fuzzing. Due to only seeing the input as one long list of strings with no knowledge of any substrings. This technique can be applied to mutation as well, compared to only adding with generation here we also additionally remove or change randomly selected symbols of the seed with new symbols. 
+We can create three types of inputs: valid, semi-valid and nonsense input. With nonsense input we will be testing the parser almost exclusively, either it crashes the parser or the parser will say invalid and the PUT will stop running. With semi-valid input we hope to be as close as possible to valid input to be able to explore the PUT but to catch an edge cases and crash.
 
-\begin{table}
-  \centering
-  \begin{tabular}{||l|lr||} \hline
-    gnats     & gram      & \$13.65 \\ \cline{2-3}
-              & each      & .01 \\ \hline
-    gnu       & stuffed   & 92.50 \\ \cline{1-1} \cline{3-3}
-    emu       &           & 33.33 \\ \hline
-    armadillo & frozen    & 8.99 \\ \hline
-  \end{tabular}
-  \caption{A table with the wrong layout.}
-  \label{tab:wrong}
-\end{table}
+A smarter technique is referred to one which has knowledge about the structure inputs can have or should have. This increases the chance of inputs passing the parser, being able to test the deeper parts of the PUT and as such covering more of the PUT. This with an increased complex fuzzer. We can build a 'smart' fuzzer by adding knowledge about keywords, making it a lexical fuzzer, adding knowledge about syntax, for example all parentheses needs to be matched. Directed fuzz testing does fit in this category as well but is only possible in a white box environment, more on that later.
 
-\begin{table}
-  \centering
-  \begin{tabular}{@{}llr@{}} \toprule
-    \multicolumn{2}{c}{Item} \\ \cmidrule(r){1-2}
-    Animal    & Description & Price (\$)\\ \midrule
-    Gnat      & per gram    & 13.65 \\
-              & each        & 0.01 \\
-    Gnu       & stuffed     & 92.50 \\
-    Emu       & stuffed     & 33.33 \\
-    Armadillo & frozen      & 8.99 \\ \bottomrule
-  \end{tabular}
-  \caption{A table with the correct layout.}
-  \label{tab:ok}
-\end{table}
+\section{Black, grey or white box fuzzing}
+Now that we have discussed adding knowledge of inputs to the fuzzer, we can also add knowledge about the PUT to the fuzzer. Which brings us to black, grey and white box fuzzing. With black box fuzzing we have no knowledge about the working of the PUT and we treat the PUT as a literal black box, we present out input and we look at what comes out of it. With only minimal information the fuzzer then tries to improve its input creation. This was also the technique that Miller (unknowingly) used.
+ 
+With grey box fuzzing is usually comes with tools that give indirect information to the fuzzer, tools like: code coverage measurements, timings, types of errors and more.
 
-\section{Lorem Ipsum}
-This section is added to check headers and footers. So this chapter must at
-least contain three pages. To make sure that we get the required amount,
-the \textsf{lipsum} package isn't used but the text is put directly in the
-text.
+Then we arrived at white box testing, with this technique fuzzers can know the source code and can adjust there inputs to fuzz specific parts of the code at a higher cost due to having to reverse engineer the path to specific edge cases. You may may have already suspected, white box fuzzing has more knowledge and can find more bugs per input but creating those inputs take more time compared to black box fuzzing.
 
-\subsection{Lorem ipsum dolor sit amet, consectetur adipiscing elit}
-Sed nec tortor id felis tristique sodales. Nulla nec massa eu dui fermentum
-tincidunt. Integer ullamcorper ante eget eros posuere faucibus. Nam id
-ligula ut augue pulvinar vulputate id at purus. Aenean condimentum tortor
-eu mi placerat eget eleifend massa mollis. Nam est mi, sagittis quis
-euismod eget, sagittis in nibh. Proin elit turpis, aliquam et imperdiet
-sed, volutpat eu turpis.
+The differentiation between black, grey and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that grey box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail all we can say is that it is no longer a black-and-white situation and that the lines become more fuzzy. \todo{is this pun allowed?}
 
-Pellentesque vel enim tellus, vitae egestas turpis. Praesent malesuada elit
-non nisi sollicitudin non blandit lacus tincidunt. Morbi blandit urna at
-lectus ornare laoreet. Suspendisse turpis diam, lobortis dictum luctus
-quis, commodo at lorem. Integer lacinia convallis ultricies. Sed quis augue
-neque, eu malesuada arcu. Nullam vehicula, purus vitae sagittis pulvinar,
-erat eros semper massa, eu egestas nibh erat quis magna. Cras pellentesque,
-nisl eu dapibus volutpat, urna augue ornare quam, quis egestas lectus nulla
-a lectus.
 
-Vivamus dictum libero in massa cursus sed vulputate eros imperdiet. Donec
-lacinia, libero ac lobortis egestas, nibh dui ornare arcu, luctus porttitor
-velit massa sit amet quam. Maecenas scelerisque laoreet diam, vitae congue
-quam adipiscing vitae. Aliquam cursus nisl a leo convallis eleifend
-fermentum massa porta. Nunc libero quam, dapibus dapibus molestie sit amet,
-faucibus vel nunc.
+\section{Fuzzing small programs} \todo{fix title}
+\section{Fuzzing big programs}
 
-\subsection{Praesent auctor venenatis posuere}
-Sed tellus augue, molestie in pulvinar lacinia, dapibus non ipsum. Fusce
-vitae mi vitae enim ullamcorper hendrerit eu malesuada est. Proin iaculis
-ante sed nibh tincidunt vel interdum libero posuere. Vivamus accumsan metus
-quis felis congue suscipit dapibus enim mattis. Fusce mattis tortor eget
-ipsum interdum sagittis auctor id metus.
+\subsection{clasical fuzzing (for some original cite's)}
+\subsection{AFL++}
+\subsection{KLEE}
+\subsection{ClusterFuzz}
+\subsection{STORM (startingpaper)}
 
-Integer diam lacus, pharetra sit amet tempor et, tristique non lorem.
-Aenean auctor, nisi eu interdum fermentum, lectus massa adipiscing elit,
-sed facilisis orci odio a lectus. Proin mi nibh, tempus quis porta a,
-viverra quis enim. In sollicitudin egestas libero, quis viverra velit
-molestie eget. Nulla rhoncus, dolor a mollis vestibulum, lacus elit semper
-nisi, nec sollicitudin sem urna eu magna. Nunc sed est urna, euismod congue
-mi.
+\subsection{types of bugs} \cite{1mansur2020detecting}
 
-\subsection{Cras vulputate ultricies venenatis}
-Vivamus eros urna, sodales accumsan semper vel, lobortis sit amet mauris.
-Etiam condimentum eleifend lorem, ullamcorper ornare lectus aliquet vitae.
-Praesent massa enim, interdum sit amet semper et, venenatis ut elit.
-Quisque faucibus, quam ac lacinia imperdiet, nulla neque elementum purus,
-tempus rutrum justo massa porta sapien. Vestibulum ante ipsum primis in
-faucibus orci luctus et ultrices posuere cubilia Curae; Sed ultrices
-interdum mi, et rhoncus sapien rutrum sed.
-
-Duis elit orci, molestie quis sollicitudin sed, convallis non ante.
-Maecenas tincidunt condimentum justo, et ultricies leo tristique vitae.
-Vestibulum quis quam non lectus dapibus eleifend a vitae nibh. Nam nibh
-justo, pharetra quis iaculis consequat, elementum quis justo. Etiam mollis
-lacinia lacus, nec sollicitudin urna lobortis ac. Nulla facilisi.
-
-Proin placerat risus eleifend erat ultricies placerat. Etiam rutrum magna
-nec turpis euismod consectetur. Phasellus tortor odio, lacinia imperdiet
-condimentum sed, faucibus commodo erat. Phasellus sed felis id ante
-placerat ultrices. Aenean tempor justo in tortor volutpat eu auctor dolor
-mollis. Aenean sit amet risus urna. Morbi viverra vehicula cursus.
-
-\subsection{Donec nibh ante, consectetur et posuere id, tempus nec arcu}
-Curabitur a tellus aliquet ipsum pellentesque scelerisque. Etiam congue,
-risus et volutpat rutrum, est purus dapibus leo, non cursus metus felis
-eget ligula. Vivamus facilisis tristique turpis, ut pretium lectus luctus
-eleifend. Fusce magna sapien, ullamcorper vitae fringilla id, euismod quis
-ante.
-
-Phasellus volutpat, nunc et pharetra semper, sem justo adipiscing mauris,
-id blandit magna quam et orci. Vestibulum a erat purus, ut molestie ante.
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
-cubilia Curae; Proin turpis diam, consequat ut ullamcorper ut, consequat eu
-orci. Sed metus risus, fringilla nec interdum vel, interdum eu nunc.
-Suspendisse vel sapien orci.
-
-\subsection{Morbi et mauris tempus purus ornare vehicula}
-Mauris sit amet diam quam, eget luctus purus. Sed faucibus, risus semper
-eleifend iaculis, mi turpis bibendum nisl, quis cursus nibh nisl sit amet
-ipsum. Vestibulum tempor urna vitae mi auctor malesuada eget non ligula.
-Nullam convallis, diam vel ultrices auctor, eros eros egestas elit, sed
-accumsan arcu tortor eget leo. Vestibulum orci purus, porttitor in pharetra
-eget, tincidunt eget nisl. Nullam sit amet nulla dui, facilisis vestibulum
-dui.
-
-Donec faucibus facilisis mauris ac cursus. Duis rhoncus quam sed nisi
-laoreet eu scelerisque massa tincidunt. Vivamus sit amet libero nec arcu
-imperdiet tempor quis non libero. Sed consequat dignissim justo. Phasellus
-ullamcorper, velit quis posuere vulputate, felis erat tincidunt mauris, at
-vestibulum justo lectus et turpis. Maecenas lacinia convallis euismod.
-Quisque egestas fermentum sapien eu dictum. Sed nec lacus in purus dictum
-consequat quis vel nisl. Fusce non urna sem. Curabitur eu diam vitae elit
-accumsan blandit. Nullam fermentum nunc et leo dictum laoreet. Donec semper
-varius velit vel fringilla. Vivamus eu orci nunc.
+\subsection{oracle (what is a crash)}
+%oracle problem? see holy grail
+%somewhere a ref to later chapter input simplification (minimisation differantioation)
 
 \section{Conclusion}
 The final section of the chapter gives an overview of the important results
 of this chapter. This implies that the introductory chapter and the
 concluding chapter don't need a conclusion.
 
-\lipsum[66]
 
 %%% Local Variables: 
 %%% mode: latex

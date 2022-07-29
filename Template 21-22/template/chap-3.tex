@@ -1,19 +1,57 @@
-\chapter{CCPMpy}
+\chapter{Simplifying crashes}
 \label{cha:3}
-\todo{intro ch 3}
+
+%chapter on simplifying the crashes
+%	binary search will not work all the time
+%	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
+%		start with halfs then *2
+%		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
+%		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
+%	delta debugging
+%		time spend searching vs simplified ratio is important as mentioned in \cite{mansur2020detecting}
+%		and needs to preserve satisfiability as mentioned in \cite{mansur2020detecting}
+%		^ possibly a big deal to find critical bugs
+%
+%	with knowledge of input, syntax \cite{zeller2009programs}
+%	of by bigger entities like lines of words \cite{zeller2009programs}
+%	 for speed
+%
+%	alt approach like \cite{mansur2020detecting} try finding the bug again with less resources avail
+%	or isolaytion \cite{zeller2009programs} p 285 
+%		I think it may fail if multiple parts are relevant
+%		I think it could detect for example the CPMpy import as a bug cause as the min diff that causes the bug
+%
+%	sub section on MUS/minimum unsat subset vs delta debugging
+%		MUs good for only whole constraints while 
+%		delta debugging goes for partial structures
+%
+%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \cite{13manes2019survey}
+%	isolation vs simplifying \cite{zeller2009programs} p 285
+%
+%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
+%	 can be solved with stack trace comparison
+%
+%section on minimalisation vs isolation \cite{zeller2002simplifying} p12
+%	for speed take smaller inputs
+%	Isolation will require a lot more things to track but is faster
+
+
 
 \section{The First Topic of this Chapter}
-\lipsum[78]
 
+\subsection{An item}
+A master's thesis is never an isolated work. This means that your text must
+contain references. On-line documents\cite{wiki} as well as
+books\cite{pratchett06:_good_omens} can be referenced.
 
 \section{Figures}
 Figures are used to add illustrations to the text. The \fref{fig:logo} shows
 the KU~Leuven logo as an illustration.
 \begin{figure}
-	\centering
-	\includegraphics{logokul}
-	\caption{The KU~Leuven logo.}
-	\label{fig:logo}
+  \centering
+  \includegraphics{logokul}
+  \caption{The KU~Leuven logo.}
+  \label{fig:logo}
 \end{figure}
 
 \section{Tables}
@@ -22,38 +60,51 @@ not a spreadsheet! Compare \tref{tab:wrong} en \tref{tab:ok}: which table do
 you prefer?
 
 \begin{table}
-	\centering
-	\begin{tabular}{||l|lr||} \hline
-		gnats     & gram      & \$13.65 \\ \cline{2-3}
-		& each      & .01 \\ \hline
-		gnu       & stuffed   & 92.50 \\ \cline{1-1} \cline{3-3}
-		emu       &           & 33.33 \\ \hline
-		armadillo & frozen    & 8.99 \\ \hline
-	\end{tabular}
-	\caption{A table with the wrong layout.}
-	\label{tab:wrong}
+  \centering
+  \begin{tabular}{||l|lr||} \hline
+    gnats     & gram      & \$13.65 \\ \cline{2-3}
+              & each      & .01 \\ \hline
+    gnu       & stuffed   & 92.50 \\ \cline{1-1} \cline{3-3}
+    emu       &           & 33.33 \\ \hline
+    armadillo & frozen    & 8.99 \\ \hline
+  \end{tabular}
+  \caption{A table with the wrong layout.}
+  \label{tab:wrong}
 \end{table}
 
 \begin{table}
-	\centering
-	\begin{tabular}{@{}llr@{}} \toprule
-		\multicolumn{2}{c}{Item} \\ \cmidrule(r){1-2}
-		Animal    & Description & Price (\$)\\ \midrule
-		Gnat      & per gram    & 13.65 \\
-		& each        & 0.01 \\
-		Gnu       & stuffed     & 92.50 \\
-		Emu       & stuffed     & 33.33 \\
-		Armadillo & frozen      & 8.99 \\ \bottomrule
-	\end{tabular}
-	\caption{A table with the correct layout.}
-	\label{tab:ok}
+  \centering
+  \begin{tabular}{@{}llr@{}} \toprule
+    \multicolumn{2}{c}{Item} \\ \cmidrule(r){1-2}
+    Animal    & Description & Price (\$)\\ \midrule
+    Gnat      & per gram    & 13.65 \\
+              & each        & 0.01 \\
+    Gnu       & stuffed     & 92.50 \\
+    Emu       & stuffed     & 33.33 \\
+    Armadillo & frozen      & 8.99 \\ \bottomrule
+  \end{tabular}
+  \caption{A table with the correct layout.}
+  \label{tab:ok}
 \end{table}
+
+\section{Lorem Ipsum}
+This section is added to check headers and footers. So this chapter must at
+least contain three pages. To make sure that we get the required amount,
+the \textsf{lipsum} package isn't used but the text is put directly in the
+text.
+
+\subsection{Lorem ipsum dolor sit amet, consectetur adipiscing elit}
+
+\subsection{Praesent auctor venenatis posuere}
+
+\subsection{Morbi et mauris tempus purus ornare vehicula}
 
 
 \section{Conclusion}
 The final section of the chapter gives an overview of the important results
 of this chapter. This implies that the introductory chapter and the
 concluding chapter don't need a conclusion.
+
 
 %%% Local Variables: 
 %%% mode: latex

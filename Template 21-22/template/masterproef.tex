@@ -2,7 +2,7 @@
 \setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
   %inputenc=utf8,
   title={The best master's thesis ever},
-  author={Ruben Kindt},
+  author={ing. Ruben Kindt},
   promotor={Prof.\,dr.\ Tias Guns},
   assessor={ },
   assistant={}}
@@ -27,9 +27,9 @@
 %%%%%%%
 % Om wat tekst te genereren wordt hier het lipsum pakket gebruikt.
 % Bij een echte masterproef heb je dit natuurlijk nooit nodig!
-\IfFileExists{lipsum.sty}%
- {\usepackage{lipsum}\setlipsumdefault{11-13}}%
- {\newcommand{\lipsum}[1][11-13]{\par Hier komt wat tekst: lipsum ##1.\par}}
+%\IfFileExists{lipsum.sty}%
+% {\usepackage{lipsum}\setlipsumdefault{11-13}}%
+% {\newcommand{\lipsum}[1][11-13]{\par Hier komt wat tekst: lipsum ##1.\par}}
 %%%%%%%
 
 %\includeonly{chap-n}
@@ -42,17 +42,13 @@
   the rest of my family.
 \end{preface}
 
-
 \listoftodos
-
 \tableofcontents*
 
 \begin{abstract}
 	\todo{abstract}
   The \texttt{abstract} environment contains a more extensive overview of
   the work. But it should be limited to one page.
-
-  \lipsum[1]
 \end{abstract}
 
 \begin{abstract*}
@@ -62,8 +58,6 @@
   Wanneer de tekst voor een Nederlandstalige master in het Engels wordt
   geschreven, wordt hier normaal een uitgebreide samenvatting verwacht,
   bijvoorbeeld een tiental bladzijden. 
-
-  \lipsum[1]
 \end{abstract*}
 
 % Een lijst van figuren en tabellen is optioneel
@@ -96,14 +90,12 @@
   	hierarchical delta-debugging
   	1-minimal
   	grammar based fuzzing
+  	SAT by construction
+  	UNSAT by construction
   	MUS %minimal unsat subset =/= 
+  	PUT Program Under Test, the piece of code, application of program we are testing on for potential bugs.
   	
-    42    & ``The Answer to the Ultimate Question of Life, the Universe,
-            and Everything'' according to \cite{h2g2} \\
-    $c$   & Speed of light \\
-    $E$   & Energy \\
-    $m$   & Mass \\
-    $\pi$ & The number pi \\
+
   \end{tabularx}
 \end{flushleft}
 
@@ -111,10 +103,10 @@
 \mainmatter
 
 \include{intro}
-\include{chap-1}
 \include{chap-2}
 \include{chap-3}
 \include{chap-4}
+\include{chap-5}
 % ... en zo verder tot
 \include{chap-n}
 \include{conclusion}
