@@ -15,8 +15,8 @@ you are reading now. The last topic of the chapter holds the conclusion.
 
 
 \section{History} \todo{fix title}
-The rise of fuzzing came when Miller gave a classroom assignment \cite{21FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{4originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
-In the last Thirty years the technique of fuzzing has changed significantly and various classifications have come forward \cite{12Fuzzingasurvey} \cite{13manes2019survey}. Three most used classifications are: 
+The rise of fuzzing came when Miller gave a classroom assignment\cite{21FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper\cite{4originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs crashed.
+In the last thirty years the technique of fuzzing has changed significantly and various classifications have come forward\cite{12Fuzzingasurvey}\cite{13manes2019survey}. Three most used classifications are: 
 how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
 
 
@@ -52,6 +52,8 @@ The differentiation between black, grey and white box fuzzing is not clear cut, 
 \subsection{KLEE}
 \subsection{ClusterFuzz}
 \subsection{STORM (startingpaper)}
+A novel way of approaching this oracle problem is by Alexandra Bugariu and Peter M\"uller in "Automatically testing string solvers"\cite{9bugariu2020automaticallyTestingStringSolvers} where they know the (un)satisfiability of the formulas by the way of construction, called (un)sat by construction.  For formulas that satisfy they generate trivial satisfiable formulas and then by satisfiability preserving transformations create more complex formulas. And unsatisfiable formulas they use $\neg$ A $\land$ A', with A' being a equivalent formula of A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation.
+This technique has also been applied to SMT solvers by Muhammad Numair Mansur at al.\cite{1mansur2020detecting}
 
 \subsection{types of bugs} \cite{1mansur2020detecting}
 
