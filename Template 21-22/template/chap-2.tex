@@ -29,7 +29,7 @@ A fuzzer can construct input for a PUT in two ways, it can generate input itself
 
 \section{Input structure}
 %lexical, sementical, constraint or random
-While we have discussed the bigger scope on how inputs are created, let us go into more detail. As we have seen before fuzzing started mainly with Miller's assignment, that random generation of inputs falls under 'dumb' fuzzing. Due to only seeing the input as one long list of strings with no knowledge of any substrings. This technique can be applied to mutation as well, compared to only adding with generation here we also additionally remove or change randomly selected symbols of the seed with new symbols. 
+While we have discussed the bigger scope on how inputs are created, let us go into more detail. As we have seen before fuzzing started mainly with Miller's assignment, that random generation of inputs falls under 'dumb' fuzzing. Due to only seeing the input as one long list of strings with no knowledge of any sub-strings. This technique can be applied to mutation as well, compared to only adding with generation here we also additionally remove or change randomly selected symbols of the seed with new symbols. 
 We can create three types of inputs: valid, semi-valid and nonsense input. With nonsense input we will be testing the parser almost exclusively, either it crashes the parser or the parser will say invalid and the PUT will stop running. With semi-valid input we hope to be as close as possible to valid input to be able to explore the PUT but to catch an edge cases and crash.
 
 A smarter technique is referred to one which has knowledge about the structure inputs can have or should have. This increases the chance of inputs passing the parser, being able to test the deeper parts of the PUT and as such covering more of the PUT. This with an increased complex fuzzer. We can build a 'smart' fuzzer by adding knowledge about keywords, making it a lexical fuzzer, adding knowledge about syntax, for example all parentheses needs to be matched. Directed fuzz testing does fit in this category as well but is only possible in a white box environment, more on that later.
@@ -39,9 +39,9 @@ Now that we have discussed adding knowledge of inputs to the fuzzer, we can also
  
 With grey box fuzzing is usually comes with tools that give indirect information to the fuzzer, tools like: code coverage measurements, timings, types of errors and more.
 
-Then we arrived at white box testing, with this technique fuzzers can know the source code and can adjust there inputs to fuzz specific parts of the code at a higher cost due to having to reverse engineer the path to specific edge cases. You may may have already suspected, white box fuzzing has more knowledge and can find more bugs per input but creating those inputs take more time compared to black box fuzzing.
+Then we arrived at white box testing, with this technique fuzzers can know the source code and can adjust their inputs to fuzz specific parts of the code at a higher cost due to having to reverse engineer the path to specific edge cases. You may may have already suspected, white box fuzzing has more knowledge and can find more bugs per input but creating those inputs take more time compared to black box fuzzing.
 
-The differentiation between black, grey and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that grey box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail all we can say is that it is no longer a black-and-white situation and that the lines become more fuzzy. \todo{is this pun allowed?}
+The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail all we can say is that it is no longer a black-and-white situation and that the lines become more fuzzy. \todo{is this pun allowed?}
 
 
 \section{Fuzzing small programs} \todo{fix title}
@@ -51,15 +51,29 @@ The differentiation between black, grey and white box fuzzing is not clear cut, 
 \subsection{AFL++}
 \subsection{KLEE}
 \subsection{ClusterFuzz}
-\subsection{STORM (startingpaper)}
-A novel way of approaching this oracle problem is by Alexandra Bugariu and Peter M\"uller in "Automatically testing string solvers"\cite{9bugariu2020automaticallyTestingStringSolvers} where they know the (un)satisfiability of the formulas by the way of construction, called (un)sat by construction.  For formulas that satisfy they generate trivial satisfiable formulas and then by satisfiability preserving transformations create more complex formulas. And unsatisfiable formulas they use $\neg$ A $\land$ A', with A' being a equivalent formula of A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation.
-This technique has also been applied to SMT solvers by Muhammad Numair Mansur at al.\cite{1mansur2020detecting}
 
-\subsection{types of bugs} \cite{1mansur2020detecting}
 
 \subsection{oracle (what is a crash)}
+The oracle problem as described in \cite{23OriginalOraclePaper} explains the issue of telling if a PUT's output was correct or not given the input or as said in "The Oracle Problem in Software Testing: A Survey"\cite{10barr2014oracleProblem} 
+\begin{quote}
+	"Given an input for a system,
+	the challenge of distinguishing the corresponding desired, correct behavior from potentially incorrect behavior is called the test oracle problem."
+\end{quote} by Earl T. Barr et al.
+
 %oracle problem? see holy grail
 %somewhere a ref to later chapter input simplification (minimisation differantioation)
+
+
+\subsection{moving the oracle problem}
+A novel way of approaching this oracle problem is by Alexandra Bugariu and Peter M\"uller in "Automatically testing string solvers"\cite{9bugariu2020automaticallyTestingStringSolvers} where they know the (un)satisfiability of the formulas by the way of construction, called (un)sat by construction.  For formulas that satisfy they generate trivial satisfiable formulas and then by satisfiability preserving transformations create more complex formulas. And unsatisfiable formulas they use $\neg$ A $\land$ A', with A' being a equivalent formula of A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation.
+This technique has also been applied to SMT solvers by Muhammad Numair Mansur at al. called STORM\cite{1mansur2020detecting} this with mutational input creation compared to the previous generation based technique. In the paper the authors dissect all assertions into their sub-formulas and create an initial pool. In this pool the sub-formulas are checked if they satisfy or not and with this knowledge new formulas are created for the population pool with ground truth.
+
+
+%deze controleert dat de sat is still valid by using another solver as oracle (bij het annoteren van T/F values in the init pool)
+% de eerste gebruikt een oracle bij het controleren of dat de equi transformations het model niet breken
+
+\subsection{Types of bugs} 
+Depending on what the output is of the fuzzer we can classify the types of bugs as done in\cite{1mansur2020detecting}: crashes, wrongly satisfied, wrongly unsatisfied or hanging. Preferably we have no bugs but that is unfeasible, therefore we classify the bugs into a preferred bug over another bug in our situation. For example a crash for a constraint programming language (CP) is more unacceptable than a wrongly unsatisfied model, since there is no way for the user to know that the solver failed (except for differentiation testing, more on that later). Meaning that the the user will treat the result (wrongly) as correct. With hanging PUT's the user can not draw incorrect conclusions, with wrongly satisfied models the user can check the model's instances and evaluate the result before using it further. This is due to the fact that SMT problems are frequently np-hard meaning they are easy to confirm but hard to solve. For practical reasons we will later change the undecidable and or hanging PUT's into timeouts. We know that the types of bugs can be classified in more detail, for example crashes into buffer overflows, invalid memory addressing and so on, but we choice to stay with a more general overview for now.
 
 \section{Conclusion}
 The final section of the chapter gives an overview of the important results
