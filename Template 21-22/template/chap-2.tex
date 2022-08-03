@@ -37,7 +37,7 @@ The differentiation between black, gray and white box fuzzing is not clear cut, 
 
 \section{Classification of some fuzzers}
 Now that we know how we can classify fuzzers let us apply this to existing fuzzers to see how they work. For starters Miller's original work, which we discussed earlier, was random generation based black box fuzzing. His later work in 1995 on more UNIX utilities and X-Windows servers\cite{26miller1995fuzzrevisited}, his work in 2000 on Windows NT 4.0 and Windows 2000\cite{24MillerWindows} and his work on MacOS \cite{25MillerOnMacOS} all fall in the same category of random generation based black box fuzzing.
-A couple of years later, KLEE was developed\cite{8KLEE} by Cristian Cadar et al. KLEE is a generation based white box fuzzing tool
+A couple of years later, KLEE was developed\cite{8KLEE} by Cadar et al. KLEE is a generation based white box fuzzing tool
 
 
 Among The more popular ones are: AFL, AFL++, Clusterfuzz, oneFuzz
@@ -55,26 +55,27 @@ OneFuzz from Microsoft
 
 \subsection{Types of bugs} 
 Depending on what the output is of the fuzzer we can classify the types of bugs, as done in a recent paper\cite{1mansur2020detecting} by Mansur: crashes, wrongly satisfied, wrongly unsatisfied or hanging. With some of these bugs being less acceptable then others 
-For example, as a recent paper\cite{1mansur2020detecting} by Muhammad Numair Mansur et al. describes, a crash for a constraint programming language (CP) is preferred over a wrongly unsatisfied model, since there is no way for the user to know that the solver failed (except for differentiation testing, more on that later). Meaning that the user will treat the result (wrongly) as correct compare this to a crash were it is clear that something went wrong.
+For example, as a recent paper\cite{1mansur2020detecting} by Mansur et al. describes, a crash for a constraint programming language (CP) is preferred over a wrongly unsatisfied model, since there is no way for the user to know that the solver failed (except for differentiation testing, more on that later). Meaning that the user will treat the result (wrongly) as correct compare this to a crash were it is clear that something went wrong.
 With hanging PUT's the user can not draw incorrect conclusions and with wrongly satisfied models the user can check the model's instances and evaluate the result before using it further. This is due to the fact that problems are frequently np-hard meaning they are easy to confirm but hard to solve. For practical reasons we will later change the undecidable and or hanging PUT's into timeouts. We know that the types of bugs can be classified in more detail, for example crashes into buffer overflows, invalid memory addressing and so on, but we choose to stay with a more general overview for now. An interesting classification to be added is the knowledge whether or not the bug is in the parser or not, as the authors of "Semantic Fuzzing with Zest"\cite{22SemanticFuzzing} would classify, is the bug in the syntactical or in the semantical part of the program?
 
 
 \subsection{oracle (what is a crash)}
-The oracle problem as described in 
-
-explains the issue of telling if a PUT's output was correct or not given the input or as said in "The Oracle Problem in Software Testing: A Survey"\cite{10barr2014oracleProblem} 
+The oracle problem describes the issue of telling if a PUT's output was, given the input, correct or not or as said in "The Oracle Problem in Software Testing: A Survey"\cite{10barr2014oracleProblem} 
 \begin{quote}
 	"Given an input for a system, the challenge of distinguishing the corresponding desired, correct behavior from potentially incorrect behavior is called the test oracle problem."
-\end{quote} by Earl T. Barr et al.
+\end{quote} by Barr et al.
+In their paper they discuss four categories: specified test oracles, derived test oracles, implicit test oracles, and the absence of test oracle. The biggest category would be the specified test oracles which contains all the possible encoding of specifications like modeling languages UML, Event-B and more. Their derived test oracles classification contains all forms of knowledge obtained from documentation on how the program should work or previous versions of the program. The last two oracles categories come down to the use of knowing that crashes are always unwanted and the human oracle like crowdsourcing respectively.
 
-%oracle problem? see holy grail
+\subsection{Handling the oracle problem}
+Although the approach of by Bugariu and M\"uller in "Automatically testing string solvers"\cite{9bugariu2020automaticallyTestingStringSolvers} falls in the first category mentioned above, their approach is innovative. While most fuzzers either use crashes or differential testing (more on that later) to find bugs, they know the  (un)satisfiability of their formulas by the way of they are constructed. For satisfiable formulas they generate trivial formulas and then by satisfiability preserving transformations increase the complexity and for unsatisfiable formulas they use $\neg$ A $\land$ A', with A' being a equivalent formula of A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation. This technique has also been applied to SMT solvers by Mansur et al. called STORM\cite{1mansur2020detecting} this with mutational input creation compared to the previous generation based technique. In the paper the authors dissect all assertions into their sub-formulas and create an initial pool. In this pool the sub-formulas are checked if they satisfy or not and with this knowledge new formulas are created for the population pool with ground truth.
+
+\subsection{Differential testing}
+As mentioned above most fuzzers use either crashes to detect that the PUT has failed to provide a correct output or in cases where possible use differential testing. This last one uses a single or multiple analogue programs to test if the PUt gave the same output as the analogue programs. neither techniques is complete: crash based fuzzing can not detect wrong outputs and differential testing can not catch bugs that also occur in the analogue programs.
+
+
+
+
 %somewhere a ref to later chapter input simplification (minimisation differantioation)
-
-
-\subsection{moving the oracle problem}
-A novel way of approaching this oracle problem is by Alexandra Bugariu and Peter M\"uller in "Automatically testing string solvers"\cite{9bugariu2020automaticallyTestingStringSolvers} where they know the (un)satisfiability of the formulas by the way of construction, called (un)sat by construction.  For formulas that satisfy they generate trivial satisfiable formulas and then by satisfiability preserving transformations create more complex formulas. And unsatisfiable formulas they use $\neg$ A $\land$ A', with A' being a equivalent formula of A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation.
-This technique has also been applied to SMT solvers by Muhammad Numair Mansur at al. called STORM\cite{1mansur2020detecting} this with mutational input creation compared to the previous generation based technique. In the paper the authors dissect all assertions into their sub-formulas and create an initial pool. In this pool the sub-formulas are checked if they satisfy or not and with this knowledge new formulas are created for the population pool with ground truth.
-%differentional testting
 
 
 \section{Conclusion}
