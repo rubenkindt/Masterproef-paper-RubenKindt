@@ -1,3 +1,5 @@
+Any references that become big are a result of errors in this file, check for spaces, "'" ... in the ID
+
 @inproceedings{1mansur2020detecting,
 	title={Detecting critical bugs in SMT solvers using blackbox mutational fuzzing},
 	author={Mansur, Muhammad Numair and Christakis, Maria and W{\"u}stholz, Valentin and Zhang, Fuyuan},
@@ -231,8 +233,6 @@
 	month = aug,
 } % 24 miller on windows NT
 
-Export Citations
-
 @inproceedings{25MillerOnMacOS,
 	author = {Miller, Barton P. and Cooksey, Gregory and Moore, Fredrick},
 	title = {An Empirical Study of the Robustness of MacOS Applications Using Random Testing},
@@ -267,50 +267,50 @@ Export Citations
 	month = aug,
 } % 27 AFL++
 
-@online{ALF's github,
+@online{ALFGithub,
 	author = {Google},
 	title = {American fuzzy lop - a security-oriented fuzzer},
 	date = {4 Juli 2020},
 	url = {https://github.com/google/AFL},
-	language = {Englsih},
+	language = {English},
 	version = {2.57b},
 	organization = {Google},
 	urldate = {01/08/2020},
 }
 
-@online{clusterfuzz' github,
+@online{clusterfuzzGithub,
 	author = {Google},
 	title = {Scalable fuzzing infrastructure.},
 	date = {4 Juli 2020},
 	url = {https://github.com/google/clusterfuzz},
-	language = {Englsih},
+	language = {English},
 	organization = {Google},
 	note = {Originally used by google for fuzzing the Chrome browser},
 	urldate = {01/08/2020},
 }
 
-@online{Summary of multiple fuzzing thecnologies,
+@online{SummaryOfMultipleFuzzingTechnologies,
 	title = {Awesome-Fuzzing},
 	url = {https://github.com/secfigo/Awesome-Fuzzing},
-	language = {Englsih},
+	language = {English},
 	urldate = {01/08/2020},
 }
 
-@online{OSS-fuzz' github,
+@online{OSS-fuzzGithub,
 	author = {Google},
 	title = {OSS-Fuzz - continuous fuzzing for open source software. },
 	date = {4 Juli 2020},
 	url = {https://github.com/google/oss-fuzz},
-	language = {Englsih},
+	language = {English},
 	organization = {Google},
 	urldate = {01/08/2020},
 }
 
-@online{ALF++'s github,
+@online{ALF++Github,
 	title = {AFL++},
 	date = {4 Juli 2020},
 	url = {https://github.com/AFLplusplus/AFLplusplus},
-	language = {Englsih},
+	language = {English},
 	urldate = {01/08/2020},
 }
 
@@ -339,27 +339,26 @@ Export Citations
 	author={Li, Yuwei and Ji, Shouling and Lv, Chenyang and Chen, Yuan and Chen, Jianhai and Gu, Qinchen and Wu, Chunming},
 	journal={arXiv preprint arXiv:1901.01142},
 	year={2019}
-} % 32
+} % 32 vulnerability-oriented evolutionary fuzzing framework
 
-
-@online{heartbleedViaFuzzing,
+@online{HeartbleedViaFuzzing,
 	author = {Hanno Böck},
 	title = {How Heartbleed could've been found},
 	date = {07/04/2015},
 	url = {https://blog.hboeck.de/archives/868-How-Heartbleed-couldve-been-found.html},
 	subtitle = {Hanno's blog},
-	language = {Englsih},
+	language = {English},
 	pubstate = {07/04/2015},
 	urldate = {04/08/2022},
 }
 
-@online{shellchockViaFuzzing,
+@online{ShellShockViaFuzzing,
 	author = {Pierluigi Paganini},
 	title = {Exploiting and verifying shellshock: CVE-2014-6271},
 	date = {27/09/2014},
 	url = {https://resources.infosecinstitute.com/topic/bash-bug-cve-2014-6271-critical-vulnerability-scaring-internet/},
 	subtitle = {The Bash Bug vulnerability (CVE-2014-6271)},
-	language = {Englsih},
+	language = {English},
 	pubstate = {27/09/2014},
 	urldate = {04/08/2022},
 }
@@ -369,7 +368,7 @@ Export Citations
 	title = {Can we find Log4Shell with Java Fuzzing? (CVE-2021-44228 - Log4j RCE)},
 	date = {13/12/2021},
 	url = {https://fuzzinglabs.com/log4shell-java-fuzzing-log4j-rce/},
-	language = {Englsih},
+	language = {English},
 	pubstate = {13/12/2021},
 	urldate = {04/08/2022},
 	organization = {fuzzinglabs},
@@ -381,7 +380,7 @@ Export Citations
 	booktitle     = {Proceedings of the 25th ACM Conference on Computer and Communications Security (CCS)},
 	year          = {2018},
 	publisher     = {ACM}
-} % 33 
+} % 33 not fully understood, could use another read
 
 @inproceedings{34ForeshadowViaFuzz,
 	title={Difuzzrtl: Differential fuzz testing to find cpu bugs},
@@ -390,10 +389,20 @@ Export Citations
 	pages={1286--1303},
 	year={2021},
 	organization={IEEE}
-} % 34 
+} % 34 technicly did not find Foreshadow but with a small modification (bottem p14) it could have
 
 @article{35ForeshadowFuzzRecom,
 	title={Microarchitectural Side-channel Attacks for Privileged Software Adversaries},
 	author={Van Bulck, Jo},
 	year={2020}
-} % 35 phd defence, Foreshadow
+} % 35 phd defence, Foreshadow, NOT READ 100%
+
+@online{AFLWrapper,
+	author = {Robbert Heatson},
+	title = {How to write an afl wrapper for any language},
+	date = {08/07/2019},
+	url = {https://robertheaton.com/2019/07/08/how-to-write-an-afl-wrapper-for-any-language/},
+	language = {English},
+	pubstate = {07/08/2019},
+	urldate = {06/08/2022},
+}

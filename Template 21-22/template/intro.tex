@@ -4,7 +4,6 @@ There are a lot of causes for bugs: software complexity, multiple people writing
 \begin{quote}
 "Fuzzing refers to a process of repeatedly running a program with generated inputs that may be syntactically or semantically malformed."
 \end{quote} as quoted from \cite{13manes2019survey}.
-
 With this technique we will try to detect bugs in the constraint programming and modeling library CPMpy \cite{17guns2019increasing} created by Prof. dr. Guns et al.
 
 \todo{modus operandi bij intro}
@@ -13,8 +12,7 @@ With this technique we will try to detect bugs in the constraint programming and
 During the development phase of software, tests are preformed to check if the written code matches the expected and wanted output. This can be done by the developers themselves or by quality assurance testers which do this full time and this on multiple different ways: code review, manual testing or automated testing. Those could exist out of unit tests, checking for known bugs, confirming that the use cases are working, code audits, fuzzing and others. None of the techniques mentioned above can prevent all possible bugs from occurring on top of that using only a single technique would cost more to find the same level of bugs then using multiple. While fuzzing emerged in the academic literature at the start of the nineties, its full adoption thirty years later in the industry is still ongoing. With multiple companies like Google, Microsoft and LLVM creating their own fuzzers together with a pushing security sector the adoption has started to become a part of the growing toolchain for software verification.
 
 \section{Fuzzing and security}
-The adoption of fuzzers has definitely gained speed due to its proven effectiveness in finding security exploits. For example ShellShock, heartbleed, Log4Shell, Foreshadow and KRACK could have been found using fuzz testing as shown in multiple sources \cite{shellchockViaFuzzing}, \cite{heartbleedViaFuzzing}, \cite{Log4ShellViaFuzzing},  \cite{34ForeshadowViaFuzz} and fuzzing is even recommended by the authors to prevent similar exploits \cite{33KrackViaFuzz} and \cite{35ForeshadowFuzzRecom}.
-
+The adoption of fuzzers has definitely gained speed due to its proven effectiveness in finding security exploits. For example ShellShock, Heartbleed, Log4Shell, Foreshadow and KRACK could have been found using fuzz testing as shown in multiple sources \cite{ShellShockViaFuzzing}, \cite{HeartbleedViaFuzzing}, \cite{Log4ShellViaFuzzing},  \cite{34ForeshadowViaFuzz} and fuzzing is even recommended by the authors to prevent similar exploits \cite{33KrackViaFuzz} and \cite{35ForeshadowFuzzRecom}.
 
 \section{Constraint programming in general}
 %	what is CP and family, differences, \cite{freuder1997pursuit}

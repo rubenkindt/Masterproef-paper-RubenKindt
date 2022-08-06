@@ -40,15 +40,15 @@ Now that we know how we can classify fuzzers let us apply this to existing fuzze
 A couple of years later, KLEE was developed\cite{8KLEE} by Cadar et al. KLEE is a generation based white box fuzzing tool
 
 
-Among The more popular ones are: AFL, AFL++, Clusterfuzz, oneFuzz
+Among the more popular ones is the American fuzzy lop\footnote{\url{https://github.com/google/AFL}} (AFL), named after a rabbit breed, is a C and C++ focused, mutation based, black box fuzzer released by Google but due inactivity the fork AFL++\cite{27AFL++}\footnote{\url{https://github.com/AFLplusplus/AFLplusplus}} has become more popular than the original and is maintained actively by the community. Not only did AFL spark AFL++, it has also sparked a python focused version pythonAFL\footnote{\url{https://github.com/jwilk/python-afl}}, a  Ruby\footnote{\url{https://github.com/richo/afl-ruby}} focused one,  a Go \footnote{\url{https://github.com/aflgo/aflgo}} focused version and is shown by Robert Heaton\cite{AFLWrapper} to not be difficult to write a wrapper for it.
+
+, Clusterfuzz\cite{clusterfuzzGithub}, OSS-Fuzz\cite{OSS-fuzzGithub} oneFuzz
 Google's fuzzer for chromioum ClusterFuzz
 OneFuzz from Microsoft 
 
 %\subsection{AFL++}
 %\subsection{KLEE}
 %\subsection{ClusterFuzz}
-
-
 
 %deze controleert dat de sat is still valid by using another solver as oracle (bij het annoteren van T/F values in the init pool)
 % de eerste gebruikt een oracle bij het controleren of dat de equi transformations het model niet breken
@@ -71,8 +71,6 @@ Although the approach of by Bugariu and M\"uller in "Automatically testing strin
 
 \subsection{Differential testing}
 As mentioned above most fuzzers use either crashes to detect that the PUT has failed to provide a correct output or in cases where possible use differential testing. This last one uses a single or multiple analogue programs to test if the PUt gave the same output as the analogue programs. neither techniques is complete: crash based fuzzing can not detect wrong outputs and differential testing can not catch bugs that also occur in the analogue programs.
-
-
 
 
 %somewhere a ref to later chapter input simplification (minimisation differantioation)
