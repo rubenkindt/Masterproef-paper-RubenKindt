@@ -35,4 +35,6 @@ Template 21-22/template/masterproef.synctex.gz
 *.toc
 *.xml
 *.bcf
-Template 21-22/template/masterproef.pdf
+
+#while compiling/building
+*.synctex(busy)
