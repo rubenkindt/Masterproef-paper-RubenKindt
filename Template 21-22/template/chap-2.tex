@@ -17,7 +17,7 @@ A smarter technique is referred to one which has knowledge about the structure i
 Now that we have discussed adding knowledge of inputs to the fuzzer, we can also add knowledge about the PUT to the fuzzer. Which brings us to black, gray and white box fuzzing. With black box fuzzing we have no knowledge about the inner working of the PUT and we treat the PUT as a literal black box, we present out input and we look at what comes out of it. And with this minimal information the fuzzer then tries to improve its input creation. 
 Compared to black box fuzzing gray box fuzzing usually comes with tools that give indirect information to the fuzzer, tools like: code coverage measurements, timings, types of errors and more.
 And as you may have predict white box testing is the term used when the fuzzer as much as possible. It will have access to the source code and can adjust their inputs to fuzz specific parts of the code. This at a higher cost due to having to reverse engineer the path to specific edge cases, meaning that white box fuzzing can find more bugs per input but creating those inputs take more time compared to black box fuzzing.
-The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail all we can say is that it is no longer a black-and-white situation and that the lines become fuzzy. \todo{is this pun allowed?}
+The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail all we can say is that it is no longer a black-and-white situation and that the lines has become fuzzy. \todo{Ask permission to do this}
 
 
 \section{Fuzzer classification}
@@ -57,6 +57,7 @@ As mentioned above most fuzzers use either crashes to detect that the PUT has fa
 
 
 \section{Conclusion}
+\todo{conclusion}
 The final section of the chapter gives an overview of the important results
 of this chapter. This implies that the introductory chapter and the
 concluding chapter don't need a conclusion.
