@@ -1,15 +1,32 @@
-\chapter{Simplifying Inputs}
+\chapter{Detecting crucial parts of the input Simplifying Inputs} \todo{better title}
 \label{cha:3}
-When we detect that the PUT crashes, wrongly satisfies, wrongly not satisfies or hangs on a given input we now want to know why it does that. What causes this unwanted output and what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when the crash is not main perpetrator or we get an other unwanted output the developer my need to debug deep into the code to find the bug. This with a potential large input could be a tedious assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with \todo{plug in sections}
+When we detect that the PUT crashes, wrongly satisfies, wrongly not satisfies or hangs on a given input we now want to know why it does that. What causes this unwanted output and what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when the crash is not main perpetrator or we get an other unwanted output the developer my need to debug deep into the code to find the bug. This with a potential large input could be a tedious and long assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with \todo{plug in sections}
 
-\section{Minimalisation and isolation}
-% what are both, what situations is which the better one
-%section on minimalisation vs isolation \cite{zeller2002simplifying} p12
-%	for speed take smaller inputs
+\section{Minimizing inputs}
+As said with bigger inputs it takes longer to find the bugs due to having to find identify which parts of the input trigger the error or having to walk through the execution of the PUT if even possible. This is where techniques come into play to create detect the crucial parts of the input. This while still finding the same bug and not changing a null pointer dereference to a parser related bug for example.\cite{bookZellerwhyProgramsFail}
+
+\subsection{Simplifying}
+The first and the most used technique is the simplification of the inputs where we remove parts of a failing input and check if it still fails. When no longer possible to remove any part of the input we have obtained an input where all parts are needed to expose the bug. This input is at the same time also the shortest possible input to trigger this bug, making finding the bug easier than in the original input filled with unrelated parts. 
+\todo{add mozilla ref}
+\subsection{Isolation}
+Another technique, isolation, is explained in Andreas Zeller et al. 
+\cite{5zeller2002simplifyingIsolatingFailure-inducing} this is a technique where instead of minimizing the input we try to find the smallest difference between an input that shows the bug versus an input that does not show it. This with the advantage that no matter the if we find the bug or not the difference will diminish, either the maximum input will shrink or the minimum input will grow. Although we will have to make sure that we are still finding the same bug and not moving from a null pointer dereference to a parser related bug. Isolation also brings extra complexity with the tracking of multiple inputs and the maximal input could take longer to run due to its size, but according to Andreas Zeller et al. is the faster one .
+
+% what size to remove, importent for speed
+% what are both, what situations is which the better one?  donno atm
 %	Isolation will require a lot more things to track but is faster
+\cite{bookZellerwhyProgramsFail}
+%	isolation vs simplifying \cite{zeller2009programs} p 285
+%
+%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
+%	 can be solved with stack trace comparison
+\subsection{Small inputs by creation}
+small by construction source 9
 
+\todo{algorithms?} paper 5 has nice simplification to isolation delta deb, called 'ddmin()'
 
-%small by construction source 9
+\section{Delta-debugging}
+\cite{2FuzzingAndDelta-debuggingSMTSolvers}
 
 
 %chapter on simplifying the crashes
@@ -38,44 +55,7 @@ When we detect that the PUT crashes, wrongly satisfies, wrongly not satisfies or
 %
 
 \section{Deduplication}
-Another thing to notice is that multiple inputs could prompt the same bug from occurring, these inputs could be similar but don't have to be. With simplifying the input we should be able to detect exact copies, but depending on the simplification's time complexity other techniques could be better with similar results. In case where we would have access to stack traces (via crashes or hanging PUT's) we could differentiate the bugs on basis of the hash of multiple lines of the backtrace. this technique is called stack backtrace hashing and is quite popular according to Valentin J.M. Man\`es\cite{13manes2019survey}. Another technique talked about in that paper, is looking at the code coverage generated by the inputs where we use the executed path (or hash of it) is used as a fingerprint of the inputs. A last technique, used by Microsoft\cite{36semanticsAwareDeduplicationRETracer} is called semantics based deduplication, where in stead of back track use memory dumps to hopefully find the origins of bugs. This use of dumps is less ideal due to traces having more information, but the latter is not always possible due to the performance overhead and privacy causes as specified in the paper. None of the techniques mentioned above are perfect: with stack backtrace hashing you could find to many false positives or false negatives depending on the depth taken from the stack, with coverage some inputs will generate extra function calls and the semantics based deduplication are limited to X86 or x86-64 code with the binary file and the debug information. Neither of these techniques work with black box fuzzing unfortunately.
-\todo{lookup other deduplication techniques}
-
-%	%dedublication techniques: stack backtrace (hashing), coverage beased, semantics aware \cite{13manes2019survey}
-%	isolation vs simplifying \cite{zeller2009programs} p 285
-%
-%The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
-%	 can be solved with stack trace comparison
-%
-
-
-
-\section{The First Topic of this Chapter}
-%
-%\section{Figures}
-%Figures are used to add illustrations to the text. The \fref{fig:logo} shows
-%the KU~Leuven logo as an illustration.
-%\begin{figure}
-%  \centering
-%  \includegraphics{logokul}
-%  \caption{The KU~Leuven logo.}
-%  \label{fig:logo}
-%\end{figure}
-
-%\begin{table}
-%  \centering
-%  \begin{tabular}{@{}llr@{}} \toprule
-%    \multicolumn{2}{c}{Item} \\ \cmidrule(r){1-2}
-%    Animal    & Description & Price (\$)\\ \midrule
-%    Gnat      & per gram    & 13.65 \\
-%              & each        & 0.01 \\
-%    Gnu       & stuffed     & 92.50 \\
-%    Emu       & stuffed     & 33.33 \\
-%    Armadillo & frozen      & 8.99 \\ \bottomrule
-%  \end{tabular}
-%  \caption{A table with the correct layout.}
-%  \label{tab:ok}
-%\end{table}
+Another thing to notice is that multiple inputs could prompt the same bug from occurring, these inputs could be similar but don't have to be. With simplifying the input we should be able to detect exact copies, but depending on the simplification's time complexity other techniques could be better with similar results. In case where we would have access to stack traces (via crashes or hanging PUT's) we could differentiate the bugs on basis of the hash of multiple lines from the backtrace sometimes even numerous hashes per input. this technique is called stack backtrace hashing and is quite popular according to Valentin J.M. Man\`es et al.\cite{13manes2019survey}. Another technique talked about in that paper, is looking at the code coverage generated by the inputs where we use the executed path (or hash of it) is used as a fingerprint of the inputs. A technique, used by Microsoft\cite{36semanticsAwareDeduplicationRETracer} is called semantics based deduplication, where in stead of back track use memory dumps to hopefully find the origins of bugs. This use of dumps is less ideal due to traces having more information, but the latter is not always possible due to the performance overhead and privacy causes as specified in the paper. A last technique would be looking at the bug description left by a manual bug reports by the user, although this dependence on the quality of the bug reports and is most likely poorly automatable. None of the techniques mentioned above are perfect: with stack backtrace hashing you could find to many false positives or false negatives depending on the depth taken from the stack, with coverage some inputs will generate extra function calls and the semantics based deduplication are limited to X86 or x86-64 code with the binary file and the debug information. Neither of these techniques work with black box fuzzing unfortunately.
 
 \section{Conclusion}
 The final section of the chapter gives an overview of the important results
