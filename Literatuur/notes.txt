@@ -1,0 +1,19 @@
+what type of solver is the kul's one?
+	can already existing fuzzers do the trick?
+	(lexical) AFLplusplus, python-afl (guided fuzzer), libFuzzer, honggfuzz, ClusterFuzz
+	(constraint based) KLEE
+	can Z3 (or others) be used as an oracle? is already build in via the 3 possible solvers
+
+Fuzzing
+	parser
+		can we use the parser of CPMpy? no since we want to find bugs in there
+	write own needs to be limited in scope
+
+create fuzzer (random, by parser, by stoch knowledge) pref sat by construction to find crit bugs
+test solver, compare with oracle or sat by construction, 
+categorize faults, 
+simplify faults by delta-debugging or own try and error
+
+
+CPMpy
+	model -= constraint werkt niet, model.constraints=model.constraints[selectie]
