@@ -2,57 +2,59 @@
 \label{cha:3}
 When we detect that the PUT crashes, wrongly satisfies, wrongly not satisfies or hangs on a given input we now want to know why it does that. What causes this unwanted output and what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when the crash is not main perpetrator or we get an other unwanted output the developer my need to debug deep into the code to find the bug. This with a potential large input could be a tedious and long assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with \todo{plug in sections}
 
-\section{Minimizing inputs}
-As said with bigger inputs it takes longer to find the bugs due to having to find identify which parts of the input trigger the error or having to walk through the execution of the PUT if even possible. This is where techniques come into play to create detect the crucial parts of the input. This while still finding the same bug and not changing a null pointer dereference to a parser related bug for example.\cite{bookZellerwhyProgramsFail}
-
+\section{Deobfuscating inputs}
+When receiving a big input the chance of having parts unrelated to the bug is almost guaranteed, we will call them (unintentionally) obfuscated inputs. Deobfuscating those takes a lot of try and error to see if the bug is still there\cite{bookZellerwhyProgramsFail} or having to walk through the execution to find the bug. With deobfuscating inputs we not only help the developer to find the bug faster, we can also group similar bugs and deduplicate error reports (more on that later). With one caveat to take in mind we need to be careful to still find the same bug and to not change a null pointer dereference bug to a parser related bug. This, as discussed in the previous chapter, is due to some bugs being more important than others. Finding these crucial parts of inputs is where the following techniques come into play.
 \subsection{Simplifying}
-The first and the most used technique is the simplification of the inputs where we remove parts of a failing input and check if it still fails. When no longer possible to remove any part of the input we have obtained an input where all parts are needed to expose the bug. This input is at the same time also the shortest possible input to trigger this bug, making finding the bug easier than in the original input filled with unrelated parts. 
-\todo{add mozilla ref}
+The first technique is the simplification of inputs, where we remove parts of a failing input and check if it still fails and often called "delta-debugging"\cite{bookZellerwhyProgramsFail}. When it is no longer possible to remove any part of the input we have obtained an input where all parts are needed to expose the bug. This input is at the same time also the shortest possible input to trigger this bug, making finding the bug easier than in the original input filled with unrelated parts.
 \subsection{Isolation}
-Another technique, isolation, is explained in Andreas Zeller et al. 
-\cite{5zeller2002simplifyingIsolatingFailure-inducing} this is a technique where instead of minimizing the input we try to find the smallest difference between an input that shows the bug versus an input that does not show it. This with the advantage that no matter the if we find the bug or not the difference will diminish, either the maximum input will shrink or the minimum input will grow. Although we will have to make sure that we are still finding the same bug and not moving from a null pointer dereference to a parser related bug. Isolation also brings extra complexity with the tracking of multiple inputs and the maximal input could take longer to run due to its size, but according to Andreas Zeller et al. is the faster one .
+Another technique, isolation, is explained by Andreas Zeller et al. 
+\cite{5zeller2002simplifyingIsolatingFailure-inducing} this is a technique where instead of minimizing the input we try to find the smallest difference between an input that shows the bug versus an input that does not show the bug. This with the advantage that no matter if we find the bug or not the difference will diminish, either the maximum input will shrink or the minimum input will grow. This technique brings extra complexity with the tracking of multiple inputs and the maximal input could take longer to run due to its size, but according to Andreas Zeller et al. this is the faster one to the two. Figure
+\ref{fig:simplificationIsolation} shows the difference between simplifying and isolation, both finding the critical part of the input, with simplification the critical part is indicated by the last test in the figure while with isolation it it the differenc of the passed and failed test.
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/simplificationIsolation}
+	\caption{Deobfuscating inputs based on simplification (left) and isolation (right) on the same input. The '*' indicates that the result is already known and does not need to be recalculated. Figure based on an illustrations found in\cite{bookZellerwhyProgramsFail}.}
+	\label{fig:simplificationIsolation}
+\end{figure}
+
+\subsection{Small inputs by creation}
+An interesting approach by Alexandra Bugariu and Peter M\"uller\cite{9bugariu2020automaticallyTestingStringSolvers} is to forgo the need of deobfuscating inputs by generating inputs "small by construction".
+
+\section{What size to change}
+Something we glossed over so far in this chapter is the chuck size to remove from the input, for figure\ref{fig:simplificationIsolation} we conveniently took one-eighth of the input as the chuck size for the ease of the example. But it is not given that we will always have big independent chucks to split on, the previous seen techniques will work well on the original fuzz testing Miller et aL.\cite{4originalFuzzingUnixUtils} worked on since those techniques could split the random symbols. While when testing something more complex containing words like "while" we no longer can split on all possible places, since we would get parsing errors instead of the starting error.
 
 % what size to remove, importent for speed
-% what are both, what situations is which the better one?  donno atm
-%	Isolation will require a lot more things to track but is faster
-\cite{bookZellerwhyProgramsFail}
-%	isolation vs simplifying \cite{zeller2009programs} p 285
-%
+
 %The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
 %	 can be solved with stack trace comparison
-\subsection{Small inputs by creation}
-small by construction source 9
 
-\todo{algorithms?} paper 5 has nice simplification to isolation delta deb, called 'ddmin()'
-
-\section{Delta-debugging}
-\cite{2FuzzingAndDelta-debuggingSMTSolvers}
-
-
-%chapter on simplifying the crashes
 %	binary search will not work all the time
 %	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
 %		start with halfs then *2
 %		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
+
 %		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
+%	with knowledge of input, syntax \cite{zeller2009programs}
+%	of by bigger entities like lines of words \cite{zeller2009programs}
+%	 for speed
+
 %	delta debugging
 %		time spend searching vs simplified ratio is important as mentioned in \cite{mansur2020detecting}
 %		and needs to preserve satisfiability as mentioned in \cite{mansur2020detecting}
 %		^ possibly a big deal to find critical bugs
-%
-%	with knowledge of input, syntax \cite{zeller2009programs}
-%	of by bigger entities like lines of words \cite{zeller2009programs}
-%	 for speed
+
 %
 %	alt approach like \cite{mansur2020detecting} try finding the bug again with less resources avail
 %	or isolaytion \cite{zeller2009programs} p 285 
 %		I think it may fail if multiple parts are relevant
 %		I think it could detect for example the CPMpy import as a bug cause as the min diff that causes the bug
-%
+
 %	sub section on MUS/minimum unsat subset vs delta debugging
 %		MUs good for only whole constraints while 
 %		delta debugging goes for partial structures
-%
+% \cite{2FuzzingAndDelta-debuggingSMTSolvers}
+
+\todo{algorithms?} paper 5 has nice simplification to isolation delta deb, called 'ddmin()'
 
 \section{Deduplication}
 Another thing to notice is that multiple inputs could prompt the same bug from occurring, these inputs could be similar but don't have to be. With simplifying the input we should be able to detect exact copies, but depending on the simplification's time complexity other techniques could be better with similar results. In case where we would have access to stack traces (via crashes or hanging PUT's) we could differentiate the bugs on basis of the hash of multiple lines from the backtrace sometimes even numerous hashes per input. this technique is called stack backtrace hashing and is quite popular according to Valentin J.M. Man\`es et al.\cite{13manes2019survey}. Another technique talked about in that paper, is looking at the code coverage generated by the inputs where we use the executed path (or hash of it) is used as a fingerprint of the inputs. A technique, used by Microsoft\cite{36semanticsAwareDeduplicationRETracer} is called semantics based deduplication, where in stead of back track use memory dumps to hopefully find the origins of bugs. This use of dumps is less ideal due to traces having more information, but the latter is not always possible due to the performance overhead and privacy causes as specified in the paper. A last technique would be looking at the bug description left by a manual bug reports by the user, although this dependence on the quality of the bug reports and is most likely poorly automatable. None of the techniques mentioned above are perfect: with stack backtrace hashing you could find to many false positives or false negatives depending on the depth taken from the stack, with coverage some inputs will generate extra function calls and the semantics based deduplication are limited to X86 or x86-64 code with the binary file and the debug information. Neither of these techniques work with black box fuzzing unfortunately.
