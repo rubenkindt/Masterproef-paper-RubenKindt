@@ -3,7 +3,11 @@
 When we detect that the PUT crashes, wrongly satisfies, wrongly not satisfies or hangs on a given input we now want to know why it does that. What causes this unwanted output and what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when the crash is not main perpetrator or we get an other unwanted output the developer my need to debug deep into the code to find the bug. This with a potential large input could be a tedious and long assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with \todo{plug in sections}
 
 \section{Deobfuscating inputs}
-When receiving a big input the chance of having parts unrelated to the bug is almost guaranteed, we will call them (unintentionally) obfuscated inputs. Deobfuscating those takes a lot of try and error to see if the bug is still there\cite{bookZellerwhyProgramsFail} or having to walk through the execution to find the bug. With deobfuscating inputs we not only help the developer to find the bug faster, we can also group similar bugs and deduplicate error reports (more on that later). With one caveat to take in mind we need to be careful to still find the same bug and to not change a null pointer dereference bug to a parser related bug. This, as discussed in the previous chapter, is due to some bugs being more important than others. Finding these crucial parts of inputs is where the following techniques come into play.
+When receiving a big input the chance of having parts unrelated to the bug is almost guaranteed, we will call them (unintentionally) obfuscated inputs. Deobfuscating those takes a lot of try and error to see if the bug is still there\cite{bookZellerwhyProgramsFail} or having to walk through the execution to find the bug. With deobfuscating inputs we not only help the developer to find the bug faster, we can also group similar bugs and deduplicate error reports (more on that later). 
+\section{The precision effect}
+With one caveat to take in mind we need to be careful to still find the same bug and to not change a null pointer dereference bug to a parser related bug. This, as discussed in the previous chapter, is due to some bugs being more important than others. In a paper by Andreas Zeller and Ralf Hildebrandt \cite{5zeller2002simplifyingIsolatingFailure-inducing} talk about this exact problem which they called "the Precision Effect". sometimes this is not a problem, for example when we are trying to find all possible bugs and will rerun the fuzzer after each incremental improvement or when a deeper bug turns into another deep bug.
+
+ Finding these crucial parts of inputs is where the following techniques come into play.
 \subsection{Simplifying}
 The first technique is the simplification of inputs, where we remove parts of a failing input and check if it still fails and often called "delta-debugging"\cite{bookZellerwhyProgramsFail}. When it is no longer possible to remove any part of the input we have obtained an input where all parts are needed to expose the bug. This input is at the same time also the shortest possible input to trigger this bug, making finding the bug easier than in the original input filled with unrelated parts.
 \subsection{Isolation}
@@ -21,17 +25,12 @@ Another technique, isolation, is explained by Andreas Zeller et al.
 An interesting approach by Alexandra Bugariu and Peter M\"uller\cite{9bugariu2020automaticallyTestingStringSolvers} is to forgo the need of deobfuscating inputs by generating inputs "small by construction".
 
 \section{What size to change}
-Something we glossed over so far in this chapter is the chuck size to remove from the input, for figure\ref{fig:simplificationIsolation} we conveniently took one-eighth of the input as the chuck size for the ease of the example. But it is not given that we will always have big independent chucks to split on, the previous seen techniques will work well on the original fuzz testing Miller et aL.\cite{4originalFuzzingUnixUtils} worked on since those techniques could split the random symbols. While when testing something more complex containing words like "while" we no longer can split on all possible places, since we would get parsing errors instead of the starting error.
-
-% what size to remove, importent for speed
+Something we glossed over so far this chapter is the chuck sizes to remove while trying to find the critical parts of the inputs. The previous seen techniques will work well on the original fuzz testing Miller et aL.\cite{4originalFuzzingUnixUtils} worked on since those random generated symbols where independent from each other. When testing something more complex words like "while" or "float" we no longer can split on all possible places, since the input would most likely no longer parse. The same for splitting size, in the exact middle for figure \ref{fig:simplificationIsolation} we conveniently took one-eighth of the input as the chuck sizes for the ease of the example. For performance reasons we hope we can keep our chuck sizes as big as possible to be able to discard larger unrelated parts of the inputs. but when this is not possible we will need to decrease the granularity of the chuck sizes. To be able to find the critical parts of an input of the form "XXooXooXXoo" (with 'o' being the critical parts and the 'X' being unrelated to the bug) we should always search further with same granularity while the removed parts are already removed until all options with that granularity searched\cite{bookZellerwhyProgramsFail}. This will make sure that we eliminate all unrelated parts with the specific granularity and get "ooXoooo". 
 
 %The Precision Effect minimizing/simplyfying may lead to a dif found bug if multiple, since all need to be solved not problem  \cite{zeller2002simplifying}
 %	 can be solved with stack trace comparison
 
-%	binary search will not work all the time
-%	quarters remove may work (if all parts fail go more granular, 1/9 or 1/16)
-%		start with halfs then *2
-%		always search further with same granularity but with removed part until all options with that granularity searched \cite{zeller2009programs} p111
+
 
 %		this uses no knowledge from input structure and program structure \cite{zeller2009programs} p112
 %	with knowledge of input, syntax \cite{zeller2009programs}
