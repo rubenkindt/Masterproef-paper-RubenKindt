@@ -1,43 +1,50 @@
 \chapter{Fuzzing}
 \label{cha:2:fuzzing}
+\label{cha:2:intro}
 The rise of fuzzing came when Miller gave a classroom assignment\cite{21FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper\cite{4originalFuzzingUnixUtils} about the remarkable results. That more than 24\% to 33\% of the programs tested crashed.
 In the last thirty years the technique of fuzzing has changed significantly and various innovations have come forward. In this chapter we will look at classifications made, what the fuzzer expects as input, what we can get as output and we will look at the most popular fuzzers.
 The three\cite{12Fuzzingasurvey},\cite{13manes2019survey} and \cite{30FuzzingHackartandscience} most used classifications are: how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
 
 \section{Generation and mutation}
+\label{cha:2:generationMutation}
 A fuzzer can construct input for a PUT in two ways, it can generate input itself or it can take an existing input and modify it, those original inputs are often called seeds. While Generation is more common than modification when it comes to in smaller inputs the opposite is true for larger inputs. This is cause by the fact that generating semi-valid input becomes a lot harder the longer the input becomes. For example, generating the word "Fuzzing" by uniformly random sampling ASCII, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger semi-valid inputs. With mutation we can start of with larger and already valid input and make modifications to create semi-valid inputs. With this last technique the diversity of the seeding inputs does become quite important. Ideally we would have an unlimited diverse set of inputs, but due to limited computation and available inputs we sometimes need to take a subset. In a paper by Alexandre Rebert et al. \cite{14rebert2014seedselecting} they propose that seed selection algorithms can improve results and compare random seed selection to the minimal subset of seeds with the highest code coverage among other algorithms. 
 
 \section{Input structure}
+\label{cha:2:InputStructure}
 %lexical, sementical, constraint or random
 While we have discussed the bigger scope on how inputs are created, let us go into more detail. As we have seen before fuzzing started mainly with Miller's classroom assignment, this random generation of inputs falls under 'dumb' fuzzing. Due to only seeing the input as one long list of strings with no knowledge of any sub-strings. This technique can be applied to mutational fuzzing as well. Compared to only adding symbols with generational fuzzing here we also remove or change randomly selected symbols. 
 We can create three types of inputs: valid, semi-valid and nonsense input. With nonsense input we will almost be exclusively testing the syntactic stage of the PUT, often called the parser. Either the input crashes the parser or the parser will return invalid and the PUT will stop running. With semi-valid input we hope to be as close as possible to valid input to be able to explore the PUT beyond the parser and to catch an edge cases here.
 A smarter technique is referred to one which has knowledge about the structure inputs can have or should have. This increases the chance of inputs passing the parser, being able to test the deeper parts of the PUT and as such covering more of the PUT's code. At the cost of needing a more complex fuzzer. We can build a 'smart' fuzzer by adding knowledge about keywords, making it a lexical fuzzer, adding knowledge about syntax, for a syntactical fuzzer which can for example match all parentheses. Directed fuzz testing does fit in this category as well but it is not possible in a black box environment, more on that later.
 
 \section{Black, gray and white box fuzzing}
+\label{cha:2:BlackGrayWhiteFuzzing}
 Now that we have discussed adding knowledge of inputs to the fuzzer, we can also add knowledge about the PUT to the fuzzer. Which brings us to black, gray and white box fuzzing. With black box fuzzing we have no knowledge about the inner working of the PUT and we treat the PUT as a literal black box, we present out input and we look at what comes out of it. And with this minimal information the fuzzer then tries to improve its input creation. 
 Compared to black box fuzzing gray box fuzzing usually comes with tools that give indirect information to the fuzzer, tools like: code coverage measurements, timings, types of errors and more.
 And as you may have predict white box testing is the term used when the fuzzer as much as possible. It will have access to the source code and can adjust their inputs to fuzz specific parts of the code. This at a higher cost due to having to reverse engineer the path to specific edge cases, meaning that white box fuzzing can find more bugs per input but creating those inputs take more time compared to black box fuzzing.
 The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail all we can say is that it is no longer a black-and-white situation and that the lines has become fuzzy. \todo{Ask permission to do this}
 
 
-\section{Fuzzer classification}
+\section{Fuzzer classification}\todo{fix title?}
+\label{cha:2:OtherFuzzers}
 Now that we know how we can classify fuzzers let us apply this to existing fuzzers to see how they work. For starters Miller's original work, which we discussed earlier, was random generation based black box fuzzing. His later work in 1995 on more UNIX utilities and X-Windows servers\cite{26miller1995fuzzrevisited}, his work in 2000 on Windows NT 4.0 and Windows 2000\cite{24MillerWindows}, his work on MacOS \cite{25MillerOnMacOS} and his later work\cite{3miller2020relevanceOfClasicalFuzzTesting} all fall in the same category of random generation based black box fuzzing.
 A couple of years later, KLEE was developed\cite{8KLEE} by Cadar et al. KLEE is a generation based white box fuzzing tool build with the idea that bugs could be on any code path and the fuzzer generates inputs from the feedback it got from the symbolic processor and the interpreter this to increase the code coverage. A code coverage tool checks what lines of code are executed during the testing phase, with a higher percentage meaning that we used new lines of code.
 Using a line of code does not mean that the line of code has been found to contain no bugs, but not passing lines of code definitely means that the lines are untested. With the highest use case being the checking a specific test raises the code coverage, meaning that test uses a part of the code base that has not been tested yet. This together with the fact that getting a high code coverage is demanding task so that you don't max the metric out most of the time turns code coverage into a well rounded measurement.
 Among the more popular ones is the American fuzzy lop\footnote{\url{https://github.com/google/AFL}} (AFL), named after a rabbit breed, is a C and C++ focused, mutation based, gray box fuzzer released by Google but due inactivity the fork AFL++\cite{27AFL++}\footnote{\url{https://github.com/AFLplusplus/AFLplusplus}} has become more popular than the original and is maintained actively by the community. Not only did AFL spark AFL++, it has also sparked a python focused version pythonAFL\footnote{\url{https://github.com/jwilk/python-afl}}, a  Ruby\footnote{\url{https://github.com/richo/afl-ruby}} focused one, a Go\footnote{\url{https://github.com/aflgo/aflgo}} focused version and is shown by Robert Heaton\cite{AFLWrapper} to not be difficult to write a wrapper for it. A potential reason to the inactivity of Google on the ALF project could be the development of both Clusterfuzz\footnote{\url{https://google.github.io/clusterfuzz/}} and OSS-fuzz\footnote{\url{https://google.github.io/oss-fuzz/}}, a  scalable fuzzing infrastructure and a combination of multiple fuzzers respectively. With the former one being used in OSS-fuzz as a back end to create a distributed execution environment. This with quite a bit of success\cite{31OSS-FuzzBugs}
-\begin{quote} \todo{update this in September}
+\begin{quote} \todo{September update this}
 	"As of July 2022, OSS-Fuzz has found over 40,500 bugs in 650 open source projects."
 \end{quote} according to the repository itself. 
 Not only Google has come with a fuzzer, Microsoft has jumped on board of fuzzing with OneFuzz\footnote{\url{https://github.com/microsoft/onefuzz}} a self-hosted Fuzzing-As-A-Service platform which is intended to be integrated with the CI/CD pipeline. Although looking at the given stars on the Github repository, it looks like Google's tools are more popular than Microsoft' ones.
 A last prominent fuzzer we are going to take a small look at is the Libfuzzer\footnote{\url{https://llvm.org/docs/LibFuzzer.html}} made by LLVM, a generation based, gray box fuzzer which is a part of the bigger LLVM project\footnote{\url{https://github.com/llvm/llvm-project/}} with the focus on the C ecosystem. Being in the same ecosystem as AFl, LibFuzzer can be used together with AFL and even share the same seed inputs, sometimes called a corpus.
 
-\subsection{Types of bugs} 
+\subsection{Types of bugs}
+\label{cha:2:TypesOfBugs}
 Depending on what the output is of the fuzzer we can classify the types of bugs, as done in a recent paper\cite{1mansur2020detecting} by Mansur: crashes, wrongly satisfied, wrongly unsatisfied or hanging. With some of these bugs being less acceptable then others 
 For example, as a recent paper\cite{1mansur2020detecting} by Mansur et al. describes, a crash for a constraint programming language (CP) is preferred over a wrongly unsatisfied model, since there is no way for the user to know that the solver failed (except for differentiation testing, more on that later). Meaning that the user will treat the result (wrongly) as correct compare this to a crash were it is clear that something went wrong.
 With hanging PUT's the user can not draw incorrect conclusions and with wrongly satisfied models the user can check the model's instances and evaluate the result before using it further. This is due to the fact that problems are frequently np-hard meaning they are easy to confirm but hard to solve. For practical reasons we will later change the undecidable and or hanging PUT's into timeouts. We know that the types of bugs can be classified in more detail, for example crashes into buffer overflows, invalid memory addressing and so on, but we choose to stay with a more general overview for now. An interesting classification to be added is the knowledge whether or not the bug is in the parser or not, as the authors of "Semantic Fuzzing with Zest"\cite{22SemanticFuzzing} would classify, is the bug in the syntactical or in the semantical part of the program?
 
 
 \section{The oracle problem}
+\label{cha:2:OracleProblem}
 The oracle problem describes the issue of telling if a PUT's output was, given the input, correct or not or as said in "The Oracle Problem in Software Testing: A Survey"\cite{10barr2014oracleProblem} 
 \begin{quote}
 	"Given an input for a system, the challenge of distinguishing the corresponding desired, correct behavior from potentially incorrect behavior is called the test oracle problem."
@@ -45,11 +52,13 @@ The oracle problem describes the issue of telling if a PUT's output was, given t
 In their paper they discuss four categories: specified test oracles, derived test oracles, implicit test oracles, and the absence of test oracle. The biggest category would be the specified test oracles which contains all the possible encoding of specifications like modeling languages UML, Event-B and more. Their derived test oracles classification contains all forms of knowledge obtained from documentation on how the program should work or previous versions of the program. The last two oracles categories come down to the use of knowing that crashes are always unwanted and the human oracle like crowdsourcing respectively.
 
 \subsection{Handling the oracle problem}
+\label{cha:2:handelingOracelproblem}
 Although the approach of by Bugariu and M\"uller in "Automatically testing string solvers"\cite{9bugariu2020automaticallyTestingStringSolvers} falls in the first category mentioned above, their approach is innovative. While most fuzzers either use crashes or differential testing (more on that later) to find bugs, they know the  (un)satisfiability of their formulas by the way of they are constructed. For satisfiable formulas they generate trivial formulas and then by satisfiability preserving transformations increase the complexity and for unsatisfiable formulas they use $\neg$ A $\land$ A', with A' being a equivalent formula of A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation. This technique has also been applied to SMT solvers by Mansur et al. called STORM\cite{1mansur2020detecting} this with mutational input creation compared to the previous generation based technique. In the paper the authors dissect all assertions into their sub-formulas and create an initial pool. In this pool the sub-formulas are checked if they satisfy or not and with this knowledge new formulas are created for the population pool with ground truth.
 %deze controleert dat de sat is still valid by using another solver as oracle (bij het annoteren van T/F values in the init pool)
 % de eerste gebruikt een oracle bij het controleren of dat de equi transformations het model niet breken
 
 \subsection{Differential testing}
+\label{cha:2:Differential}
 As mentioned above most fuzzers use either crashes to detect that the PUT has failed to provide a correct output or in cases where possible use differential testing. This last one uses a single or multiple analogue programs to test if the PUt gave the same output as the analogue programs. neither techniques is complete: crash based fuzzing can not detect wrong outputs and differential testing can not catch bugs that also occur in the analogue programs.
 
 
@@ -57,6 +66,7 @@ As mentioned above most fuzzers use either crashes to detect that the PUT has fa
 
 
 \section{Conclusion}
+\label{cha:2:conclusion}
 \todo{conclusion}
 The final section of the chapter gives an overview of the important results
 of this chapter. This implies that the introductory chapter and the
