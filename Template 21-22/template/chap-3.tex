@@ -35,7 +35,7 @@ Another thing we glossed over is the chuck sizes to remove while trying to find 
 We could also apply some techniques seen in section \ref{cha:2:InputStructure} where we discussed the creation of randomly and smarter created inputs. Instead of removing (hopefully) unrelated parts based purely on where the part sits in the input. We can use knowledge of the input structure or knowledge of the PUT to guide us in the removal\cite{bookZellerwhyProgramsFail}, both lexical (the meaning of words) and syntactical knowledge (the meaning of combinations of words) can be used to help us in deobfuscating inputs. Where syntactical knowledge would help us remove the most since it is the bigger of the two.
 
 \subsection{Preserving satisfiability}
-With techniques as mentioned in section ??, satisfiable by construction will need to take in mind the extra complexity of preserving the ground truth when deobfuscating inputs. either we can apply Muhammad Numair Mansur et al.'s\cite{1mansur2020detecting} technique of trying to fuzz the same bug again but with less symbols or as Robert Brummayer and Armin Biere\cite{2FuzzingAndDelta-debuggingSMTSolvers} did use other SMT solvers.
+With techniques as mentioned in section \ref{cha:2:handelingOracelproblem}, satisfiable by construction will need to take in mind the extra complexity of preserving the ground truth when deobfuscating inputs. either we can apply Muhammad Numair Mansur et al.'s\cite{1mansur2020detecting} technique of trying to fuzz the same bug again, but with less symbols or as Robert Brummayer and Armin Biere\cite{2FuzzingAndDeltaDebuggingSMTSolvers} did use other SMT solvers.
 \todo{NEEDS example}
 
 \section{Deduplication}
