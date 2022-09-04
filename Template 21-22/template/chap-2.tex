@@ -23,7 +23,6 @@ A smarter technique is referred to techniques, which have knowledge about the st
 \label{cha:2:BlackGrayWhiteFuzzing}
 Now that we have discussed adding knowledge of inputs to the fuzzer, we can also add knowledge about the PUT to the fuzzer. Which brings us to black, gray and white box fuzzing. With black box fuzzing we have no knowledge about the inner working of the PUT and we treat the PUT as a literal black box, we provide input and we look at what comes out. With this minimal information the fuzzer then tries to improve its input creation. Compared to black box fuzzing, gray box fuzzing usually comes with tools that give indirect information to the fuzzer. Tools like: code coverage, timings, classes of errors as measurements are all used as feedback, but more measurements are possible. Lastly, as you may have predicted, white box testing is the term used when the fuzzer has as much information to it available as possible. It will have access to the source code and can adjust their inputs to fuzz specific parts of the code (this falls under directed fuzzing). White box fuzzing does have a higher computation cost due to having to reverse engineer the path to specific edge cases, meaning that it can find more bugs per input but creating those inputs takes more time compared to black box fuzzing. The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail, all we can say is that it is no longer a black-and-white situation and that the lines has become fuzzy. \todo{Ask permission to do this}
 
-
 \section{Classifying fuzzers}
 \label{cha:2:OtherFuzzers}
 Now that we know how we can classify fuzzers, let us look at some existing fuzzers to see how they work. For starters Miller's original work, which we discussed earlier, was a random generation based black box fuzzing. And started off as an assignment for his students to test the reliability of Unix utility programs by trying to break them using a fuzz generator, which was able to generate printable ASCII, non-printable ASCII, with or without null terminating characters of a random length. That resulted in a successful paper\cite{4originalFuzzingUnixUtils} two years later. His later work in 1995 on even more UNIX utilities, his work on X-Windows servers\cite{26miller1995fuzzrevisited}, his work in 2000 on Windows NT 4.0 and Windows 2000\cite{24MillerWindows}, his work on MacOS\cite{25MillerOnMacOS} and his later revisit\cite{3miller2020relevanceOfClasicalFuzzTesting} on fuzzing all fall in the same category of random generation based black box fuzzing. This papers showed that a significant portion of programs are able to be crashed with random inputs. Of the programs tested 15 to 43\% of the Unix utilities crashed, 6\% of the open-source GNU utilities crashed, 26\% of X-Window applications crashed, 45\% of Windows NT 4.0 and Windows 2000 programs crashed and 16\% MacOS programs crashed.
@@ -41,14 +40,26 @@ Not only Google has come forward with a fuzzer. Even Microsoft has jumped on boa
 The last prominent fuzzer we are going to take a look at is the LibFuzzer\footnote{\url{https://llvm.org/docs/LibFuzzer.html}} made by LLVM, a generation based gray box fuzzer which is a part of the bigger LLVM project\footnote{\url{https://github.com/llvm/llvm-project/}} with the focus on the C ecosystem. Being in the same ecosystem as AFL, LibFuzzer can be used together with AFL and even share the same seed inputs.
 
 \subsection{Testing CP and SMT with Fuzzers}
-Until now that we discussed fuzzers more generally, we would like to consider fuzzers build for testing constraint programming languages (CP) and satisfiability modulo theories (SMT)
-Fuzzers with a focus more on constraint programming languages (CP) and satisfiability modulo theories 
-\todo{fuzzers with focus on CP languages}
-\todo{STORM} paper 1
-\todo{YinYang} paper 43 
+Until now we discussed fuzzers more generally, we would like to deliberate specific fuzzers build for testing constraint programming languages (CP) and satisfiability modulo theory (SMT) solvers.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/STORM}
+	\caption{Overview of the three STORM phases as presented by Muhammad Numair Mansur et al. in "Detecting Critical Bugs in SMT Solvers Using Blackbox Mutational Fuzzing"\cite{1mansur2020detecting}.}
+	\label{fig:STORM}
+\end{figure}
+One of those fuzzers is STORM which is a mutation based black box fuzzer created by Muhammad Numair Mansur et al.\cite{1mansur2020detecting} to find critical bugs in SMT solvers. In their paper they explain the inner working thoroughly, but briefly summarized STORM creates an initial pool of smaller formulas from  existing formulas found in seeds, uses another solver to create models of those smaller formulas. To then construct more complex formulas with the knowledge of their ground truth, with this STORM can test the SMT solver as can be seen in figure \ref{fig:STORM}. This novel way of fuzzing SMT solvers with inputs that are satisfiable by construction and has been cited significantly considering that it is a recent paper.
+
+
+Another technique for fuzzing SMT solvers is the one proposed by Dominik Winterer et al. with their fuzzer YinYang\cite{43YinYang}, which uses "Semantic Fusion" to test the solvers.
+\begin{quote}
+	"Our key idea is to fuse two existing equisatisfiable (i.e., both satisfiable or unsatisfiable) formulas into a new formula that combines the structures of its ancestors in a novel manner and preserves the satisfiability by construction. This fused formula is then used for validating SMT solvers."
+\end{quote} As quoted from "Validating SMT Solvers via Semantic Fusion"\cite{43YinYang}
+Dominik Winterer et al. take a free variable from each of the equisatisfiable formulas to be able to create a new variable using a reversible fusion function. For example a formula $\phi_1$ = X > 10, $\phi_2$ = Y < 9 with the fusion function for Z = X + Y would become $\phi_3$ = Z - Y > 10 $\land$ Z - X < 9, linking both satisfiable formulas together. For unsatisfiable formulas an extra conjunction is needed with the definition of the new variable, because a substitution could result in the loss of the unsatisfiability of the formula as mentioned in the paper. The results of the paper where also significant with 45 bugs in state-of-the-art SMT solvers in Z3\footnote{\url{https://github.com/Z3Prover/z3}} and CVC4\footnote{\url{https://cvc4.github.io/}}. Dominik Winterer et al. also give multiple fusion functions like multiplication and string concatenations which can be applied to integers and real numbers and strings respectively. Extending this technique to other data types or more fusion functions would not be difficult.
+
 \todo{falcon} paper 42 fits well here
-\todo{discuss other fuzzers here in more depth}
-Z3 and co
+
 
 \subsection{Types of bugs}
 \todo{add different result both say sat but One says 'X=9' other says x="10"}
