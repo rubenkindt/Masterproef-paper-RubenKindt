@@ -1,16 +1,41 @@
 \chapter{Detecting crucial parts in inputs}
 \label{cha:3:intro}
 When we detect that the PUT crashes, wrongly satisfies, wrongly unsatisfies, hangs or gives the wrong solution on a given input we want to know why it does that. What causes this unwanted output and on what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when a bug causes a crash in another place or we get another unwanted output the developer may need to debug deep into the code to find the bug. This with a potential large inputs created by the fuzzer could be a tedious and long assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with deobfuscating inputs.
-\todo{algorithms? paper 5 has nice simplification to isolation delta deb, called 'ddmin()'}
 
 \section{Deobfuscating inputs}
 \label{cha:3:Deobfuscating}
-When receiving a big input the chance of it having parts unrelated to the bug is almost guaranteed, we will call these inputs (unintentionally) obfuscated inputs. Deobfuscating those takes a lot of trying parts of the inputs to see if the bugs are still there \cite{bookZellerwhyProgramsFail} or having to walk through the execution to find the bugs. Both take a while if we want to go to absolute minimal inputs, but for developers it is not needed to go to that extreme. As long as we take the bulk of the unrelated parts of inputs away it will help the developer to find the bug faster. With these techniques we can also group similar bugs and duplicate errors (more on that later) which is also fairly useful information for developers.
+\begin{quote}
+	"Often people who encounter a bug spend a lot of time investigating which changes to the input file will make the bug go away and which changes will not affect it." \cite{50akgun2018metamorphic}
+	\newline
+	-Richard Stallman,	Using and Porting GNU CC
+\end{quote} 
+When receiving a big input the chance of it having parts unrelated to the bug is almost guaranteed, we will call these inputs (unintentionally) obfuscated inputs. Deobfuscating those inputs can take a lot of trying to see which variations still show the bugs or having to walk through the execution to find the bugs. Both take a while if we want to go to absolute minimal inputs, but for developers it is not needed to go to that extreme. As long as we take the bulk of the unrelated parts of inputs away it will help the developer to find the bug faster. With these techniques we can also group similar bugs and duplicate errors (more on that later) which is also fairly useful information for developers.
 \subsection{Simplifying}
 \label{cha:3:Simplifying}
 To find crucial parts of inputs, it is often achieved either with simplification or Isolation. 
-Simplification is the technique where we repeatably remove parts of a failing input and check if it still fails and it often called "delta-debugging" \cite{bookZellerwhyProgramsFail}, which belongs to the divide-and-conquer family of algorithms \cite{2FuzzingAndDeltaDebuggingSMTSolvers}. 
-When it is no longer possible to remove any part of the input we have obtained an input where all parts are necessary to expose the bug. This input is at the same time also the shortest possible input to trigger this bug, making finding the bug easier than in the original input filled with unrelated parts.
+Simplification is the technique where we repeatably remove parts of a failing input and check if it still fails and it often called "delta-debugging", which belongs to the divide-and-conquer family of algorithms \cite{2FuzzingAndDeltaDebuggingSMTSolvers}. 
+The algorithm can be seen in figure \ref{fig:ddmin} with 
+"$ c_{\mbox{\ding{56}}} $"  %c_X
+meaning the failing input to be deobfuscated,
+"\ding{52}" %checkmark 
+meaning that a test passed with the given input,
+"\ding{56}" %cross 
+failed with the given input, 
+"$\Delta$" and "$\nabla$" being a subset of the input and the complement of the former and
+"1-minimal" meaning that not a single character can can change without the input going from failing to passing. Firstly we start the algorithm with the input and a split (n) of two. If there is a subset that still fails on it own, then we continue with that subset else we look for a subset where the complement of the input still fails but where a subsets is missing from the input. In the case where we split the input in two parts this would be the same as te previous. In case we do not find any smaller subset to continue on, then we reduce de granularity of the split by two. To finally when it is no longer possible to remove any part of the input we have obtained an input where all parts are necessary to expose the bug. This input is at the same time also the shortest possible input to trigger this bug, making finding the bug for the developer easier than in the original input filled with unrelated parts. An example of delta-debugging to minimize input can be found in figure \ref{fig:ddminExample}.
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/ddminFromPaper5edit}
+	\caption{A minimizing delta-debugging algorithm as shown in \cite{5zeller2002simplifyingIsolatingFailure-inducing}.}
+	\label{fig:ddmin}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/ddminExampleFromPaper5}
+	\caption{A minimizing delta-debugging example as shown in \cite{5zeller2002simplifyingIsolatingFailure-inducing}.}
+	\label{fig:ddminExample}
+\end{figure}
 
 \subsection{Isolation}
 \label{cha:3:Isolation}
@@ -26,7 +51,6 @@ Figure \ref{fig:simplificationIsolation} shows the difference between simplifyin
 
 \subsection{Connection with minimal unsatisfiable subset and maximally satisfiable subsets}
 For readers that are familiar with the SMT of constraint solving-world will have noticed that this techniques feels similar to a way of finding the minimal unsatisfiable subset (MUS), which it is in the case of a solver (wrongly) stating that an input is unsatisfiable. With MUS you try to find the smallest subset of formulas (or constraints) that will result in an unsatisfiable solution while with MSS you would be trying to find the biggest set of formulas (or constraints) that would result in a satisfiable solution. Both are an iterative process and can be applied in the simplification and the isolation process. But solving which combination of formulas results in the smallest of biggest subset is an computationally intensive progress. Fortunately a lot ot though has already been put in it to reduce it, for example Mark H. Liffiton et al. have proposed multiple "Algorithms for Computing Minimal Unsatisfiable Subsets of Constraints" \cite{51liffiton2008algorithms}. Again we should note that an Minimal input is not needed as we aim to reduces de input to help de developer find the error faster, a difference between a smaller and the absolute minimum will cause for a big difference in practice.
-
 
 \subsection{Alternative approach}
 An alternative approach compared to the already mentioned techniques is one by Alexandra Bugariu and Peter M\"uller \cite{9bugariu2020automaticallyTestingStringSolvers} is to forgo the need of deobfuscating inputs by generating inputs "small by construction". Because the smaller the inputs are the space there is for remaining stuff to obfuscate the Input. On the other hand the chance of finding bigger bugs with multiple constraints interacting with each other will be harder to find.
@@ -45,8 +69,6 @@ For more complex inputs we can apply techniques seen in section \ref{cha:2:Input
 With the techniques as mentioned in section \ref{cha:2:handelingOracelproblem}, "satisfiable by construction" formed inputs will need to take the extra complexity of preserving the ground truth in mind when deobfuscating inputs. When the ground truth says that an input should be unsat and the PUT says it is a satisfiable problem with the following output, then we can not remove constraints to retest if that specific constraint was the cause without knowing the new ground truth. As potential change, this could switch the original input from an unsatisfiable to a satisfiable problem. We could use a trusted solver to make sure that we only retest unsat inputs by retesting each change. or as done by  Muhammad Numair Mansur et al.'s \cite{1mansur2020detecting} technique of trying to fuzz the same seed in the hope to find a smaller input that gives the same bug. Or use other SMT solvers to make sure that the ground truth does not change as Brummayer and Biere \cite{2FuzzingAndDeltaDebuggingSMTSolvers} did.
 In the other scenario when he ground truth says that an input should be sat with X amount of models and the PUT says that the input is unsatisfiable. Then we have more options to deobfuscate the inputs. We can use the previously mentioned techniques like the other scenario but we can also use simplifying, isolation, MUS, MSS and the technique of refuzzing like STORM while still preserving the (un)satisfiability of the problem.
 
-
-
 \section{The precision effect}
 \label{cha:3:PersisionEffect}
 This finding of the same bug needs to be done carefully, so that we do not change a null pointer dereference bug to a parser related bug. This, as discussed in the previous chapter, is because we value some bugs with more importance than others. 
@@ -54,7 +76,7 @@ In a paper by Andreas Zeller and Ralf Hildebrandt \cite{5zeller2002simplifyingIs
 
 \section{Deduplication}
 \label{cha:3:Deduplication}
-With deobfuscating the inputs we can detect exact copies, but depending on the deobfuscation's time complexity other techniques could be better with similar results. In case where we would have access to stack traces (via crashes or hanging PUT's) we could differentiate the bugs on the basis of the hash from the backtrace, sometimes even numerous hashes per input depending on the amount of backtrace lines taken. This technique is called "stack backtrace hashing" and is quite popular according to Valentin J.M. Man\`es et al. \cite{13manes2019survey} 
+With deobfuscating the inputs we can detect exact copies, but depending on the deobfuscation's time complexity other techniques could be better with similar results. In case where we would have access to stack traces (via crashes) we could differentiate the bugs on the basis of the hash from the backtrace, sometimes even numerous hashes per input depending on the amount of backtrace lines taken. This technique is called "stack backtrace hashing" and is quite popular according to Valentin J.M. Man\`es et al. \cite{13manes2019survey} 
 Another technique talked about in that paper, is looking at the code coverage generated by the inputs where the executed path (or hash of it) is used as a fingerprint of the inputs. A technique, used by Microsoft \cite{36semanticsAwareDeduplicationRETracer} is called "semantics based deduplication", where instead of backtrace they use memory dumps to hopefully find the origins of bugs. This use of dumps is less ideal due to traces having more information, but the latter is not always possible due to the performance overhead and privacy causes as specified in the paper. 
 A last technique would be looking at the bug description left by manual bug reports, although this dependence on the quality of bug reports and is most likely poorly automatable. 
 None of the techniques mentioned above are perfect: with stack backtrace hashing you need access to the backtrace, with coverage some inputs will generate extra function calls and the semantics based deduplication are limited to X86 or x86-64 code with the binary file and the debug information. Neither of those first techniques will work with black box fuzzing unfortunately.
