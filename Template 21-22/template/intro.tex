@@ -9,20 +9,25 @@ With this technique we will try to detect bugs in the constraint programming and
 \todo{modus operandi bij intro}
 
 \section{The usage of fuzzers in the software development cycle}
+\label{intro:SoftwareDevelopmentCycle}
 During the development phase of software, tests are preformed to check if the written code matches the expected and wanted output. This can be done by the developers themselves or by quality assurance testers which do this full time and this on multiple different ways: code review, manual testing or automated testing. Those could exist out of unit tests, checking for known bugs, confirming that the use cases are working, code audits, dynamic testing, fuzzing and others. None of the techniques mentioned above can prevent all possible bugs from occurring on top of that using only a single technique would cost more to find the same level of bugs then using multiple techniques. Sometimes a code audit is better, for example in situations where you want to know something easy that is most likely plainly written in the code. Other cases dynamic testing may be better, image you have a program which parses curricula vitae to check if candidates match the job position and you want to check if fresh Computer science graduates match the position software analyst. In this case it may be a lot easier to simulate the use case than to dive into the code. In situations where you want to test if bugs exist, you may not know where to start inside of the PUT, this is where Fuzzing may be the correct tool to use. Fuzzing emerged in the academic literature at the start of the nineties, while the industry's full adoption thirty years later is still ongoing. Multiple companies like Google, Microsoft and LLVM have created their own fuzzers and this together with a pushing security sector for the adoption has caused fuzzing to become a part of the growing toolchain for software verification.
 
-\section{Fuzzing and security}
+\section{Fuzzing and security} \todo{bit more} %\cite{32V-Fuzz}
+\label{intro:FussingSecurity}
 The adoption of fuzzers has definitely gained speed due to its proven effectiveness in finding security exploits. For example ShellShock, Heartbleed, Log4Shell, Foreshadow and KRACK could have been found using fuzz testing as shown in multiple sources \cite{ShellShockViaFuzzing}, \cite{HeartbleedViaFuzzing}, \cite{Log4ShellViaFuzzing}, \cite{34ForeshadowViaFuzz} and fuzzing is even recommended by the authors to prevent similar exploits \cite{33KrackViaFuzz} and \cite{35ForeshadowFuzzRecom}.
 
-\section{Constraint programming in general}
+\section{Constraint solving in general}
+\label{intro:ConstraintSolving}
 %	what is CP and family, differences, \cite{freuder1997pursuit}
 %	usage
 %	what could go wrong, cost of bugs
 
 \section{CPMpy}
+\label{intro:CPMpy}
 %	section on how CPMpy works and convorts for other solvers \cite{CP2021 Tutorial "CPMpy, a Numpy-based CP Modeling Environment} and \cite{https://github.com/CPMpy/cpmpy/} and where errors could occure, whitch ones are in/out of scope
 
-\section{fuzzing history}
+\section{fuzzing history} % this is moved to \ref{fuzzing:intro}
+\label{intro:fuzzinghistory}
 % why fuzzing, ref to securrity and \cite{25MillerOnMacOS} examples of viruese
 %bit of history around fuzzing or CP
 % first study in fall of 1988 paper in 1990
