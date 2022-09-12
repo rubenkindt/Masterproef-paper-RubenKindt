@@ -6,7 +6,7 @@ In the last thirty years the technique of fuzzing has changed significantly and 
 
 \section{Classifications}
 \label{cha:2:Classifications}
-The three most popular classifications are \cite{12Fuzzingasurvey} \cite{13manes2019survey} \cite{30FuzzingHackartandscience}: how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
+The three most popular classifications are \cite{30FuzzingHackartandscience, 12Fuzzingasurvey, 13manes2019survey}: how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT)?
 
 \subsection{Generation and mutation}
 \label{cha:2:generationMutation}
@@ -95,7 +95,7 @@ Although the approach of by Bugariu and M\"uller in "Automatically testing strin
 \section{Opinions against Fuzzing}
 \label{fuzzing:OpinionsAgainstFuzzing}
 We have talked about the successes of fuzzing, but there are also opinions against fuzzing. As William M. McKeeman \cite{39differentialTesting} writes some developers do not like the automatic way of adding more bugs to their backlog and see it as unreasonable. "Why would a person do this (obscure actions)?" and that fuzzing seems to generate an infinite amount of bugs are also pet peeves of developers. 
-Although we have a bias, due to writing a dissertation about fuzzing, but we think that those perspectives should not be left out this paper. But also mention that this is not a single view shared by all developers from \cite{42FalconFuzzingConfigurationSettingsAndNormal}, \cite{43YinYang}, \cite{47zhang2019finding} and more we see a positive response to newly found bugs. Some have even started implementing fuzzers \cite{44Stringfuzz} in their toolchain to find bugs.
+Although we have a bias, due to writing a dissertation about fuzzing, but we think that those perspectives should not be left out this paper. But also mention that this is not a single view shared by all developers from \cite{43YinYang, 42FalconFuzzingConfigurationSettingsAndNormal, 47zhang2019finding} and more we see a positive response to newly found bugs. Some have even started implementing fuzzers \cite{44Stringfuzz} in their toolchain to find bugs.
 
 \section{Conclusion}
 \label{fuzzing:conclusion}

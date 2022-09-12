@@ -1,21 +1,69 @@
-\chapter{CP and SMT}
-\label{cha:4}
-\todo{intro ch 4}
+\chapter{CP, SAT and SMT}
+\label{cha:CS}
+\todo{intro ch CP and SMT}
 
 % see holy grail
 \section{Holy grail of programming} %use as intro?
+\label{CS:HolyGrail}
 \begin{quote}
 	"Constraint programming represents one of the closest approaches computer science has yet made to the Holy Grail of programming: the user states the problem, the computer solves it." \cite{11freuder1997pursuitHolyGrail} quote by Eugene C. Freuder
 \end{quote}
-As the quote and paper Eugene C. Freuder asserts, he believes that the 
-% \cite{52bartak1999constraint}
+As the quote and the paper from Eugene C. Freuder says, he and others believe that in the ideal world the user conveys any problem to the program and that the program will solve it. Which does match a coarse summary of what a constraint programming language (CP) can do. But we don't live in an ideal world and problems need to be converted or split up into a representation the solver can understand. This is where constraints come into the picture, constraints are mathematical or logical limitations; or connections between variables when solved form a model that satisfy all constraints and sometimes minimize or maximize a final objective function, for example finding a model where a postman visits all cities on a route but minimize the distance traveled. 
+With CP the focus lays more on the solving high level problems with specialties around scheduling and planning \cite{52bartak1999constraint}. Which their key feature being the global constraints, a set of 'function' that are aimed at high level of abstraction. for example the 'allDifferent()' which makes sure that all variables will receive a different value or 'circuit()' that holds if the input forms a Hamiltonian circuit.
+
+A second field of research that we will discuss is the boolean satisfiability problem better known as SAT, where the focus lays on the boolean variant of constraints within the family of constraint solvers. This field of research has produced quite a lot of progress due to its age, resulting in efficiency in solving \cite{56bardin2019bringing}.
+
+Our last field of research that we will discuss, is the satisfiability modulo theory (SMT) which builds further on SAT. This by including Lists, arrays, strings, real numbers, integers and other more complex data structures and types. With SMT the focus lays more on static checking and program verification \cite{56bardin2019bringing, 54moura2008z3}.
 
 
 %\cite{56bardin2019bringing} gives nice overview of constraint solving in general
-
-
 \section{CP}
-%\cite{53marriott1998programming}
+\label{CS:CP}
+....
+\todo{blabalba}
+
+
+As an example we will show the popular puzzle in the constraint programming field "send + more = money" a logic puzzle made by Henry Dudeney and published in Strand Magazine's July 1924 edition \cite{sendMoreMoney}.
+\begin{center}
+	\[$$
+	\; \; S E N D\\
+	+ M O R E\\
+	-----------------\\
+	M O N E Y
+	$$\]
+\end{center}
+Where each character represents a single digit between zero and nine (both included), meaning that the 'e' from "send" should be the same value as the 'e' from "more" and "money". The other rules go as follows: all characters should have a different digit, the starting letter of each word can not be zero and after replacing all characters with digits the sum should be correct. 
+
+This example is often used to introduce CP field, as will we using MiniZinc as our constraint programming language. 
+
+\label{lst:SendMoreMoney}
+\begin{lstlisting}[language=minizinc, caption={Solution to "send+ more = money" modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
+	include "alldifferent.mzn";
+	var 1..9: S;
+	var 0..9: E; %comment
+	var 0..9: N;
+	var 0..9: D;
+	var 1..9: M;
+	var 0..9: O;
+	var 0..9: R;
+	var 0..9: Y;
+	
+	constraint 
+	              1000 * S + 100 * E + 10 * N + D
+	            + 1000 * M + 100 * O + 10 * R + E
+	= 10000 * M + 1000 * O + 100 * N + 10 * E + Y;
+	
+	constraint alldifferent([S,E,N,D,M,O,R,Y]);
+	
+	solve satisfy;
+	output 
+	["   \(S)\(E)\(N)\(D)\n",
+	"+  \(M)\(O)\(R)\(E)\n",
+	"= \(M)\(O)\(N)\(E)\(Y)\n"];
+\end{lstlisting}
+
+
+\cite{53marriott1998programming}
 % compaierde to traditional programming 1 relations expresseeed isnstead of 1 relation needing to be expreassed from all possible viewspoints (SEND + MORE = MONEY as example)
 
 \subsection{origen}
@@ -31,7 +79,11 @@ As the quote and paper Eugene C. Freuder asserts, he believes that the
 %something about the challange \cite{59stuckey2010philosophy} \cite{58stuckey2014minizinc} "The principle aim of the MiniZinc Challenge is, un-surprisingly, to compare the state of the art among constraint-programming (CP) solvers. " paper 58
 %others GeCode \footnote{\url{https://www.gecode.org/}}
 
+\section{SAT}
+\label{CS:SAT}
+
 \section{SMT}
+\label{CS:SMT}
 %Z3 \cite{54moura2008z3} + \footnote{\url{https://github.com/Z3Prover/z3}}
 %CVC4 CVC5  \footnote{\url{https://github.com/cvc5/cvc5}} the fifth in line of the build Cooperating Validity Checkers (CVC), the previous where (CVC, CVC Lite, CVC3 end CVC4) \cite{62barrettcvc5} \cite{63barbosa2022cvc5}
 %mention techniques branching, unit propagation, backtracking, DPLL, CDCL, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts \cite{60katebi2011empirical} \cite{61MCSMarcDenecker}
@@ -40,6 +92,7 @@ As the quote and paper Eugene C. Freuder asserts, he believes that the
 
 
 \section{Conclusion}
+\label{CS:conclusion}
 \todo{Conclusion}
 The final section of the chapter gives an overview of the important results
 of this chapter. This implies that the introductory chapter and the

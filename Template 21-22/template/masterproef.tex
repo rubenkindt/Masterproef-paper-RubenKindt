@@ -18,6 +18,101 @@
 % Hier kun je dan nog andere pakketten laden of eigen definities voorzien
 \usepackage{todonotes}
 \usepackage{pifont} % used for checkmarks
+\usepackage{listings}
+
+%thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
+%----------------------------------------------%
+% Syntax highlighting for MiniZinc in listings %
+%----------------------------------------------%
+\definecolor{ForestGreen}{RGB}{34,106,46}
+\usepackage{color}
+\lstdefinelanguage{minizinc}{
+	morekeywords={
+		%% MiniZinc keywords
+		%%
+		ann, annotation, any, array, assert,
+		bool,
+		constraint,
+		else, elseif, endif, enum, exists,
+		float, forall, function,
+		if, in, include, int,
+		list,
+		minimize, maximize,
+		of, op, output,
+		par, predicate,
+		record,
+		set, solve, string,
+		test, then, tuple, type,
+		var,
+		where,
+		%% MiniZinc functions
+		%%
+		abort, abs, acosh, array_intersect, array_union,
+		array1d, array2d, array3d, array4d, array5d, array6d, asin, assert, atan,
+		bool2int,
+		card, ceil, combinator, concat, cos, cosh,
+		dom, dom_array, dom_size, dominance,
+		exp,
+		fix, floor,
+		index_set, index_set_1of2, index_set_2of2, index_set_1of3, index_set_2of3, index_set_3of3,
+		int2float, is_fixed,
+		join,
+		lb, lb_array, length, let, ln, log, log2, log10,
+		min, max,
+		pow, product,
+		round,
+		set2array, show, show_int, show_float, sin, sinh, sqrt, sum,
+		tan, tanh, trace,
+		ub, and ub_array,
+		%% Search keywords
+		%%
+		bool_search, int_search, seq_search, priority_search,
+		%% MiniSearch keywords
+		%%
+		minisearch, search, while, repeat, next, commit, print, post, sol, scope, time_limit, break, fail
+	},
+	sensitive=true, % are the keywords case sensitive
+	morecomment=[l][\em\color{ForestGreen}]{\%},
+	%morecomment=[s]{/*}{*/},
+	morestring=[b]",
+}
+%% Settings for listings
+%%
+\lstset{ %
+	backgroundcolor=\color{lightgray},  % choose the background color; you must add
+	% \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\scriptsize\ttfamily,    % the size of the fonts that are used for the code
+	belowskip=0em,
+	breakatwhitespace=false,            % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                    % sets automatic line breaking
+	captionpos=b,                       % sets the caption-position to bottom
+	commentstyle=\color{ForestGreen},   % comment style
+	%deletekeywords={...},              % if you want to delete keywords from the given language
+	escapeinside={\%*}{*)},             % if you want to add LaTeX within your code
+	extendedchars=true,                 % lets you use non-ASCII characters; for 8-bits
+	% encodings only, does not work with UTF-8
+	frame=single,                       % adds a frame around the code
+	keepspaces=true,                    % keeps spaces in text, useful for keeping indentation
+	% of code (possibly needs columns=flexible)
+	keywordstyle=\bfseries\color{blue}, % keyword style
+	language=minizinc,                  % the language of the code
+	%morekeywords={*,...},              % if you want to add more keywords to the set
+	numbers=left,                       % where to put the line-numbers; possible values are (none, left, right)
+	%numbersep=5pt,                     % how far the line-numbers are from the code
+	%numberstyle=\tiny\color{Gray},     % the style that is used for the line-numbers
+	rulecolor=\color{black},            % if not set, the frame-color may be changed
+	% on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                   % show spaces everywhere adding particular
+	% underscores; it overrides 'showstringspaces'
+	showstringspaces=false,             % underline spaces within strings only
+	showtabs=false,                     % show tabs within strings adding particular underscores
+	%stepnumber=1,                      % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{purple},            % string literal style
+	tabsize=2,                          % sets default tabsize to 2 spaces
+	title=\lstname                      % show the filename of files included with \lstinputlisting;
+	% also try caption instead of title
+}
+
 %\usepackage[style=numeric,sortcites,sorting=nty,backref,hyperref]{biblatex}
 %\usepackage[style=numeric,sortcites,sorting=none,backref,hyperref]{biblatex} % no sort, for finding unused ref
 %\nocite{*}  % cite all ref, for finding unused ref
@@ -27,6 +122,7 @@
 % Tenslotte wordt hyperref gebruikt voor pdf bestanden.
 % Dit mag verwijderd worden voor de af te drukken versie.
 \usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
+\hypersetup{allcolors = black}
 
 %%%%%%%
 % Om wat tekst te genereren wordt hier het lipsum pakket gebruikt.
@@ -69,6 +165,7 @@
 %\listoftables
 % Bij een beperkt aantal figuren en tabellen gebruik je liever het volgende:
 \listoffiguresandtables
+\lstlistoflistings
 % De lijst van symbolen is eveneens optioneel.
 % Deze lijst moet wel manueel aangemaakt worden, bv. als volgt:
 \chapter{List of Abbreviations and Symbols}
