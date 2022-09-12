@@ -9,7 +9,7 @@
 	"Constraint programming represents one of the closest approaches computer science has yet made to the Holy Grail of programming: the user states the problem, the computer solves it." \cite{11freuder1997pursuitHolyGrail} quote by Eugene C. Freuder
 \end{quote}
 As the quote and the paper from Eugene C. Freuder says, he and others believe that in the ideal world the user conveys any problem to the program and that the program will solve it. Which does match a coarse summary of what a constraint programming language (CP) can do. But we don't live in an ideal world and problems need to be converted or split up into a representation the solver can understand. This is where constraints come into the picture, constraints are mathematical or logical limitations; or connections between variables when solved form a model that satisfy all constraints and sometimes minimize or maximize a final objective function, for example finding a model where a postman visits all cities on a route but minimize the distance traveled. 
-With CP the focus lays more on the solving high level problems with specialties around scheduling and planning \cite{52bartak1999constraint}. Which their key feature being the global constraints, a set of 'function' that are aimed at high level of abstraction. for example the 'allDifferent()' which makes sure that all variables will receive a different value or 'circuit()' that holds if the input forms a Hamiltonian circuit.
+With CP the focus lays more on the solving high level problems with specialties around scheduling and planning \cite{52bartak1999constraint}. Which their key feature being the global constraints, a set of "function" that are aimed at high level of abstraction. for example the "alldifferent()" which makes sure that all variables will receive a different value or "circuit()" that holds if the input forms a Hamiltonian circuit.
 
 A second field of research that we will discuss is the boolean satisfiability problem better known as SAT, where the focus lays on the boolean variant of constraints within the family of constraint solvers. This field of research has produced quite a lot of progress due to its age, resulting in efficiency in solving \cite{56bardin2019bringing}.
 
@@ -34,13 +34,13 @@ As an example we will show the popular puzzle in the constraint programming fiel
 \end{center}
 Where each character represents a single digit between zero and nine (both included), meaning that the 'e' from "send" should be the same value as the 'e' from "more" and "money". The other rules go as follows: all characters should have a different digit, the starting letter of each word can not be zero and after replacing all characters with digits the sum should be correct. 
 
-This example is often used to introduce CP field, as will we using MiniZinc as our constraint programming language. 
+This example is often used to introduce CP field, so will we. We will also use MiniZinc as our constraint programming language for this example.
 
 \label{lst:SendMoreMoney}
-\begin{lstlisting}[language=minizinc, caption={Solution to "send+ more = money" modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
-	include "alldifferent.mzn";
-	var 1..9: S;
-	var 0..9: E; %comment
+\begin{lstlisting}[language=minizinc, caption={Solution to "send + more = money" slightly modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
+	include "globals.mzn";
+	var 1..9: S; % Since 'S' is a starting chacter it is limiter from 1 to 9 included.
+	var 0..9: E; % Other charcaters are limited from 0 to 9 included.
 	var 0..9: N;
 	var 0..9: D;
 	var 1..9: M;
@@ -48,7 +48,7 @@ This example is often used to introduce CP field, as will we using MiniZinc as o
 	var 0..9: R;
 	var 0..9: Y;
 	
-	constraint 
+	constraint % The sum must hold.
 	              1000 * S + 100 * E + 10 * N + D
 	            + 1000 * M + 100 * O + 10 * R + E
 	= 10000 * M + 1000 * O + 100 * N + 10 * E + Y;
@@ -57,16 +57,21 @@ This example is often used to introduce CP field, as will we using MiniZinc as o
 	
 	solve satisfy;
 	output 
-	["   \(S)\(E)\(N)\(D)\n",
-	"+  \(M)\(O)\(R)\(E)\n",
+	[" \(S)\(E)\(N)\(D)\n",
+	"+ \(M)\(O)\(R)\(E)\n",
 	"= \(M)\(O)\(N)\(E)\(Y)\n"];
 \end{lstlisting}
-
+\label{sendMoreMoneyExplanation}
+On line 1 you can see the importing of the global constraints, which CP is know for. Line 2 until 9 we can see the declarations of all possible characters to the possible digits, starting letters like 'S' and 'M' are limited by their representation from 1 to 9 instead of using a constraint. The constraint on line 11 runs through until line 14, where it is closed by a the semicolon. This constraint specifies the matching of the sum. At line 16 we use one of the imported functions namely "alldifferent()" which will satisfy if no similar values occur in the array. To then start solving for satisfiability at line 18, this in comparison of solving for minimization or maximization of an objectify function, which does not apply here. Finally after a solver has found satisfiability we print the result using a pretty print from line 19 to 22.
 
 \cite{53marriott1998programming}
 % compaierde to traditional programming 1 relations expresseeed isnstead of 1 relation needing to be expreassed from all possible viewspoints (SEND + MORE = MONEY as example)
 
-\subsection{origen}
+
+A keen observer has will have noticed that we used "after a solver has found satisfiability" in the explanation of "send + more = money" \ref{sendMoreMoneyExplanation}. This is because MiniZinc is not a solver, it is a lightweight .... \todo{cont}
+
+
+\subsection{origin}
 %constraint satisfaction and constraint solving 
 %Generate and Test is bad papaer 52
 % CP is good at scheduling problems paper 52

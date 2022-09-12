@@ -39,3 +39,4 @@ Template 21-22/template/masterproef.synctex.gz
 #while compiling/building
 *.synctex(busy)
 ~$Timesheet.xlsx
+*.lol

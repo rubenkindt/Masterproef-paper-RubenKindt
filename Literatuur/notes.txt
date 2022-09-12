@@ -17,3 +17,5 @@ simplify faults by delta-debugging or own try and error
 
 CPMpy
 	model -= constraint werkt niet, model.constraints=model.constraints[selectie]
+
+automaticly finding cause of error p298 of why programms fail, could result in patchwork
