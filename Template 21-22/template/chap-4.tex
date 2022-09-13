@@ -16,14 +16,12 @@ A second field of research that we will discuss is the boolean satisfiability pr
 Our last field of research that we will discuss, is the satisfiability modulo theory (SMT) which builds further on SAT. This by including Lists, arrays, strings, real numbers, integers and other more complex data structures and types. With SMT the focus lays more on static checking and program verification \cite{56bardin2019bringing, 54moura2008z3}.
 
 
-%\cite{56bardin2019bringing} gives nice overview of constraint solving in general
-\section{CP}
+\section{Constraint programming}
 \label{CS:CP}
-....
-\todo{blabalba}
+As mentioned before CP's are well versatile in the solving of constraints and especially when it comes to planning and scheduling. This by their efficient constraint propagation, backtracking and the linking of related constraints \cite{66WikiCP}. Originally CP's can be linked back to constraint logic programming (CLP) where programming languages (mostly logic programming languages) where combined with constraints. A notable version is that of Joxan Jaffart and Jean-Louis Lassez \cite{65jaffar1987constraint, 66WikiCP} extension in Prolog.
 
-
-As an example we will show the popular puzzle in the constraint programming field "send + more = money" a logic puzzle made by Henry Dudeney and published in Strand Magazine's July 1924 edition \cite{sendMoreMoney}.
+To further introduces you to constraint programming we will show a popular puzzle in the CP field "send + more = money". which is a logic puzzle made by Henry Dudeney and published in Strand Magazine's July 1924 edition \cite{sendMoreMoney}.
+Where each character represents a single digit between zero and nine (both included), meaning that the 'e' from "send" should be the same value as the 'e' from "more" and "money". The other rules go as follows: all characters should have a different digit, the starting letter of each word can not be zero and after replacing all characters with digits the sum should be correct. 
 \begin{center}
 	\[$$
 	\; \; S E N D\\
@@ -32,9 +30,7 @@ As an example we will show the popular puzzle in the constraint programming fiel
 	M O N E Y
 	$$\]
 \end{center}
-Where each character represents a single digit between zero and nine (both included), meaning that the 'e' from "send" should be the same value as the 'e' from "more" and "money". The other rules go as follows: all characters should have a different digit, the starting letter of each word can not be zero and after replacing all characters with digits the sum should be correct. 
-
-This example is often used to introduce CP field, so will we. We will also use MiniZinc as our constraint programming language for this example.
+This example is often used to introduce CP field, so will we. We will also use MiniZinc\footnote{\url{https://www.minizinc.org/}} as our constraint programming language to find the solution for this example.
 
 \label{lst:SendMoreMoney}
 \begin{lstlisting}[language=minizinc, caption={Solution to "send + more = money" slightly modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
@@ -62,35 +58,46 @@ This example is often used to introduce CP field, so will we. We will also use M
 	"= \(M)\(O)\(N)\(E)\(Y)\n"];
 \end{lstlisting}
 \label{sendMoreMoneyExplanation}
-On line 1 you can see the importing of the global constraints, which CP is know for. Line 2 until 9 we can see the declarations of all possible characters to the possible digits, starting letters like 'S' and 'M' are limited by their representation from 1 to 9 instead of using a constraint. The constraint on line 11 runs through until line 14, where it is closed by a the semicolon. This constraint specifies the matching of the sum. At line 16 we use one of the imported functions namely "alldifferent()" which will satisfy if no similar values occur in the array. To then start solving for satisfiability at line 18, this in comparison of solving for minimization or maximization of an objectify function, which does not apply here. Finally after a solver has found satisfiability we print the result using a pretty print from line 19 to 22.
+On line 1 you can see the importing of the global constraints, which CP is know for. Line 2 until 9 we can see the declarations of all possible characters to the possible digits, starting letters like 'S' and 'M' are limited by their representation from 1 to 9 instead of using a constraint. The constraint on line 11 runs through until line 14, where it is closed by a the semicolon. This constraint specifies the matching of the sum. At line 16 we use one of the imported functions namely "alldifferent()" which will satisfy if no similar values occur in the array. To then start solving for satisfiability at line 18, this in comparison of solving for minimization or maximization of an objectify function, which does not apply here. Finally after a solver has found satisfiability we print the result using a pretty print from line 19 to 22. We will leave it up to you for finding the solution of the puzzle, but remember that you can check your answer with the program above.
 
-\cite{53marriott1998programming}
-% compaierde to traditional programming 1 relations expresseeed isnstead of 1 relation needing to be expreassed from all possible viewspoints (SEND + MORE = MONEY as example)
-
-
-A keen observer has will have noticed that we used "after a solver has found satisfiability" in the explanation of "send + more = money" \ref{sendMoreMoneyExplanation}. This is because MiniZinc is not a solver, it is a lightweight .... \todo{cont}
-
+The advantage of using constraints is also visible by the sum constraint, if we had used allocations 
+The "alldifferent" and the sum constraint also shows us the power of CP's, with a single statement multiple relations are expressed\cite{53marriott1998programming}. Instead of needing to specify all possible relations of the last tree characters (D + E = Y, E = Y - D and D = Y - E) a single expression suffices. When knowing two values we can infer the third, imagine the work needed for the "alldifferent()" constraint. 
 
 \subsection{origin}
-%constraint satisfaction and constraint solving 
-%Generate and Test is bad papaer 52
-% CP is good at scheduling problems paper 52
-%Limitations NP-hard and efficiency
+Within constraint programming we can distinguish two branches \cite{52bartak1999constraint}: one being constraint satisfaction. Which puts the focus on finding a model(s) which satisfies all constraint. which can be done with generating values within the domain of the variables and testing them, also called generate and test, but obviously this is not the fastest way. 
 
-\subsection{some Examples}
-%minizinc also fits in SMT story \footnote{\url{https://www.minizinc.org/}} and \cite{57nethercote2007minizinc}
-%std constraint programming frontend with multiple backend solvers
-%check related work of 57 MiniZinc coms from Zinc ... (quote? or from conclusion)
-%something about the challange \cite{59stuckey2010philosophy} \cite{58stuckey2014minizinc} "The principle aim of the MiniZinc Challenge is, un-surprisingly, to compare the state of the art among constraint-programming (CP) solvers. " paper 58
-%others GeCode \footnote{\url{https://www.gecode.org/}}
+On the other hand we have constraint optimization, which covers an even harder problem. Instead of having to check if a constraints satisfies, here we want to know what model will give us the best value. The optimization function is often called the objective function and occurs quite often in real life problems \cite{52bartak1999constraint}. Unfortunately depending on the problem we often hit limitations due to NP-hardness. Different search strategies can help to gain a higher efficiency and a lot have been though off. Popular approaches to finding solutions in both branches are the use of: constraint propagation, backtracking, symmetry breaking, dynamic programming, techniques from the SAT solvers like lazy clause generation (more on that later) and even heuristics as: local search, Tabu search, simulated annealing and more. 
+
+\subsection{MiniZinc}
+A keen observer has will have noticed that we used "after \underline{Underlined text} a solver has found satisfiability" in the explanation of "send + more = money" \ref{sendMoreMoneyExplanation}. This is because MiniZinc is not a solver, it came to be from the lack of standard modeling language surrounding CP's. When you wanted to use another solver you had to model you problem again in that solver's specific language. This is what Nicholas Nethercote et al. wanted to solve, they came up with MiniZinc which is a modeling language for CP's that is not connected to a single specific solver \cite{57nethercote2007minizinc}. 
+In the words of Peter J. Stucke, a member of the MiniZinc team: 
+
+\begin{quote}
+	"MiniZinc is high level enough to express most combinatorial optimization problems easily and in a largely solver-
+	independent way; (...) However, MiniZinc is low level enough that it can be mapped easily onto many solvers." \cite{58stuckey2014minizinc}
+\end{quote}
+MiniZinc transforms its inputs to FlatZinc which then can be solved by a growing list of CP solvers. At the time of writing 17 solvers have FlatZinc interfaces. MiniZinc originated from a modeling languages focused on constraints, called Zinc \cite{68incbanda2006modelling}. As you can tell by its name MiniZinc is a subset of Zinc \cite{57nethercote2007minizinc}.
+
+\subsubsection{MiniZinc Challenge}
+An intentional benefit of having a standardized constraint programming language is the ability to benchmark CP solvers. Which the MiniZinc team did with the organization of the "MiniZinc Challenge"
+
+\todo{here further}
+The challenges is intended as a benchmark but results as well in more solver implementing the FlatZinc API. The challenge even attracted SAT solvers like BumbleBEE \cite{69BEEmetodi2012compiling} which did need an extra translation layer, BEE, to convert FlatZinc to conjunctive normal form (CNF). Although it is limited to finite domain constraint problems.
+%minizinc also fits in SMT story  and \cite{57nethercote2007minizinc}
+%something about the challange \cite{59stuckey2010philosophy} \cite{58stuckey2014minizinc} 
+%others GeCode \footnote{\url{https://www.gecode.org/}}, 
+%CPMpy
 
 \section{SAT}
 \label{CS:SAT}
+\todo{lazy clause generation example?} %\cite{67stuckey2010lazyClauseGeneration}
+
+%\cite{60katebi2011empirical}
 
 \section{SMT}
 \label{CS:SMT}
 %Z3 \cite{54moura2008z3} + \footnote{\url{https://github.com/Z3Prover/z3}}
-%CVC4 CVC5  \footnote{\url{https://github.com/cvc5/cvc5}} the fifth in line of the build Cooperating Validity Checkers (CVC), the previous where (CVC, CVC Lite, CVC3 end CVC4) \cite{62barrettcvc5} \cite{63barbosa2022cvc5}
+%CVC4 CVC5 \footnote{\url{https://github.com/cvc5/cvc5}} the fifth in line of the build Cooperating Validity Checkers (CVC), the previous where (CVC, CVC Lite, CVC3 end CVC4) \cite{62barrettcvc5} \cite{63barbosa2022cvc5}
 %mention techniques branching, unit propagation, backtracking, DPLL, CDCL, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts \cite{60katebi2011empirical} \cite{61MCSMarcDenecker}
 % CVC5 has API's for C++, Python and Java
 %Z3 API's conatins but not limited to C/C++, .NET, OCaml, Python, Java, Haskell \cite{64WikiSMT}

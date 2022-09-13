@@ -19,6 +19,7 @@
 \usepackage{todonotes}
 \usepackage{pifont} % used for checkmarks
 \usepackage{listings}
+\usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
 
 %thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
 %----------------------------------------------%
@@ -172,7 +173,7 @@
 \section*{Abbreviations}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
-  \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
+  \begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
 
 %    delta-debugging & "" \\
 %    catigorize  & "" \\
@@ -187,15 +188,16 @@
 %    UNSAT by construction & "" \\
 
 %Alphabetic pls
-	CI/CD &  Continuous Integration and Continuous Deployment, a pipeline for newly written code.to repeatably be: build, test, release, deploy and more. \\
-    CP & Constrain Programming Language sometimes also referred to as CPL \\
+	CI/CD & Continuous Integration and Continuous Deployment, a pipeline for newly written code to repeatably be: build, test, release, deploy and more. \\
+    CP & Constrain Programming language sometimes also referred to as CPL \\
     CPL & Constrain Programming Language also referred to as CP \\
+    CNF & Conjunctive Normal Form, which is a boolean formula written using conjunctions of distinctions. \\
     CSP & Constraint Satisfaction Problem is a problem with constraints and variable with a specific domain e.g. finite.\\
-    CPMpy & \\
+    CPMpy & Constraint Programming and Modeling language for PYthon.\\
     CVC & Cooperating Validity Checker \\
     PUT & Program Under Test, the piece of code, application of program we are testing on for potential bugs. \\
     LLVM & Although it looks like an abbreviations, it is not. LLVM is the name of a project focused on compiler and toolchain technologies. \\
-    MUS & minimal unsat subset =/=  \\
+    MUS & Minimal Unsatisfiable Subset =/=  \\
     SMT & Satisfiability Modulo Theory\\
     SUT & Sofware under Test \\
   \end{tabularx}
@@ -204,7 +206,7 @@
 \section*{Symbols}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
-  \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
+  \begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
   	$\neg$ & negation \\
   	$\land$ & logical and \\
   	$\lor$  & logical or \\
