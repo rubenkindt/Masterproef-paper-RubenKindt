@@ -70,8 +70,8 @@ On the other hand we have constraint optimization, which covers an even harder p
 
 \subsection{MiniZinc}
 A keen observer has will have noticed that we used "after \underline{Underlined text} a solver has found satisfiability" in the explanation of "send + more = money" \ref{sendMoreMoneyExplanation}. This is because MiniZinc is not a solver, it came to be from the lack of standard modeling language surrounding CP's. When you wanted to use another solver you had to model you problem again in that solver's specific language. This is what Nicholas Nethercote et al. wanted to solve, they came up with MiniZinc which is a modeling language for CP's that is not connected to a single specific solver \cite{57nethercote2007minizinc}. 
-In the words of Peter J. Stucke, a member of the MiniZinc team: 
 
+In the words of Peter J. Stucke, a member of the MiniZinc team: 
 \begin{quote}
 	"MiniZinc is high level enough to express most combinatorial optimization problems easily and in a largely solver-
 	independent way; (...) However, MiniZinc is low level enough that it can be mapped easily onto many solvers." \cite{58stuckey2014minizinc}
@@ -79,14 +79,20 @@ In the words of Peter J. Stucke, a member of the MiniZinc team:
 MiniZinc transforms its inputs to FlatZinc which then can be solved by a growing list of CP solvers. At the time of writing 17 solvers have FlatZinc interfaces. MiniZinc originated from a modeling languages focused on constraints, called Zinc \cite{68incbanda2006modelling}. As you can tell by its name MiniZinc is a subset of Zinc \cite{57nethercote2007minizinc}.
 
 \subsubsection{MiniZinc Challenge}
-An intentional benefit of having a standardized constraint programming language is the ability to benchmark CP solvers. Which the MiniZinc team did with the organization of the "MiniZinc Challenge"
+An intentional benefit of having a standardized constraint programming language is the ability to benchmark CP solvers. Which the MiniZinc team did with the organization of the "MiniZinc Challenge". In this yearly challenge a solver gets  15 minutes to solve a 100 selected problem instances to solve. Due the difficulty of having to find quite an amount of good representative problem instances, the organizers of the challenge ask the participants to submit two problem models and multiple related instances. From the received list the jury then tries to make a fair selection to cover the use of: global constraints, real-world representative problems end to find a good balance between satisfying versus optimization problems and the different types of technologies (SAT and MIP) instead of only selecting CP focused problems \cite{58stuckey2014minizinc}.
 
-\todo{here further}
-The challenges is intended as a benchmark but results as well in more solver implementing the FlatZinc API. The challenge even attracted SAT solvers like BumbleBEE \cite{69BEEmetodi2012compiling} which did need an extra translation layer, BEE, to convert FlatZinc to conjunctive normal form (CNF). Although it is limited to finite domain constraint problems.
-%minizinc also fits in SMT story  and \cite{57nethercote2007minizinc}
-%something about the challange \cite{59stuckey2010philosophy} \cite{58stuckey2014minizinc} 
-%others GeCode \footnote{\url{https://www.gecode.org/}}, 
-%CPMpy
+It is due to this MiniZinc challenge that a better connection has formed between CP solvers and SAT solvers. By attracting SAT solvers to the challenge a better connection forms between the fields of research, like BEE \cite{69BEEmetodi2012compiling} which is a compiler able to translate FlatZinc to conjunctive normal form (CNF). From this CNF Amit Metodi and Michael Codish where then able to let a SAT solver solve the problem. Although it is limited to finite domain constraint problems this allows us bring the field of research closer.
+
+On top of being a great way to benchmark comparative solvers the MiniZinc challenge, it also results in more solver implementing the FlatZinc as an input and due to the competitive nature of academics bringing the motivation to stride forwards according to the author of "Philosophy of the MiniZinc challenge", Julien Fischer \cite{59stuckey2010philosophy}.
+
+\subsection{CPMpy}
+\label{CP:CPMpy}
+MiniZinc is not de only one with the idea to create a modeling language for CP's, other examples are Essence with the focus on combinatorial problems for people with a background in discrete mathematics \cite{70frisch2008essence}.
+And the one with our most interest is the constraint programming and modeling language for Python (CPMpy) based around the popular packet NumPy. By creating a constraint programming and modeling language in Python the learning curve of CP's becomes lower. On top of that by facilitating the use of NumPy, which is popular in the data processing and the general array based operations, CPMpy makes a familiar data processing tool available to be used while programming constraints \cite{17guns2019increasing}.
+
+\todo{option to multiple solvers}
+
+We would have wanted to write an in-depth explanation on how CPMpy doe its conversions from constraints to what is given to the solvers, but CPMpy being in beta and with more changes potential coming this could become outdated quickly. We do look forward to the team working on CPMpy and their future paper(s) explaining it.
 
 \section{SAT}
 \label{CS:SAT}
