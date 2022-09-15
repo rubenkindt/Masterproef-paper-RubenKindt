@@ -81,7 +81,7 @@ MiniZinc transforms its inputs to FlatZinc which then can be solved by a growing
 \subsubsection{MiniZinc Challenge}
 An intentional benefit of having a standardized constraint programming language is the ability to benchmark CP solvers. Which the MiniZinc team did with the organization of the "MiniZinc Challenge". In this yearly challenge a solver gets  15 minutes to solve a 100 selected problem instances to solve. Due the difficulty of having to find quite an amount of good representative problem instances, the organizers of the challenge ask the participants to submit two problem models and multiple related instances. From the received list the jury then tries to make a fair selection to cover the use of: global constraints, real-world representative problems end to find a good balance between satisfying versus optimization problems and the different types of technologies (SAT and MIP) instead of only selecting CP focused problems \cite{58stuckey2014minizinc}.
 
-It is due to this MiniZinc challenge that a better connection has formed between CP solvers and SAT solvers. By attracting SAT solvers to the challenge a better connection forms between the fields of research, like BEE \cite{69BEEmetodi2012compiling} which is a compiler able to translate FlatZinc to conjunctive normal form (CNF). From this CNF Amit Metodi and Michael Codish where then able to let a SAT solver solve the problem. Although it is limited to finite domain constraint problems this allows us bring the field of research closer.
+It is due to this MiniZinc challenge that a better connection has formed between CP solvers and SAT solvers. By attracting SAT solvers to the challenge a better connection forms between the fields of research, like fzn2smt \cite{72bofill2010system} and BEE \cite{69BEEmetodi2012compiling} which are able to translate FlatZinc to SAT-LIB and conjunctive normal form (CNF) respectively. With BEE producing CNF, Amit Metodi and Michael Codish where then able to let a SAT solver solve the problem, although the later is limited to finite domain constraint problems. This allows us bring the field of research closer.
 
 On top of being a great way to benchmark comparative solvers the MiniZinc challenge, it also results in more solver implementing the FlatZinc as an input and due to the competitive nature of academics bringing the motivation to stride forwards according to the author of "Philosophy of the MiniZinc challenge", Julien Fischer \cite{59stuckey2010philosophy}.
 
@@ -89,25 +89,28 @@ On top of being a great way to benchmark comparative solvers the MiniZinc challe
 \label{CP:CPMpy}
 MiniZinc is not de only one with the idea to create a modeling language for CP's, other examples are Essence with the focus on combinatorial problems for people with a background in discrete mathematics \cite{70frisch2008essence}.
 And the one with our most interest is the constraint programming and modeling language for Python (CPMpy) based around the popular packet NumPy. By creating a constraint programming and modeling language in Python the learning curve of CP's becomes lower. On top of that by facilitating the use of NumPy, which is popular in the data processing and the general array based operations, CPMpy makes a familiar data processing tool available to be used while programming constraints \cite{17guns2019increasing}.
+At the time of writing the CPMpy has support for multiple solvers like: OR-tools, CP-SAT, Gurobi (for MIP problems), PySAT (which is a library that contains 13 different SAT solvers), PySSD which is a knowledge compiler \todo{is PySSD a solver?} and CPMpy has support for any CP-solver that support for the text-based MiniZinc language \cite{CPMpyDoc, CPMpyGithub}. With potential future extensions to Microsoft's Z3 solver and others.
 
-\todo{option to multiple solvers}
-
-We would have wanted to write an in-depth explanation on how CPMpy doe its conversions from constraints to what is given to the solvers, but CPMpy being in beta and with more changes potential coming this could become outdated quickly. We do look forward to the team working on CPMpy and their future paper(s) explaining it.
+We would have written an in-depth explanation on how CPMpy does its conversions from constraints to what is given to the solvers, but CPMpy being in beta and with more changes potential coming this could become outdated quickly. We do look forward to the team working on CPMpy and their future paper(s) explaining it.
 
 \section{SAT}
 \label{CS:SAT}
-\todo{lazy clause generation example?} %\cite{67stuckey2010lazyClauseGeneration}
+Now that we discussed CP's, let's step back to boolean satisfiability problems (SAT), and as the name already spoiled it here we are focused on checking the satisfiability of boolean formulas. SAT has been successful in the hardware design and verification. With al lot of research in improving SAT-solvers, they have become significant efficient on large problems \cite{56bardin2019bringing}.
+The efficiency improvements came from the DPLL algorithm to conflict-driven clause learning (CDCL), with the biggest improvement being the addition of non-chronological back jumps. Also better propagation, lazy clause generation (LCG), data structures and the introduction of heuristics assisted significantly. Heuristics often include clause deletion to decrease the sized by deleting unused clauses, variable state independent decaying sum (VSIDS) where we add a decaying weight to select which literal we prioritize, random restarts where we try to avoid large search trees by restarting with the learned clauses, among other heuristics \cite{61MCSMarcDenecker, 60katebi2011empirical, 67stuckey2010lazyClauseGeneration}.
+%mention techniques branching, unit propagation, backtracking, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts
+\todo{example?}
 
-%\cite{60katebi2011empirical}
 
 \section{SMT}
 \label{CS:SMT}
-%Z3 \cite{54moura2008z3} + \footnote{\url{https://github.com/Z3Prover/z3}}
-%CVC4 CVC5 \footnote{\url{https://github.com/cvc5/cvc5}} the fifth in line of the build Cooperating Validity Checkers (CVC), the previous where (CVC, CVC Lite, CVC3 end CVC4) \cite{62barrettcvc5} \cite{63barbosa2022cvc5}
-%mention techniques branching, unit propagation, backtracking, DPLL, CDCL, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts \cite{60katebi2011empirical} \cite{61MCSMarcDenecker}
-% CVC5 has API's for C++, Python and Java
-%Z3 API's conatins but not limited to C/C++, .NET, OCaml, Python, Java, Haskell \cite{64WikiSMT}
+An extension of SAT is satisfiability modulo theories (SMT), which extends the only boolean formulas of SAT with quantifiers, integers, lists, arrays and much more. With the advantage that efficient algorithms from SAT transfers over. The focus with this technology lays in multiple fields but it is quite popular in program verification and testing. As can be seen with Microsoft's Z3 \footnote{\url{https://github.com/Z3Prover/z3}} focused on static software checking \cite{54moura2008z3}. Z3 is one of the most popular SMT-solver at the moment, with a considerable amount of varying supported theories. It has support for the standard SMT-LIB input, the
+Simplify input, and a low-level native input for textual input-based directly. Z3 also supports API's for the following programming languages: C/C++, .NET, OCaml, Python, Java, Haskell and more \cite{64WikiSMT}.
 
+The second most popular SMT-solver is from the cooperating validity checkers (CVC) line-up. The latest in the CVC-lineup is CVC5 \footnote{\url{https://github.com/cvc5/cvc5}}, which is the fifth in line of the CVC-family, the previous being SVC (not always counted), CVC, 
+CVC Lite \footnote{\url{https://cs.nyu.edu/acsys/cvcl/}}, 
+CVC3 \footnote{\url{https://cs.nyu.edu/acsys/cvc3/}}\cite{71barrett2007cvc3} and 
+CVC4 \footnote{\url{https://cvc4.github.io/}} \cite{62barrettcvc5, 63barbosa2022cvc5}. 
+As like CVC4, CVC5 supports the standard SMT-LIB input format among other formats directly and supports API's in C++, Python, Java and probably more by the time you read this.
 
 \section{Conclusion}
 \label{CS:conclusion}
