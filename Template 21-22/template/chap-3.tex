@@ -1,6 +1,6 @@
 \chapter{Detecting crucial parts in inputs}
 \label{inputReduction:intro}
-When we detect that the PUT crashes, wrongly satisfies, wrongly unsatisfies, hangs or gives the wrong solution on a given input we want to know why it does that. What causes this unwanted output and on what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when a bug causes a crash in another place or we get another unwanted output the developer may need to debug deep into the code to find the bug. This with a potential large inputs created by the fuzzer could be a tedious and long assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with deobfuscating inputs.
+When we detect that the program under test (PUT) crashes, wrongly satisfies, wrongly unsatisfies, hangs or gives the wrong solution on a given input we want to know why it does that. What causes this unwanted output and on what line the bug occurs. With crashes, a stack trace and some luck this could be easy, but when a bug causes a crash in another place or we get another unwanted output the developer may need to debug deep into the code to find the bug. This with a potential large inputs created by the fuzzer could be a tedious and long assignment, for this reason we would like to know what parts of the input are related to the bug. We will discover this further in this chapter, starting with deobfuscating inputs.
 
 \section{Deobfuscating inputs}
 \label{inputReduction:Deobfuscating}
@@ -88,11 +88,7 @@ None of the techniques mentioned above are perfect: with stack backtrace hashing
 
 \section{Conclusion}
 \label{inputReduction:Conclusion}
-\todo{Conclusion}
-The final section of the chapter gives an overview of the important results
-of this chapter. This implies that the introductory chapter and the
-concluding chapter don't need a conclusion.
-
+In this chapter we discussed why a reduced failing input would be convenient for the further process, what advantages it brings with it while fuzzing PUTs. We have seen multiple methods of deobfuscating inputs from the straightforward simplifying to the heavier isolation. We also looked at state of the art approaches, how they preserve satisfiability and how to avoid having to deobfuscate inputs in the first place. To then end with the advantage of short deobfuscated inputs to prevent duplicates bugs.
 
 %%% Local Variables: 
 %%% mode: latex
