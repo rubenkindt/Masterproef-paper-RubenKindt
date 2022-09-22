@@ -4,7 +4,9 @@
 \label{CS:HolyGrail}
 \section{Holy grail of programming}
 \begin{quote}
-	"Constraint programming represents one of the closest approaches computer science has yet made to the Holy Grail of programming: the user states the problem, the computer solves it." \cite{11freuder1997pursuitHolyGrail} quote by Eugene C. Freuder
+	"Constraint programming represents one of the closest approaches computer science has yet made to the Holy Grail of programming: the user states the problem, the computer solves it." 
+	\newline
+	-Eugene C. Freuder in "In Pursuit of the Holy Grail" \cite{11freuder1997pursuitHolyGrail}.
 \end{quote}
 As the quote and the paper \cite{11freuder1997pursuitHolyGrail} from Eugene C. Freuder says, he and others believe that in the ideal world the user conveys any problem to a computer or a program and that the program will solve it. Which matches a coarse summary of what a constraint programming language (CP) can do in an ideal world. But we do not live in that type of world and problems need to be converted or split up into a representation that the solver can understand. 
 This is where constraints come into the picture, constraints are mathematical, logical or relational connections put on or between variables to form a model that hopefully satisfy all constraints after solving. This is sometimes combined with a final objective function to be minimized or maximized, for example finding a model where a postman visits all cities on a route but with a minimal distance traveled. 
@@ -75,8 +77,10 @@ In the words of Peter J. Stucke, a member of the MiniZinc team:
 
 \begin{quote}
 	"MiniZinc is high level enough to express most combinatorial optimization problems easily and in a largely solver-
-	independent way; (...) However, MiniZinc is low level enough that it can be mapped easily onto many solvers." \cite{58stuckey2014minizinc}
-\end{quote} which shows their view of MiniZinc.
+	independent way; (...) However, MiniZinc is low level enough that it can be mapped easily onto many solvers." 
+	\newline
+	-Peter J. Stuckey et al. in "The MiniZinc Challenge 2008-2013" \cite{58stuckey2014minizinc}.
+\end{quote} which shows the team's vision of MiniZinc.
 
 MiniZinc transforms its inputs to FlatZinc by combining the model, data and solver specific features. Which then can be solved by a specific solver. The list of CP solvers that support MiniZinc, at the time of writing 17 solvers have FlatZinc interfaces.
 
