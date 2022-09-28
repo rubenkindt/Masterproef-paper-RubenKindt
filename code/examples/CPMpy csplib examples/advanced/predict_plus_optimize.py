@@ -34,7 +34,7 @@ if os.path.exists('runs/CPMPY'):
 ## tensorboard to look at learning curve
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter('runs/CPMPY')
-%load_ext tensorboard
+
 
 # %%
 """

@@ -6,25 +6,28 @@ def check_if_already_MiniZinc(filename, folderpath):
     temp_file_name = filename.replace(".py", "")
     temp_file_name += "_output.txt"
     try:
-        with open(folderpath+"/"+filename, 'r') as f:
+        with open(folderpath+"/"+filename, 'r+') as f:
             lines = f.read(-1) #-1 = read all
             f.close()
     except:
-        print(colored("CANT OPEN THE FILE", "red", attrs=["bold"]))
-        print(filename, folderpath)
+        print(colored("CANT OPEN THE FILE:" +str(filename)+ str(folderpath), "red", attrs=["bold"]))
         return "error"
 
-    if lines.find("minizinc") == -1:
-        return False
-    else:
-        print("found a miniZinc in")
-        print(filename, folderpath)
+    if 'SolverLookup.get("minizinc' in lines \
+        or "SolverLookup.get('minizinc" in lines\
+        or '.solve(solver="minizinc' in lines\
+        or ".solve(solver='minizinc" in lines\
+        or '.solve("minizinc' in lines\
+        or ".solve('minizinc" in lines\
+        or "CPM_minizinc(" in lines:
+        print("found a miniZinc in "+str(filepath)+" "+str(filename))
         return True
-
+    else:
+        return False
 
 def read_result(file_path):
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r+') as f:
             lines = f.read().splitlines()
             #print(lines)
     except:
@@ -81,15 +84,19 @@ def read_result(file_path):
         os.remove(file_path)
         return "timeout"
 
-def solver_runner(solver_path, smt_file, temp_core_folder, timeout, solver):
+def solver_runner(solver_path, smt_file, temp_core_folder, timeout=60, solver=None):
 
     temp_file_name = smt_file.replace(temp_core_folder, "")
     temp_file_name = temp_file_name.replace(".py", "")
     temp_file_name += "_output.txt"
-    temp_file_path = temp_core_folder + temp_file_name
+    temp_file_path = temp_core_folder + "/" + temp_file_name
 
-    command = "timeout " + str(timeout) + "s " + solver_path + " " + smt_file + " > " + temp_file_path
-    #print(colored(command, "yellow"))
+    if os.name == 'posix':
+        command = "timeout " + str(timeout) + "s " + str(solver_path) + ' "' + str(temp_core_folder) + "/" + str(smt_file) + '" > "' + str(temp_file_path) + '"'
+    else:
+        command = str(solver_path) + ' "' + str(temp_core_folder) + "/" + str(smt_file) + '" > "' + str(temp_file_path) + '"'
+
+    print(colored(command, "yellow"))
 
     p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
     terminal_output = p.stderr.read().decode()
@@ -106,25 +113,38 @@ def solver_runner(solver_path, smt_file, temp_core_folder, timeout, solver):
     if terminal_output.find("Fatal failure") != -1:
         return "fatalfailure"
     if terminal_output.find("ModuleNotFoundError") != -1:
-        return "error"
+        return "missing module"
+    if terminal_output.find("FileNotFoundError") != -1:
+        return "FileNotFoundError"
     if terminal_output.find("Error") != -1:
         return "error"
 
     solver_output = read_result(temp_file_path)
+    try:
+        os.remove(temp_file_path)
+    except:
+        pass
     return solver_output
 
-folder = "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples"
+if os.name == 'posix':
+    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/"
+else:
+    folder = "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples"
 
 filelist = []
+count=0
 for directory, dirs, filenames in os.walk(folder):
     for filename in filenames:
         filelist.append((filename, directory))
 
+
 for filename, filepath in filelist:
     if filename.endswith(".py"):
-        check_if_already_MiniZinc(filename, filepath)
+        solver_runner("python3",filename,filepath)
+        #check_if_already_MiniZinc(filename, filepath)
+        count +=1
 
-
+print(str(count)+" scripts found")
 #ret = solver_runner("python3", "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples\\nqueens.py",
 #              "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples\\",
 #              10, incremental="no", solver="CPM")

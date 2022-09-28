@@ -40,3 +40,12 @@ Template 21-22/template/masterproef.synctex.gz
 *.synctex(busy)
 ~$Timesheet.xlsx
 *.lol
+
+#python developing env (pycharm)
+./idea
+.idea/*
+*.pyc
+*.iml
+
+#temp output files
+*_output.txt
