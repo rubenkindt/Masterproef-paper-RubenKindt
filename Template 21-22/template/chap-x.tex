@@ -21,8 +21,9 @@ Storm take in SMT-lib seed files, we can convert them to minizinc and then using
 Therefore we will be refactoring STORM to fit our CPMpy
 
 
-
-
+Translating seeds from solver X to solver Y: 
+option 1 hardcode default solver of CPMpy to Y, less good modifying the language is something we want to avoid. May also not work when solver is hard coded in the seed.
+Option 2 interpret the seed and make changes so that the solver Y is run. Bit trickier as you cannot see the difference between model.solve() and solver.solve() because model and solver are variables.
 
 
 

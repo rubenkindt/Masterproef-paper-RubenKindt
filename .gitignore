@@ -49,3 +49,12 @@ Template 21-22/template/masterproef.synctex.gz
 
 #temp output files
 *_output.txt
+*_WithMiniZinc*.py
+code/.idea/.name
+
+#CPMpy generated files
+code/17b
+code/3_coins
+code/3_jugs_regular
+code/5x5_puzzle
+code/50_puzzel

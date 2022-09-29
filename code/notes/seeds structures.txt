@@ -6,16 +6,15 @@ solve sat
 exec
 parsen op used vars
 add declatarions
-add solve
-	[("ortools", CPM_ortools),
-         ("gurobi", CPM_gurobi),
-         ("pysat", CPM_pysat),
-         ("pysdd", CPM_pysdd),
-         ("minizinc", CPM_minizinc),]
-minizinc:
-['api', 'cbc', 'chuffed', 'coin-bc', 'coinbc', 'cp', 'cplex', 'experimental', 'findmus', 'float', 'gecode', 'gist', 'globalizer', 'gurobi', 'int', 'lcg', 'mip', 'org.chuffed.chuffed', 'org.gecode.gecode', 'org.gecode.gist', 'org.minizinc.findmus', 'org.minizinc.globalizer', 'org.minizinc.mip.coin-bc', 'org.minizinc.mip.cplex', 'org.minizinc.mip.gurobi', 'org.minizinc.mip.scip', 'org.minizinc.mip.xpress', 'osicbc', 'restart', 'scip', 'set', 'tool', 'xpress']
-
-
+add solvers
 add prints
+add sat,unsat, unknown prints
 
 with correct tabs
+
+
+find diff between Model.solve("minizinc:chuffed") VS ss=CPM_Minizinc(model) ... ss.solve()
+solveAll(display=printfunction)
+	solver=None, display=None, time_limit=None, solution_limit=None
+solve()
+	solver=None, time_limit=None):

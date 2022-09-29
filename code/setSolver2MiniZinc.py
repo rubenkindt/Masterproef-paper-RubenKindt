@@ -10,7 +10,7 @@ def check_if_already_MiniZinc(filename, folderpath):
             lines = f.read(-1) #-1 = read all
             f.close()
     except:
-        print(colored("CANT OPEN THE FILE:" +str(filename)+ str(folderpath), "red", attrs=["bold"]))
+        print(colored("CANT OPEN THE FILE:"+str(filename)+str(folderpath), "red", attrs=["bold"]))
         return "error"
 
     if 'SolverLookup.get("minizinc' in lines \
@@ -25,13 +25,51 @@ def check_if_already_MiniZinc(filename, folderpath):
     else:
         return False
 
+def change_solver_to_MiniZinc(filename, folderpath, subsolver):
+    try:
+        with open(folderpath+"/"+filename, 'r') as f:
+            lines = f.read(-1) #-1 = read all
+            f.close()
+    except:
+        print(colored("CANT OPEN THE FILE:"+str(filename)+str(folderpath), "red", attrs=["bold"]))
+        return None
+
+    while "CMP_pysat" in lines:
+        lines=lines.replace("CMP_pysat", "CPM_minizinc",-1)
+    while "CMP_gurobi" in lines:
+        lines = lines.replace("CMP_gurobi", "CPM_minizinc", -1)
+    while "CPM_ortools" in lines:
+        lines = lines.replace("CPM_ortools", "CPM_minizinc", -1)
+    while ".solve()" in lines:
+        location = lines.find(".solve()") + len(".solve(")
+        lines = lines[:location] + "solver='minizinc:" + str(subsolver) + "'" + lines[location:]
+    while ".solveAll()" in lines:
+        location = lines.find(".solveAll()") + len(".solveAll(")
+        lines = lines[:location] + "solver='minizinc:" + str(subsolver) + "'" + lines[location:]
+
+    #todo fix cases with solveAll(solver="stuff", display=None, time_limit=None, solution_limit=None) and solve(solver=None, time_limit=None)
+    try:
+        file = folderpath+"/"+"_WithMiniZinc_"+filename
+        if os.path.isfile(file):
+            os.remove(file)
+        with open(file, 'w+') as f:
+            f.write(lines)
+            f.close()
+            return folderpath, "_WithMiniZinc_"+filename
+    except:
+        print(colored("CANT OPEN THE FILE:"+str(filename)+str(folderpath), "red", attrs=["bold"]))
+        return None
+
+    return None
+
 def read_result(file_path):
     try:
         with open(file_path, 'r+') as f:
             lines = f.read().splitlines()
+            f.close()
             #print(lines)
     except:
-        print(colored("CANT OPEN THE FILE", "red", attrs=["bold"]))
+        print(colored("CANT OPEN THE FILE: "+str(file_path), "red", attrs=["bold"]))
         return "error"
 
     for line in lines:
@@ -79,22 +117,23 @@ def read_result(file_path):
             os.remove(file_path)
             return lines[0]
         else:
-            return "error"
+            os.remove(file_path)
+            return "no (un)sat of unknown found"
     else:
         os.remove(file_path)
         return "timeout"
+    return
 
-def solver_runner(solver_path, smt_file, temp_core_folder, timeout=60, solver=None):
+def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
 
-    temp_file_name = smt_file.replace(temp_core_folder, "")
-    temp_file_name = temp_file_name.replace(".py", "")
+    temp_file_name = fileName.replace(".py", "")
     temp_file_name += "_output.txt"
-    temp_file_path = temp_core_folder + "/" + temp_file_name
+    temp_file_path = folderPath + "/" + temp_file_name
 
     if os.name == 'posix':
-        command = "timeout " + str(timeout) + "s " + str(solver_path) + ' "' + str(temp_core_folder) + "/" + str(smt_file) + '" > "' + str(temp_file_path) + '"'
+        command = "timeout -s SIGKILL " + str(timeout) + "s " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName) + '" > "' + str(temp_file_path) + '"'
     else:
-        command = str(solver_path) + ' "' + str(temp_core_folder) + "/" + str(smt_file) + '" > "' + str(temp_file_path) + '"'
+        command = str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName) + '" > "' + str(temp_file_path) + '"'
 
     print(colored(command, "yellow"))
 
@@ -105,17 +144,17 @@ def solver_runner(solver_path, smt_file, temp_core_folder, timeout=60, solver=No
 
     # Process terminal output first before result parsing
     if terminal_output.find("NULL pointer was dereferenced") != -1:
-        return "nullpointer"
+        return "nullpointer error"
     if terminal_output.find("assert") != -1 or terminal_output.find("AssertionError") != -1:
-        return "assertviolation"
+        return "assertviolation error"
     if terminal_output.find("segfault") != -1:
-        return "segfault"
+        return "segfault error"
     if terminal_output.find("Fatal failure") != -1:
-        return "fatalfailure"
+        return "fatalfailure error"
     if terminal_output.find("ModuleNotFoundError") != -1:
-        return "missing module"
+        return "missing module error"
     if terminal_output.find("FileNotFoundError") != -1:
-        return "FileNotFoundError"
+        return "FileNotFound Error"
     if terminal_output.find("Error") != -1:
         return "error"
 
@@ -127,25 +166,32 @@ def solver_runner(solver_path, smt_file, temp_core_folder, timeout=60, solver=No
     return solver_output
 
 if os.name == 'posix':
-    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/"
+    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples"
 else:
-    folder = "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples"
+    folder = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples"
 
 filelist = []
-count=0
+
 for directory, dirs, filenames in os.walk(folder):
     for filename in filenames:
         filelist.append((filename, directory))
 
-
-for filename, filepath in filelist:
-    if filename.endswith(".py"):
-        solver_runner("python3",filename,filepath)
-        #check_if_already_MiniZinc(filename, filepath)
-        count +=1
+count=0
+failed=0
+#filelist= [("bowls_and_oranges.py", folder)]
+for filename, folderpath in filelist:
+    if not filename.endswith(".py"):
+        continue
+    if filename.__contains__("_WithMiniZinc_"):
+        continue
+    print("testing: "+str(folderpath)+str(filename))
+    tempFolderPath, tempFileName = change_solver_to_MiniZinc(filename,folderpath,"chuffed")
+    st=solver_runner("python3",tempFileName,tempFolderPath)
+    if st.endswith("error"):
+        failed+=1
+    #check_if_already_MiniZinc(filename, filepath)
+    count +=1
 
 print(str(count)+" scripts found")
-#ret = solver_runner("python3", "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples\\nqueens.py",
-#              "C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples\\",
-#              10, incremental="no", solver="CPM")
-#print(ret)
+print(str(failed)+" scripts failed")
+
