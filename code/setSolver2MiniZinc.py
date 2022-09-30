@@ -34,18 +34,39 @@ def change_solver_to_MiniZinc(filename, folderpath, subsolver):
         print(colored("CANT OPEN THE FILE:"+str(filename)+str(folderpath), "red", attrs=["bold"]))
         return None
 
-    while "CMP_pysat" in lines:
-        lines=lines.replace("CMP_pysat", "CPM_minizinc",-1)
-    while "CMP_gurobi" in lines:
-        lines = lines.replace("CMP_gurobi", "CPM_minizinc", -1)
-    while "CPM_ortools" in lines:
-        lines = lines.replace("CPM_ortools", "CPM_minizinc", -1)
-    while ".solve()" in lines:
+    toFind = ["CMP_pysat(", "CMP_gurobi(", "CPM_ortools("]
+    canChangeSolve=True
+    for find in toFind:
+        while find in lines:
+            location = lines.find(find)
+            end = lines[location:].find(")") + location
+            modelVarName= lines[location+len(find):end]
+            lines = lines[:location] + \
+                    'CPM_minizinc(cpm_model=' + modelVarName + ", " + \
+                    'subsolver="' + str(subsolver) + '"' + \
+                    lines[end:]
+            canChangeSolve=False
+
+    while canChangeSolve and ".solve()" in lines:
         location = lines.find(".solve()") + len(".solve(")
         lines = lines[:location] + "solver='minizinc:" + str(subsolver) + "'" + lines[location:]
-    while ".solveAll()" in lines:
+
+    while canChangeSolve and ".solveAll()" in lines:
         location = lines.find(".solveAll()") + len(".solveAll(")
         lines = lines[:location] + "solver='minizinc:" + str(subsolver) + "'" + lines[location:]
+
+    # comment out solver specific attributes
+    location = lines.find("ort_solver")
+    while location != -1:
+        if lines[location-15:location][::-1].find("#") == -1: #cant find "#" in front
+            insertKardLocationRelative = lines[:location][::-1].find("\n") #search for first space and
+            lines = lines[:location-insertKardLocationRelative] + "#" + lines[location-insertKardLocationRelative:] #add "#"
+        location += len("ort_solver")
+        premble = len(lines[:location])
+        location = lines[location:].find("ort_solver")
+        if location == -1:
+            break
+        location += premble
 
     #todo fix cases with solveAll(solver="stuff", display=None, time_limit=None, solution_limit=None) and solve(solver=None, time_limit=None)
     try:
@@ -155,6 +176,12 @@ def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
         return "missing module error"
     if terminal_output.find("FileNotFoundError") != -1:
         return "FileNotFound Error"
+    if terminal_output.find("Exception: MiniZinc solver returned with status 'Error'") != -1:
+        return "MiniZinc Error"
+    if terminal_output.find('AttributeError: "CPM_') != -1:
+        return "solver does not have attribute error"
+    if terminal_output.find("NotImplementedError") != -1:
+        return "Not Implemented Error"
     if terminal_output.find("Error") != -1:
         return "error"
 
@@ -174,24 +201,22 @@ filelist = []
 
 for directory, dirs, filenames in os.walk(folder):
     for filename in filenames:
+        if not filename.endswith(".py") or filename.__contains__("cpmpy_hakank") or filename.__contains__("_WithMiniZinc"):
+            continue
         filelist.append((filename, directory))
 
 count=0
 failed=0
-#filelist= [("bowls_and_oranges.py", folder)]
-for filename, folderpath in filelist:
-    if not filename.endswith(".py"):
-        continue
-    if filename.__contains__("_WithMiniZinc_"):
-        continue
-    print("testing: "+str(folderpath)+str(filename))
-    tempFolderPath, tempFileName = change_solver_to_MiniZinc(filename,folderpath,"chuffed")
-    st=solver_runner("python3",tempFileName,tempFolderPath)
-    if st.endswith("error"):
+##filelist= [("bowls_and_oranges.py", folder)]
+for nameOfFile, path in filelist:
+    print(str(count+1) + "/" + str(len(filelist)) + "testing: "+str(path)+"/"+str(nameOfFile))
+    #tempFolderPath, tempFileName = change_solver_to_MiniZinc(nameOfFile,path,"chuffed")
+    #st=solver_runner("python3",tempFileName,tempFolderPath)
+    st=solver_runner("python3",nameOfFile,path)
+    if st.__contains__("error"):
         failed+=1
-    #check_if_already_MiniZinc(filename, filepath)
+    #check_if_already_MiniZinc(nameOfFile, path)
     count +=1
 
 print(str(count)+" scripts found")
 print(str(failed)+" scripts failed")
-

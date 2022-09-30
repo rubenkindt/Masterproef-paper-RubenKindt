@@ -1,0 +1,1 @@
+Chuffed seems to continue working on problems after a SIGKILL has been send, the process survives and cloging up the avail resources
