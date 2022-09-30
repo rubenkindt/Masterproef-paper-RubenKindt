@@ -101,5 +101,5 @@ given = sorted(set([random.randint(3,100) for i in range(random.randint(3,10))])
 
 # given = [7,13]
 max_val = 1000 # Arbitrary max limit of amount
-for target in range(1,100):
+for target in range(1,10):
     n_pack_problem(target,given,max_val)

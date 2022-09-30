@@ -245,11 +245,6 @@ m = Model(
 )
 m.solve()
 
-from ocus_explanations import explain_ocus
-r = explain_ocus(m.constraints, verbose=True)
-
-# %%
-
 
 # %%
 # FROM examples/advanced/counterfactual_explain.py

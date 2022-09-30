@@ -166,9 +166,7 @@ def generating_numbers(m=20):
 
     print()
  
-m = 20
-if len(sys.argv) > 1:
-    m = int(sys.argv[1])
+m = 5
 generating_numbers(m)
 
 # for n in range(1,20+1):
