@@ -123,25 +123,3 @@ def display(sol):
     print(msg + " --> 0")
 
 display(x.value())
-
-# %%
-"""
-Or we can plot it...
-"""
-
-# %%
-import matplotlib.pyplot as plt
-
-def plot_tsp(coords, sol):
-    coords = np.array(coords)
-    plt.plot(coords[:,0], coords[:,1], 'co')
-    
-    for source,dest in enumerate(sol):
-        x,y = coords[source]
-        dx,dy = coords[dest] - coords[source]
-        plt.arrow(x,y,dx,dy, width=0.5, length_includes_head = True)
-    
-    return plt.show()
-    
-
-plot_tsp(locations, x.value())
