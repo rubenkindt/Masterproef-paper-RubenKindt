@@ -152,9 +152,9 @@ def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
     temp_file_path = folderPath + "/" + temp_file_name
 
     if os.name == 'posix':
-        command = "timeout -s SIGKILL " + str(timeout) + "s " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName) + '" > "' + str(temp_file_path) + '"'
+        command = "cd " + folderPath + " ; " + "timeout -s SIGKILL " + str(timeout) + "s " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName) + '" > "' + str(temp_file_path) + '"'
     else:
-        command = str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName) + '" > "' + str(temp_file_path) + '"'
+        command = "cd " + folderPath + " & " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName) + '" > "' + str(temp_file_path) + '"'
 
     print(colored(command, "yellow"))
 
@@ -210,7 +210,7 @@ failed=0
 ##filelist= [("bowls_and_oranges.py", folder)]
 for nameOfFile, path in filelist:
     print(str(count+1) + "/" + str(len(filelist)) + "testing: "+str(path)+"/"+str(nameOfFile))
-    #tempFolderPath, tempFileName = change_solver_to_MiniZinc(nameOfFile,path,"chuffed")
+    #tempFolderPath, tempFileName = change_solver_to_MiniZinc(nameOfFile,path,"gecode")
     #st=solver_runner("python3",tempFileName,tempFolderPath)
     st=solver_runner("python3",nameOfFile,path)
     if st.__contains__("error"):
