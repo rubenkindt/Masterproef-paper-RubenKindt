@@ -324,9 +324,6 @@ regression_df.reset_index(inplace=True)
 """
 
 # %%
-%tensorboard --logdir=runs --port=6005
-
-# %%
 """
 ## Smart Predict and Optimize Regression Model 
 """
@@ -431,10 +428,6 @@ spo_df.reset_index(inplace=True)
 ### We will see the learning curve on tensorboard
 """
 
-# %%
-%tensorboard --logdir=runs --port=6005
-
-# %%
 """
 ## For a two-stage model even though MSE goes down, regret goes up
 ## For SPO, Regret goes down

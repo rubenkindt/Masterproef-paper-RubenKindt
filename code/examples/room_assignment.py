@@ -57,9 +57,9 @@ print(sat, m.status())
 
 # %%
 # use Plotly's excellent gantt chart support
-import plotly.express as px
+#import plotly.express as px
 
-df['Room Number'] = requestvars.value()  # value in the solution
-df['Room Number'].fillna(0, inplace=True)
-fig = px.timeline(df, x_start="start", x_end="end", y="Room Number", color=df.index)
-fig.show()
+#df['Room Number'] = requestvars.value()  # value in the solution
+#df['Room Number'].fillna(0, inplace=True)
+#fig = px.timeline(df, x_start="start", x_end="end", y="Room Number", color=df.index)
+#fig.show()
