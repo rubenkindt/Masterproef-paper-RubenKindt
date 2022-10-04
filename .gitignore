@@ -53,8 +53,9 @@ Template 21-22/template/masterproef.synctex.gz
 code/.idea/.name
 
 #CPMpy generated files
-code/17b
-code/3_coins
-code/3_jugs_regular
-code/5x5_puzzle
-code/50_puzzel
+*17b
+*3_coins
+*3_jugs_regular
+*5x5_puzzle
+*50_puzzel
+*a_puzzle
