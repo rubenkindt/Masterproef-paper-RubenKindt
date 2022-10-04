@@ -28,13 +28,12 @@ from storm.utils.file_operations import get_all_smt_files_recursively, create_se
 from storm.parsers.argument_parser import MainArgumentParser
 from storm.utils.max_depth import get_max_depth, count_asserts, count_lines
 from storm.utils.randomness import Randomness
-from storm.config import config
 from z3 import *
 from storm.parameters import get_parameters_dict
 import shutil
 from storm.utils.file_operations import append_row
 import time
-
+import os
 
 ALL_FUZZING_PARAMETERS = None
 
@@ -139,7 +138,7 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         max_assert = ALL_FUZZING_PARAMETERS["max_assert"]
 
         # Generate all mutants at once for this file in a thread with a timeout
-        signal = generate_mutants(smt_Object=smt_Object,
+        signal = generate_mutants(smt_Object=smt_Object, # init pool
                                   path_to_directory=path_to_temp_core_directory,
                                   maxDepth=max_depth,
                                   maxAssert=max_assert,
@@ -199,7 +198,11 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
 
 
 def main():
-    os.system("clear")
+    if os.name == 'posix':
+        os.system("clear")
+    else:
+        os.system("cls")
+
     print(colored("############################", "blue", "on_white", attrs=["bold"]))
     print(colored("  Welcome to storm v.1.0.0  ", "blue", "on_white", attrs=["bold"]))
     print(colored("############################", "blue", "on_white", attrs=["bold"]))

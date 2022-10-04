@@ -48,7 +48,7 @@ class smtObject(object):
 
 
 
-    def get_validity(self):
+    def get_validity(self): # not sat/unsat... but file readable
         return self.valid
     def get_orig_ast(self):
         return self.orig_ast
