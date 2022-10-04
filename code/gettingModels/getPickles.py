@@ -1,10 +1,12 @@
+import subprocess
 import os
-import termcolor
+from termcolor import colored
+
 
 def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
-
     if os.name == 'posix':
-        command = "cd " + folderPath + " ; " + "timeout -s SIGKILL " + str(timeout) + "s " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName)
+        command = "cd " + folderPath + " ; " + "timeout -s SIGKILL " + str(timeout) + "s " + str(
+            solver_path) + ' "' + str(folderPath) + "/" + str(fileName)
     else:
         command = "cd " + folderPath + " & " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName)
 
@@ -39,6 +41,7 @@ def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
 
     return "pass"
 
+
 if os.name == 'posix':
     folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples"
 else:
@@ -48,13 +51,17 @@ filelist = []
 for directory, dirs, filenames in os.walk(folder):
     for filename in filenames:
         if not filename.endswith(".py") or filename.__contains__("cpmpy_hakank") or \
-            filename.__contains__("_WithMiniZinc") or filename.__contains__("Pickled"):
+                filename.__contains__("_WithMiniZinc") or filename.__contains__("Pickled") or \
+                directory.__contains__("bus_scheduling_csplib"):
             continue
         filelist.append((filename, directory))
 
 count = 0
 ##filelist= [("bowls_and_oranges.py", folder)]
 for nameOfFile, path in filelist:
-    print(str(count+1) + "/" + str(len(filelist)) + "testing: "+str(path)+"/"+str(nameOfFile))
-    solver_runner("Python3",nameOfFile,path)
-    count +=1
+    solver_runner("Python3", nameOfFile, path)
+    print(str(count + 1) + "/" + str(len(filelist)) + "testing: " + str(path) + "/ " + str(nameOfFile.replace(".py","")))
+    for f_name in os.listdir(path):
+        if f_name.startswith("Pickled"):
+            os.replace(str(path) + "/"+str(f_name),str(path) + "/"+nameOfFile.replace(".py","")+str(f_name.replace("Pickled","")))
+    count += 1
