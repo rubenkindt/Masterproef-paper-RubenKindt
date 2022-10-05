@@ -31,6 +31,15 @@ def get_all_smt_files_recursively(path_to_directory):
 
     return file_paths
 
+def get_all_seed_files_recursively(path_to_directory):
+    file_paths = list()
+    for r, d, f in os.walk(path_to_directory):
+        for file in f:
+            if file.__contains__("."):
+                continue
+            file_paths.append(os.path.join(r,file))
+
+    return file_paths
 
 def create_smt2_file(path, string):
     file = open(path, "w")

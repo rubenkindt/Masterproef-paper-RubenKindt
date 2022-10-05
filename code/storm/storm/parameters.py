@@ -84,7 +84,7 @@ parameters = {
         "solver_timeout" : 120,
         "check_sat_using" : ["yes", "no"],  # remove an option if you want a single mode. Otherwise storm will choose with a prob
         "check_sat_using_options" : ["horn", "(then horn-simplify default)", "dom-simplify", "(then dom-simplify smt)"],
-        "incremental": ["yes", "no"]    # remove an option if you want a single mode. Otherwise storm will choose with a prob
+        "incremental": ["no", "no"]    # remove an option if you want a single mode. Otherwise storm will choose with a prob
     }
 
 

@@ -15,6 +15,8 @@ limitations under the License.
 """
 
 import multiprocessing
+
+from storm.utils.flatten_model import flatten_cpmpymodel
 from storm.utils.randomness import Randomness
 from termcolor import colored
 from storm.fuzzer.helper_functions import export_mutants, enrich_true_and_false_nodes, \
@@ -22,12 +24,12 @@ from storm.fuzzer.helper_functions import export_mutants, enrich_true_and_false_
 from z3 import *
 
 
-def generate_mutants(smt_Object, path_to_directory, maxDepth, maxAssert, seed, theory, fuzzing_parameters):
+def generate_mutants(cpmpy_Object, path_to_directory, maxDepth, maxAssert, seed, theory, fuzzing_parameters):
 
-    def generate_mutants_in_a_thread(smt_Object, path_to_directory, seed, theory, fuzzing_parameters):
+    def generate_mutants_in_a_thread(cpmpy_Object, path_to_directory, seed, theory, fuzzing_parameters):
         # We have to create a new randomness object here
         randomness = Randomness(seed)
-        model = smt_Object.get_model()
+        model = cpmpy_Object.get_model()
         print("####### Generating mutants at location: " + colored(path_to_directory, "blue", attrs=["bold"]))
         get_all_truth_values_in_astVector(smt_Object, maxDepth, maxAssert)
         print("####### Some stats: ")
@@ -59,7 +61,7 @@ def generate_mutants(smt_Object, path_to_directory, maxDepth, maxAssert, seed, t
             print(colored("Nothing in TRUE or FALSE node. Nothing we can do here.", "red", attrs=["bold"]))
 
 
-    process = multiprocessing.Process(target=generate_mutants_in_a_thread, args=(smt_Object,
+    process = multiprocessing.Process(target=generate_mutants_in_a_thread, args=(cpmpy_Object,
                                                                                  path_to_directory,
                                                                                  seed,
                                                                                  theory,
@@ -72,6 +74,9 @@ def generate_mutants(smt_Object, path_to_directory, maxDepth, maxAssert, seed, t
         return 1
     return 0
 
+def recursively_break_down_a_constraint_into_nodes(cpmpy_Object):
+    cpmpy_Object, cpmpy_Object.flatModel = flatten_cpmpymodel(cpmpy_Object)
+    return cpmpy_Object
 
 def recursively_break_down_an_assertion_into_nodes(assertion, smt_Object, maxDepth):
     """
@@ -99,22 +104,27 @@ def recursively_break_down_an_assertion_into_nodes(assertion, smt_Object, maxDep
         smt_Object.append_to_all_nodes(assertion)
 
 
-def get_all_truth_values_in_astVector(smt_Object, maxDepth, maxAssert):
+def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert):
     """
         Get truth values for all the leaves and sub-trees in the astVector
     """
     print("####### Breaking up assertions into nodes..")
-    ast = smt_Object.get_orig_ast()
-    for assertion in ast:
-        assertion_tree_depth = get_tree_depth(assertion, maxDepth, optimization=False)
-        if assertion_tree_depth > 99999:
-            print(colored("\t\tTree depth is higher than the max recursion limit. Abort", "red", attrs=["bold"]))
-            continue
+    #ast = smt_Object.get_orig_ast()
+    #for assertion in ast:
+        # our model is already flattened
+        #assertion_tree_depth = get_tree_depth(assertion, maxDepth, optimization=False)
+        #if assertion_tree_depth > 99999:
+        #    print(colored("\t\tTree depth is higher than the max recursion limit. Abort", "red", attrs=["bold"]))
+        #    continue
         # Now we get truth values of nodes in the assertion
-        recursively_break_down_an_assertion_into_nodes(assertion, smt_Object, maxDepth)
+        #recursively_break_down_an_assertion_into_nodes(assertion, smt_Object, maxDepth)
+
+    recursively_break_down_a_constraint_into_nodes(cpmpy_Object)
 
     print("####### Evaluating truth values for all nodes..")
     # Evaluate truth values of nodes in this assertion
+    cpmpy_Object.solver.
+
     model = smt_Object.get_model()
     for node in smt_Object.get_all_nodes():
         if model.eval(node, model_completion=True) == True:

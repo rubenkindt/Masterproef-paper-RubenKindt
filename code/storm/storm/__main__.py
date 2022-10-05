@@ -23,6 +23,7 @@ from storm.fuzzer.helper_functions import add_check_sat_using, insert_pushes_pop
 from storm.minimizer.minimizer import minimize
 from storm.runner.solver_runner import solver_runner
 from storm.smt.smt_object import smtObject
+from storm.cpmpy.cpmpy_object import cpmpyObject
 from storm.utils.file_operations import get_all_smt_files_recursively, create_server_core_directory, refresh_directory, \
     get_mutant_paths, pick_a_supported_theory, record_soundness
 from storm.parsers.argument_parser import MainArgumentParser
@@ -32,6 +33,7 @@ from z3 import *
 from storm.parameters import get_parameters_dict
 import shutil
 from storm.utils.file_operations import append_row
+from storm.utils.file_operations import get_all_seed_files_recursively
 import time
 import os
 
@@ -89,7 +91,7 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
     """
     time.sleep(wait)
     print("Running storm on a core")
-    temp_directory = os.path.join(config["home"], "temp")
+    temp_directory = os.path.join(parsedArguments["home"], "temp")
     path_to_temp_core_directory = os.path.join(temp_directory, parsedArguments["server"], "core_" + core)
     create_server_core_directory(temp_directory, parsedArguments["server"], core)
     seed_file_paths = []
@@ -99,17 +101,17 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         # normal mode
         ALL_FUZZING_PARAMETERS = get_parameters_dict(replication_mode = False,
                                                      bug_number=None)
-        path_to_theory = os.path.join(parsedArguments["benchmark"], parsedArguments["theory"])
-        if not os.path.exists(path_to_theory):
-            print(colored("Theory not found in the benchmarks folder", "red"))
+        path_to_seeds = parsedArguments["seeds"]
+        if not os.path.exists(path_to_seeds):
+            print(colored("path_to_seeds not found in the path_to_seeds folder", "red"))
             return 1
-        seed_file_paths = get_all_smt_files_recursively(path_to_theory)
+        seed_file_paths = get_all_seed_files_recursively(path_to_seeds)
     else:
         # FSE2020 bugs reproduction mode
         # Get the path to the seed file
         ALL_FUZZING_PARAMETERS = get_parameters_dict(replication_mode=True,
                                                      bug_number=parsedArguments["reproduce"])
-        path_to_seed_file = os.path.join(config["home"], "storm", "fse_repl", parsedArguments["reproduce"], "seed.smt2")
+        path_to_seed_file = os.path.join(parsedArguments["home"], "fse_repl", parsedArguments["reproduce"], "seedFile")
         print("Path to seed file for this bug = " + path_to_seed_file)
         seed_file_paths.append(path_to_seed_file)
         parsedArguments["theory"] = ALL_FUZZING_PARAMETERS["theory"]
@@ -123,22 +125,24 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         refresh_directory(path_to_temp_core_directory)
         incrementality = randomness.random_choice(ALL_FUZZING_PARAMETERS["incremental"])
         print("####### [" + str(i) + "] seed: ", end="")
-        smt_Object = smtObject(file_path=file, path_to_mutant_folder=path_to_temp_core_directory)
-        if not smt_Object.get_validity():
-            print(colored("Was not able to parse the smt file", "red"))
+        #smt_Object = smtObject(file_path=file, path_to_mutant_folder=path_to_temp_core_directory)
+        cpmpy_Object = cpmpyObject(file_path=file, path_to_mutant_folder=path_to_temp_core_directory)
+
+        if not cpmpy_Object.get_readeble():
+            print(colored("Was not able to parse the cpmpy pickled file", "red"))
             return 1
 
-        smt_Object.check_satisfiability(timeout=ALL_FUZZING_PARAMETERS["solver_timeout"])
-        if smt_Object.get_orig_satisfiability() == "timeout":
+        cpmpy_Object.check_satisfiability(timeout=ALL_FUZZING_PARAMETERS["solver_timeout"])
+        if cpmpy_Object.get_orig_satisfiability() == "timeout":
             continue
-        if not smt_Object.get_validity():
+        if not cpmpy_Object.get_readeble():
             continue
 
         max_depth = ALL_FUZZING_PARAMETERS["max_depth"]
         max_assert = ALL_FUZZING_PARAMETERS["max_assert"]
 
         # Generate all mutants at once for this file in a thread with a timeout
-        signal = generate_mutants(smt_Object=smt_Object, # init pool
+        signal = generate_mutants(cpmpy_Object=cpmpy_Object, # init pool
                                   path_to_directory=path_to_temp_core_directory,
                                   maxDepth=max_depth,
                                   maxAssert=max_assert,
@@ -152,14 +156,14 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
             continue
 
         # Incremental setting apply to all mutants of a file
-        print("####### Setting incrementality with prob: " + colored(str(ALL_FUZZING_PARAMETERS["incremental"]), "yellow", attrs=["bold"]))
-        print("####### Incrementality: ", end="")
-        if incrementality == "yes":
-            print(colored("YES", "green", attrs=["bold"]))
-            mutant_file_paths.sort()
-            insert_pushes_pops(mutant_file_paths, randomness)
-        else:
-            print(colored("NO", "red", attrs=["bold"]))
+        #print("####### Setting incrementality with prob: " + colored(str(ALL_FUZZING_PARAMETERS["incremental"]), "yellow", attrs=["bold"]))
+        #print("####### Incrementality: ", end="")
+        #if incrementality == "yes":
+            #print(colored("YES", "green", attrs=["bold"]))
+            #mutant_file_paths.sort()
+            #insert_pushes_pops(mutant_file_paths, randomness)
+        #else:
+            #print(colored("NO", "red", attrs=["bold"]))
 
 
         print("####### Adding check-sat-using options with prob: " + colored(str(ALL_FUZZING_PARAMETERS["check_sat_using"]), "yellow", attrs=["bold"]))
@@ -210,12 +214,16 @@ def main():
     arguments.parse_arguments(argparse.ArgumentParser())
     parsedArguments = arguments.get_arguments()
     print(parsedArguments)
+    if parsedArguments["home"] is None and os.name == 'posix':
+        parsedArguments["home"] = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/storm"
+    if parsedArguments["home"] is None and os.name == 'nt':
+        parsedArguments["home"] = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm"
 
     SEED = parsedArguments["seed"]
     reproduction_mode = True if parsedArguments["reproduce"] is not None else False
 
     # Minimization mode
-    if parsedArguments["min"]:
+    if False and parsedArguments["min"]:
         if parsedArguments["file_path"] is None:
             print(colored("--file_path argument cannot be None", "red", attrs=["bold"]))
             return 1
@@ -225,9 +233,9 @@ def main():
         if parsedArguments["solver"] is None:
             print(colored("--solver argument cannot be None", "red", attrs=["bold"]))
             return 1
-        if parsedArguments["theory"] is None:
-            print(colored("--theory argument cannot be None", "red", attrs=["bold"]))
-            return 1
+        #if parsedArguments["theory"] is None:
+            #print(colored("--theory argument cannot be None", "red", attrs=["bold"]))
+            #return 1
 
         minimize_dir_path = os.path.dirname(os.path.realpath(parsedArguments["file_path"]))
         stats_file = os.path.join(minimize_dir_path, "min_stats.csv")
@@ -275,9 +283,9 @@ def main():
 
 
     if not reproduction_mode:
-        if parsedArguments["benchmark"] is None:
-            print(colored("--benchmark argument cannot be None", "red", attrs=["bold"]))
-            return 1
+        #if parsedArguments["benchmark"] is None:
+            #print(colored("--benchmark argument cannot be None", "red", attrs=["bold"]))
+            #return 1
         if parsedArguments["solver"] is None:
             print(colored("--solver argument cannot be None", "red", attrs=["bold"]))
             return 1
@@ -286,17 +294,18 @@ def main():
             return 1
 
 
-    theory_provided = False
+    """theory_provided = False
     if not parsedArguments["theory"] is None:
         theory_provided = True
+    """
 
     try:
         if parsedArguments["cores"] is not None:
             for i in range(int(parsedArguments["cores"])):
-                if not theory_provided and not reproduction_mode:
-                    print(colored("--theory argument is None. Automatically selecting theory", "magenta", attrs=["bold"]))
-                    parsedArguments["theory"] = pick_a_supported_theory(parsedArguments["benchmark"], parsedArguments["solver"], SEED)
-                    print(colored("Picked theory = " + parsedArguments["theory"], "magenta", attrs=["bold"]))
+                #if not theory_provided and not reproduction_mode:
+                    #print(colored("--theory argument is None. Automatically selecting theory", "magenta", attrs=["bold"]))
+                    #parsedArguments["theory"] = pick_a_supported_theory(parsedArguments["benchmark"], parsedArguments["solver"], SEED)
+                    #print(colored("Picked theory = " + parsedArguments["theory"], "magenta", attrs=["bold"]))
                 core = str(i)
                 wait = int(parsedArguments["cores"])
                 process = multiprocessing.Process(target=run_storm, args=(parsedArguments,core, SEED, wait, reproduction_mode, False, None))
@@ -305,10 +314,10 @@ def main():
                 os.system("taskset -p -c " + str(i) + " " + str(process.pid))
                 SEED = str((int(SEED) + 1))
         else:
-            if not theory_provided and not reproduction_mode:
-                print(colored("--theory argument is None. Automatically selecting theory", "magenta", attrs=["bold"]))
-                parsedArguments["theory"] = pick_a_supported_theory(parsedArguments["benchmark"], parsedArguments["solver"], SEED)
-                print(colored("Picked theory = " + parsedArguments["theory"], "magenta", attrs=["bold"]))
+            #if not theory_provided and not reproduction_mode:
+            #    print(colored("--theory argument is None. Automatically selecting theory", "magenta", attrs=["bold"]))
+            #    parsedArguments["theory"] = pick_a_supported_theory(parsedArguments["benchmark"], parsedArguments["solver"], SEED)
+            #    print(colored("Picked theory = " + parsedArguments["theory"], "magenta", attrs=["bold"]))
             run_storm(parsedArguments, "0", SEED, 0, reproduction_mode, False, None)
 
     except (KeyboardInterrupt, SystemExit):
