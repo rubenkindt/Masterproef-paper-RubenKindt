@@ -1,0 +1,2 @@
+Chuffed seems to continue working on problems after a SIGKILL has been send, the process survives and cloging up the avail resources
+> nothing we (cpmpy team) can do about it

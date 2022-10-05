@@ -1,3 +1,0 @@
-auto solve examples with Minizinc
-vb parsen
-storm (postponed)
