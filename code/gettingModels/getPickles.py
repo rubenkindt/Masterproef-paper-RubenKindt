@@ -6,7 +6,7 @@ from termcolor import colored
 def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
     if os.name == 'posix':
         command = "cd " + folderPath + " ; " + "timeout -s SIGKILL " + str(timeout) + "s " + str(
-            solver_path) + ' "' + str(folderPath) + "/" + str(fileName)
+            solver_path) + ' ' + str(folderPath) + "/" + str(fileName)
     else:
         command = "cd " + folderPath + " & " + str(solver_path) + ' "' + str(folderPath) + "/" + str(fileName)
 
@@ -43,9 +43,9 @@ def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
 
 
 if os.name == 'posix':
-    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples"
+    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/non-flattened"
 else:
-    folder = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples"
+    folder = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples/non-flattened"
 
 filelist = []
 for directory, dirs, filenames in os.walk(folder):
@@ -59,7 +59,7 @@ for directory, dirs, filenames in os.walk(folder):
 count = 0
 ##filelist= [("bowls_and_oranges.py", folder)]
 for nameOfFile, path in filelist:
-    solver_runner("Python3", nameOfFile, path)
+    solver_runner("python3", nameOfFile, path)
     print(str(count + 1) + "/" + str(len(filelist)) + "testing: " + str(path) + "/ " + str(nameOfFile.replace(".py","")))
     for f_name in os.listdir(path):
         if f_name.startswith("Pickled"):

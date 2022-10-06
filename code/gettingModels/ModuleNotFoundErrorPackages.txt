@@ -1,0 +1,5 @@
+pip install Ipython
+pip install tqdm
+pip install geopandas
+pip install torch
+pip install 
