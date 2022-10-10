@@ -13,21 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import cpmpy
 from termcolor import colored
-from z3 import *
 from storm.utils.file_operations import create_smt2_file
 import copy
 
 
-def export_mutants(mutants, path, smt_object, theory):
-    """
-        :param asts: List of ast objects
-        :param path: export path
-        :return:
-    """
+def export_mutants(mutants, path, cpmpy_Object):
 
-    dummy_ast = smt_object.get_dummy_ast()
+    dummy_ast = cpmpy_Object.get_dummy_ast()
     for i, ast in enumerate(mutants):
         new_ast = copy.deepcopy(dummy_ast)
         new_ast.resize(0)
@@ -35,14 +29,10 @@ def export_mutants(mutants, path, smt_object, theory):
         for j, assertion in enumerate(ast):
             new_ast.push(assertion)
 
-        s = Solver()
-        s.add(new_ast)
-        smt2_string = s.to_smt2()
-        print_success_false_string = "(set-option :print-success false)\n"
-        theory_string = "(set-logic " + theory + ")\n"
-        smt2_string = print_success_false_string + theory_string + smt2_string
-        file_path = os.path.join(path, "mutant_" + str(i) + ".smt2")
-        create_smt2_file(file_path, smt2_string)
+        m = cpmpy.Model()
+        m += new_ast
+        file_path = os.path.join(path, "mutant_" + str(i))
+        smt2_string = m.to_file(file_path)
 
 
 def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_depth):
@@ -70,11 +60,11 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
             if node_type == "false":
                 # if node type is false then negate it and add it to true constructed node
                 false_node = randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
-                smt_object.append_true_constructed_node(Not(false_node))
+                smt_object.append_true_constructed_node(~(false_node))
             if node_type == "true":
                 # if node type is true then negate it and add it to false constructed node
                 true_node = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes())
-                smt_object.append_false_constructed_node(Not(true_node))
+                smt_object.append_false_constructed_node(~(true_node))
 
         #   If AND:
         #       node1, node2 = choose from +ve or -ve pool
@@ -98,15 +88,15 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
             node_2 = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes()) if node_2_type == "true" else randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
 
             # Append if depth of both subtrees is <= depth
-            if get_tree_depth(node_1, max_depth) <= max_depth and get_tree_depth(node_2, max_depth) <= max_depth:
+            #if get_tree_depth(node_1, max_depth) <= max_depth and get_tree_depth(node_2, max_depth) <= max_depth:
                 # Depth bound of the newly contructed tree met
-                if node_1_type == "false" or node_2_type == "false":
-                    smt_object.append_false_constructed_node(And(node_1, node_2))
-                else:
-                    smt_object.append_true_constructed_node(And(node_1, node_2))
+            if node_1_type == "false" or node_2_type == "false":
+                smt_object.append_false_constructed_node((node_1 & node_2))
+            else:
+                smt_object.append_true_constructed_node((node_1 & node_2))
 
 
-def pick_true_and_false_nodes_at_random(smt_object, number_of_mutants, max_assertions, randomness):
+def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_assertions, randomness):
     """
         Depending on the size of the true_nodes and false_nodes
         Generate new ASTs
@@ -123,29 +113,29 @@ def pick_true_and_false_nodes_at_random(smt_object, number_of_mutants, max_asser
             if node_decision == "simp":
                 # Pick a True or False node
                 node_type = randomness.random_choice(["true", "false"])
-                if len(smt_object.get_true_nodes()) == 0:
+                if len(cpmpy_Object.get_true_nodes()) == 0:
                     node_type = "false"
-                if len(smt_object.get_false_nodes()) == 0:
+                if len(cpmpy_Object.get_false_nodes()) == 0:
                     node_type = "true"
 
                 node = None
                 if node_type == "true":
-                    node = randomness.random_choice(smt_object.get_true_nodes())
+                    node = randomness.random_choice(cpmpy_Object.get_true_nodes())
                 if node_type == "false":
-                    node = Not(randomness.random_choice(smt_object.get_false_nodes()))
+                    node = Not(randomness.random_choice(cpmpy_Object.get_false_nodes()))
 
                 mutant_file.append(node)
             else:
                 # pick a true of false constructed node
                 constructed_node_type = randomness.random_choice(["true", "false"])
-                if len(smt_object.get_true_constructed_nodes()) == 0:
+                if len(cpmpy_Object.get_true_constructed_nodes()) == 0:
                     constructed_node_type = "false"
-                if len(smt_object.get_false_constructed_nodes()) == 0:
+                if len(cpmpy_Object.get_false_constructed_nodes()) == 0:
                     constructed_node_type = "true"
                 if constructed_node_type == "true":
-                    node = randomness.random_choice(smt_object.get_true_constructed_nodes())
+                    node = randomness.random_choice(cpmpy_Object.get_true_constructed_nodes())
                 else:
-                    node = Not(randomness.random_choice(smt_object.get_false_constructed_nodes()))
+                    node = Not(randomness.random_choice(cpmpy_Object.get_false_constructed_nodes()))
                 mutant_file.append(node)
 
         mutants.append(mutant_file)
@@ -188,7 +178,7 @@ def get_tree_depth(assertion, maxDepth, optimization=True):
     return depth
 
 
-def add_check_sat_using(exported_mutant_file_path, check_sat_using_option):
+'''def add_check_cp_using(exported_mutant_file_path, check_cp_using_option):
     """
         Replace the normal (check-sat) with (check-sat-using)
     """
@@ -199,12 +189,12 @@ def add_check_sat_using(exported_mutant_file_path, check_sat_using_option):
         print("#######" +  colored("ERROR OCCURRED IN 'check_sat_using'", "red", attrs=["bold"]))
     for i in range(len(lines)):
         if lines[i].find("(check-sat)") != -1:
-            lines[i] = "(check-sat-using " + check_sat_using_option + ")" + "\n"
+            lines[i] = "(check-sat-using " + check_cp_using_option + ")" + "\n"
         else:
             lines[i] = lines[i] + "\n"
     file = open(exported_mutant_file_path, "w")
     file.writelines(lines)
-    file.close()
+    file.close()'''
 
 
 """

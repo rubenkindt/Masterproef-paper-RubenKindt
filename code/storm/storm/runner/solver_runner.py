@@ -16,45 +16,39 @@ limitations under the License.
 
 import subprocess
 import os
+
+from cpmpy import *
+from cpmpy.solvers.solver_interface import ExitStatus
 from termcolor import colored
 
 
+def solver_runner(cp_file, temp_core_folder, timeout, solver):
 
-def solver_runner(solver_path, smt_file, temp_core_folder, timeout, incremental, solver):
-
-    temp_file_name = smt_file.replace(temp_core_folder, "")
-    temp_file_name = temp_file_name.replace(".smt2", "")
-    temp_file_name += "_output.txt"
+    temp_file_name = "_output.txt"
     temp_file_path = temp_core_folder +  temp_file_name
 
-    if solver in ["yices", "cvc4", "boolector"] and incremental == "yes":
-        command = "timeout " + str(timeout) + "s " + solver_path + " --incremental " + smt_file + " > " + temp_file_path
-    else:
-        command = "timeout " + str(timeout) + "s " + solver_path + " " + smt_file + " > " + temp_file_path
+    model = cpmpy.Model().from_file(cp_file)
+    try :
+        solFound = model.solve(solve=solver, timeout=timeout)
+    except Exception as e:
+        return "error" + " " + str(e)
 
-    #print(colored(command, "yellow"))
-
-    p = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
-    terminal_output = p.stderr.read().decode()
-
-    # Process terminal output first before result parsing
-    if terminal_output.find("NULL pointer was dereferenced") != -1:
-        return "nullpointer"
-    if terminal_output.find("assert") != -1 or terminal_output.find("AssertionError") != -1:
-        return "assertviolation"
-    if terminal_output.find("segfault") != -1:
-        return "segfault"
-    if terminal_output.find("Fatal failure") != -1:
-        return "fatalfailure"
-    if terminal_output.find("Error") != -1:
+    if model.status() == ExitStatus.NOT_RUN:
+        return "unknown"
+    if model.status() == ExitStatus.FEASIBLE:
+        return "sat"
+    if model.status() == ExitStatus.OPTIMAL:
+        return "sat"
+    if model.status() == ExitStatus.ERROR:
         return "error"
+    if model.status() == ExitStatus.UNKNOWN:
+        return "unknown"
+    if model.status() == ExitStatus.UNSATISFIABLE:
+        return "unsat"
 
-    solver_output = read_result(temp_file_path, incremental)
-    return solver_output
+    return "unknown"
 
-
-
-
+"""
 def read_result(file_path, incremental):
     try:
         with open(file_path, 'r') as f:
@@ -133,3 +127,4 @@ def read_result(file_path, incremental):
     else:
         os.remove(file_path)
         return "timeout"
+"""

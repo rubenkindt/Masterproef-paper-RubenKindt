@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 from termcolor import colored
+import datetime
 from storm.fse_repl.bug1.parameters import get_bug1_parameters_dict
 from storm.fse_repl.bug2.parameters import get_bug2_parameters_dict
 from storm.fse_repl.bug3.parameters import get_bug3_parameters_dict
@@ -81,9 +82,9 @@ parameters = {
         "number_of_mutants": 1000,
         "mutant_generation_timeout" : 900, # 15 mins
         "mutant_running_timeout" : 900, # 15 mins
-        "solver_timeout" : 120,
-        "check_sat_using" : ["yes", "no"],  # remove an option if you want a single mode. Otherwise storm will choose with a prob
-        "check_sat_using_options" : ["horn", "(then horn-simplify default)", "dom-simplify", "(then dom-simplify smt)"],
+        "solver_timeout" : datetime.timedelta(minutes=2),
+        "check_cp_using" : ["yes", "no"],  # remove an option if you want a single mode. Otherwise storm will choose with a prob
+        "check_cp_using_options" : ["ortools", "gurobi", "pysat", "minizinc:gurobi", "minizinc:gecode"],
         "incremental": ["no", "no"]    # remove an option if you want a single mode. Otherwise storm will choose with a prob
     }
 

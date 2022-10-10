@@ -101,7 +101,7 @@ def pick_a_supported_theory(path_to_benchmark, solver, seed):
             return theory
 
 
-def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, seed_theory, fuzzing_parameters):
+def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters):
     temp_dir = os.path.join(home_directory, "temp")
     print(colored("Creating a soundness folder at: ", "magenta", attrs=["bold"]) + temp_dir)
     print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
@@ -128,7 +128,7 @@ def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mu
     error_logs += "seed to run_storm() function: " + str(seed) + "\n"
     error_logs += "Path to original file: " + seed_file_path + "\n"
     error_logs += "This was the [" + str(mutant_number) + "]th mutant\n"
-    error_logs += "Seed theory: " + seed_theory + "\n"
+    #error_logs += "Seed theory: " + seed_theory + "\n"
     error_logs += "\nConfiguration: " + "\n"
     error_logs += str(fuzzing_parameters)
     error_logs += "\n"

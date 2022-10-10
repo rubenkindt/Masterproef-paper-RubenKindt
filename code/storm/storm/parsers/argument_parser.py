@@ -25,10 +25,11 @@ class MainArgumentParser(object):
         self.cores = 1
         self.server = None
         self.seed = None
+        self.seedFilePath = None
         self.ddebug = None
         #self.benchmark = None
         #self.theory = None
-        self.solverbin = None
+        #self.solverbin = None
         self.solver = None
         self.reproduce = None
         self.min = None
@@ -47,7 +48,6 @@ class MainArgumentParser(object):
         parser.add_argument("--ddebug", help="Delta Debugger")
         #parser.add_argument("--benchmark", help="Path to benchmark folder")
         #parser.add_argument("--theory", help="Theory")
-        parser.add_argument("--solverbin", help="path to solver bin")
         parser.add_argument("--solver", help="solver name e.g. z3, cvc4")
         parser.add_argument("--reproduce", help="reproduce bugs reported in our FSE 2020 paper")
         parser.add_argument("--min", nargs='?', const=True, default=False, help="Minimization mode")
@@ -55,6 +55,7 @@ class MainArgumentParser(object):
         parser.add_argument("--check_sat_using", help="check_sat_using (only for minimizer)")
         #parser.add_argument("--incremental", nargs='?', const=True, default=False, help="incremental")
         parser.add_argument("--home", help="path where temp files will be created")
+        parser.add_argument("--seedFilePath", help="path where seed files are")
 
         arguments = vars(parser.parse_args())
 
@@ -74,7 +75,6 @@ class MainArgumentParser(object):
         self.ddebug = True if arguments["ddebug"] is not None else False
         #self.benchmark = arguments["benchmark"]
         #self.theory = arguments["theory"]
-        self.solverbin = arguments["solverbin"]
         self.solver = arguments["solver"]
         self.reproduce = arguments["reproduce"]
         self.min = arguments["min"]
@@ -82,6 +82,7 @@ class MainArgumentParser(object):
         self.check_sat_using = arguments["check_sat_using"]
         #self.incremental = arguments["incremental"]
         self.home = arguments["home"]
+        self.seedFilePath = arguments["seedFilePath"]
 
 
     def get_arguments(self):
@@ -93,7 +94,7 @@ class MainArgumentParser(object):
         self.parsed_arguments["ddebug"] = self.ddebug
         #self.parsed_arguments["benchmark"] = self.benchmark
         #self.parsed_arguments["theory"] = self.theory
-        self.parsed_arguments["solverbin"] = self.solverbin
+        #self.parsed_arguments["solverbin"] = self.solverbin
         self.parsed_arguments["solver"] = self.solver
         self.parsed_arguments["reproduce"] = self.reproduce
         self.parsed_arguments["min"] = self.min
@@ -101,4 +102,5 @@ class MainArgumentParser(object):
         self.parsed_arguments["check_sat_using"] = self.check_sat_using
         #self.parsed_arguments["incremental"] = self.incremental
         self.parsed_arguments["home"] = self.home
+        self.parsed_arguments["seedFilePath"] = self.seedFilePath
         return self.parsed_arguments

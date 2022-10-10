@@ -79,11 +79,10 @@ TODO: small optimisations, e.g. and/or chaining (potentially after negation), se
 """
 import copy
 import math
-import numpy as np
-from cpmpy.expressions.core import *
-from cpmpy.expressions.variables import _NumVarImpl, _IntVarImpl, _BoolVarImpl, NegBoolView
+
+import cpmpy.expressions.core
 from cpmpy.expressions.utils import is_num, is_any_list
-from storm.cpmpy.cpmpy_object import cpmpyObject
+from cpmpy.expressions.variables import _NumVarImpl, _IntVarImpl, _BoolVarImpl
 
 def flatten_cpmpymodel(cpmpyObject):
     """
@@ -139,7 +138,7 @@ def flatten_constraint(cpmpyObject, expr):
             flatcons += fc
         return cpmpyObject, flatcons
     # recursively flatten top-level 'and'
-    if isinstance(expr, Operator) and expr.name == 'and':
+    if isinstance(expr, cpmpy.expressions.core.Operator) and expr.name == 'and':
         flatcons = []
         for e in expr.args:
             cpmpyObject.append_to_all_nodes(e)
@@ -149,7 +148,7 @@ def flatten_constraint(cpmpyObject, expr):
 
     assert expr.is_bool(), f"Boolean expressions only in flatten_constraint, `{expr}` not allowed."
 
-    if isinstance(expr, Operator):
+    if isinstance(expr, cpmpy.expressions.core.Operator):
         """
             - Base Boolean operators: and([Var]), or([Var])        (CPMpy class 'Operator', is_bool())
             - Base Boolean impliciation: Var -> Var                (CPMpy class 'Operator', is_bool())
@@ -172,7 +171,7 @@ def flatten_constraint(cpmpyObject, expr):
                 (rhs,rcons) = get_or_make_var(expr.args[1])
                 flatcons = lcons+rcons
 
-            newexpr = Operator(expr.name, (lhs,rhs))
+            newexpr = cpmpy.expressions.core.Operator(expr.name, (lhs, rhs))
             return cpmpyObject, [newexpr]+flatcons
         else:
             # a normalizable boolexpr
@@ -180,7 +179,7 @@ def flatten_constraint(cpmpyObject, expr):
             return cpmpyObject, [con]+flatcons
 
 
-    elif isinstance(expr, Comparison):
+    elif isinstance(expr, cpmpy.expressions.core.Comparison):
         """
     - Base Boolean equality: Var == Var                         (CPMpy class 'Comparison')
                              Var == Constant                    (CPMpy class 'Comparison')
@@ -222,7 +221,7 @@ def flatten_constraint(cpmpyObject, expr):
             # other cases: LHS is numexpr
             (lhs, lcons) = normalized_numexpr(lexpr)
 
-        return cpmpyObject, [Comparison(exprname, lhs, rvar)]+lcons+rcons
+        return cpmpyObject, [cpmpy.expressions.core.Comparison(exprname, lhs, rvar)] + lcons + rcons
 
     else:
         """
@@ -243,7 +242,7 @@ def flatten_objective(expr, supported=frozenset(["sum","wsum"])):
         # one source of errors is sum(v) where v is a matrix, use v.sum() instead
         raise Exception(f"Objective expects a single variable/expression, not a list of expressions")
 
-    if isinstance(expr, Expression) and expr.name in supported:
+    if isinstance(expr, cpmpy.expressions.core.Expression) and expr.name in supported:
         return normalized_numexpr(expr)
     else:
         # any other numeric expression
@@ -287,16 +286,16 @@ def get_or_make_var(expr):
         # then compute bounds and return (newintvar, LHS == newintvar)
         (flatexpr, flatcons) = normalized_numexpr(expr)
 
-        if isinstance(flatexpr, Operator) and expr.name == "wsum":
+        if isinstance(flatexpr, cpmpy.expressions.core.Operator) and expr.name == "wsum":
             # more complex args, and weights can be negative, so more complex lbs/ubs
             weights, flatvars  = flatexpr.args
-            bounds = np.array([[w * fvar.lb for w, fvar in zip(weights, flatvars)],
-                               [w * fvar.ub for w, fvar in zip(weights, flatvars)]])
+            bounds = cpmpy.expressions.core.cpmpy.expressions.core.np.array([[w * fvar.lb for w, fvar in zip(weights, flatvars)],
+                                                                             [w * fvar.ub for w, fvar in zip(weights, flatvars)]])
             lb, ub = bounds.min(axis=0).sum(), bounds.max(axis=0).sum() # for every column is axis=0...
             ivar = _IntVarImpl(lb, ub)
             return (ivar, [flatexpr == ivar]+flatcons)
 
-        elif isinstance(flatexpr, Operator):
+        elif isinstance(flatexpr, cpmpy.expressions.core.Operator):
             lbs = [var.lb if isinstance(var, _NumVarImpl) else var for var in flatexpr.args]
             ubs = [var.ub if isinstance(var, _NumVarImpl) else var for var in flatexpr.args]
 
@@ -319,11 +318,11 @@ def get_or_make_var(expr):
                 # the above can give fractional values, tighten bounds to integer
                 ivar = _IntVarImpl(math.ceil(min(bnds)), math.floor(max(bnds)))
             elif flatexpr.name == 'mod': # binary
-                l = np.arange(lbs[0], ubs[0]+1)
-                r = np.arange(lbs[1], ubs[1]+1)
+                l = cpmpy.expressions.core.cpmpy.expressions.core.np.arange(lbs[0], ubs[0] + 1)
+                r = cpmpy.expressions.core.cpmpy.expressions.core.np.arange(lbs[1], ubs[1] + 1)
                 # check all possibilities
-                remainders = np.mod(l[:,None],r)
-                lb, ub = np.min(remainders), np.max(remainders)
+                remainders = cpmpy.expressions.core.cpmpy.expressions.core.np.mod(l[:, None], r)
+                lb, ub = cpmpy.expressions.core.cpmpy.expressions.core.np.min(remainders), cpmpy.expressions.core.cpmpy.expressions.core.np.max(remainders)
                 ivar = _IntVarImpl(lb,ub)
             elif flatexpr.name == 'pow': # binary
                 base = [lbs[0], ubs[0]]
@@ -390,7 +389,7 @@ def normalized_boolexpr(expr):
     assert(not __is_flat_var(expr))
     assert(expr.is_bool()) 
 
-    if isinstance(expr, Operator):
+    if isinstance(expr, cpmpy.expressions.core.Operator):
         # and, or, ->
 
         # apply De Morgan's transform for "implies"
@@ -406,10 +405,10 @@ def normalized_boolexpr(expr):
         else:
             # one of the arguments is not flat, flatten all
             flatvars, flatcons = zip(*[get_or_make_var(arg) for arg in expr.args])
-            newexpr = Operator(expr.name, flatvars)
+            newexpr = cpmpy.expressions.core.Operator(expr.name, flatvars)
             return (newexpr, [c for con in flatcons for c in con])
 
-    elif isinstance(expr, Comparison):
+    elif isinstance(expr, cpmpy.expressions.core.Comparison):
         if all(__is_flat_var(arg) for arg in expr.args):
             return (expr, [])
         else:
@@ -482,7 +481,7 @@ def normalized_boolexpr(expr):
                 # other cases: LHS is numexpr
                 (lhs, lcons) = normalized_numexpr(lexpr)
 
-            return (Comparison(exprname, lhs, rvar), lcons+rcons)
+            return (cpmpy.expressions.core.Comparison(exprname, lhs, rvar), lcons + rcons)
 
     else:
         """
@@ -525,7 +524,7 @@ def normalized_numexpr(expr):
         # so reify and return the boolvar
         return get_or_make_var(expr)
 
-    elif isinstance(expr, Operator):
+    elif isinstance(expr, cpmpy.expressions.core.Operator):
         # special case, -var, turn into -1*args[0]
         if expr.name == '-': # unary
             return normalized_numexpr(-1*expr.args[0])
@@ -536,14 +535,14 @@ def normalized_numexpr(expr):
         elif expr.name == 'wsum': # unary
             weights, sub_exprs  = expr.args
             flatvars, flatcons = map(list, zip(*[get_or_make_var(arg) for arg in sub_exprs])) # also bool, reified...
-            newexpr = Operator(expr.name, (weights, flatvars))
+            newexpr = cpmpy.expressions.core.Operator(expr.name, (weights, flatvars))
             return (newexpr, [c for con in flatcons for c in con])
 
         else: # generic operator
             # recursively flatten all children
             flatvars, flatcons = zip(*[get_or_make_var(arg) for arg in expr.args])
 
-            newexpr = Operator(expr.name, flatvars)
+            newexpr = cpmpy.expressions.core.Operator(expr.name, flatvars)
             return (newexpr, [c for con in flatcons for c in con])
     else:
         # Global constraint (non-Boolean) (examples: Max,Min,Element)
@@ -579,7 +578,7 @@ def negated_normal(expr):
     if __is_flat_var(expr):
         return ~expr
 
-    elif isinstance(expr, Comparison):
+    elif isinstance(expr, cpmpy.expressions.core.Comparison):
         newexpr = copy.copy(expr)
         if   expr.name == '==': newexpr.name = '!='
         elif expr.name == '!=': newexpr.name = '=='
@@ -589,13 +588,13 @@ def negated_normal(expr):
         elif expr.name == '>':  newexpr.name = '<='
         return newexpr
 
-    elif isinstance(expr, Operator):
+    elif isinstance(expr, cpmpy.expressions.core.Operator):
         assert(expr.is_bool())
 
         if expr.name == 'and':
-            return Operator('or', [negated_normal(arg) for arg in expr.args])
+            return cpmpy.expressions.core.Operator('or', [negated_normal(arg) for arg in expr.args])
         elif expr.name == 'or':
-            return Operator('and', [negated_normal(arg) for arg in expr.args])
+            return cpmpy.expressions.core.Operator('and', [negated_normal(arg) for arg in expr.args])
         elif expr.name == '->':
             return expr.args[0] & negated_normal(expr.args[1])
         else:

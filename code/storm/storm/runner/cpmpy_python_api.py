@@ -20,31 +20,31 @@ import cpmpy
 from cpmpy.solvers import CPM_minizinc
 from termcolor import colored
 from cpmpy import *
-from cpmpy.solvers.solver_interface import SolverInterface, SolverStatus, ExitStatus
+from cpmpy.solvers.solver_interface import *
 
 def check_satisfiability(cpmpy_Object, timeout):
 
-    def check_sat(cpmpy_Object, output):
-        solFound = cpmpy_Object.solver.solve(time_limit=timeout)
-        status = cpmpy_Object.solver.status()
+    #def check_sat(cpmpy_Object, output):
+    solFound = cpmpy_Object.solver.solve(timeout=timeout)
+    solverStatus = cpmpy_Object.solver.status().exitstatus
 
-        if status == ExitStatus.NOT_RUN:
-            output.value = "unknown".encode()
-        elif status == ExitStatus.OPTIMAL:
-            output.value = "sat".encode()
-        elif status == ExitStatus.FEASIBLE:
-            output.value = "sat".encode()
-        elif status == ExitStatus.UNSATISFIABLE:
-            output.value = "unsat".encode()
-        elif status == ExitStatus.ERROR:
-            raise Exception("MiniZinc solver returned with status 'Error'")
-        elif status == ExitStatus.UNKNOWN:
-            output.value = "unknown".encode()
-        else:
-            raise NotImplementedError  # a new status type was introduced, please report on github
+    if solverStatus == ExitStatus.NOT_RUN:
+        output = "unknown"
+    elif solverStatus == ExitStatus.OPTIMAL:
+        output = "sat"
+    elif solverStatus == ExitStatus.FEASIBLE:
+        output = "sat"
+    elif solverStatus == ExitStatus.UNSATISFIABLE:
+        output = "unsat"
+    elif solverStatus == ExitStatus.ERROR:
+        output = "error"
+    elif solverStatus == ExitStatus.UNKNOWN:
+        output = "unknown"
+    else:
+        output = "error"
+    return output
 
-
-    output = multiprocessing.Array('c', b'unknown')
+    """output = multiprocessing.Array('c', b'unknown')
     process = multiprocessing.Process(target=check_sat, args=(cpmpy_Object, output))
     process.start()
     process.join(timeout)
@@ -53,7 +53,7 @@ def check_satisfiability(cpmpy_Object, timeout):
         return "timeout"
     else:
         satisfiability = output.value.decode()
-        return satisfiability
+        return satisfiability"""
 
 
 def convert_model_to_expression(model): # org name convert_ast_to_expression

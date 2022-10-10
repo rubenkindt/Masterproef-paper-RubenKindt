@@ -19,11 +19,10 @@ import multiprocessing
 import time
 from termcolor import colored
 from storm.fuzzer.fuzzer import generate_mutants
-from storm.fuzzer.helper_functions import add_check_sat_using, insert_pushes_pops
 from storm.minimizer.minimizer import minimize
 from storm.runner.solver_runner import solver_runner
 from storm.smt.smt_object import smtObject
-from storm.cpmpy.cpmpy_object import cpmpyObject
+from storm.STORMS_cpmpy.cpmpy_object import cpmpyObject
 from storm.utils.file_operations import get_all_smt_files_recursively, create_server_core_directory, refresh_directory, \
     get_mutant_paths, pick_a_supported_theory, record_soundness
 from storm.parsers.argument_parser import MainArgumentParser
@@ -101,7 +100,7 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         # normal mode
         ALL_FUZZING_PARAMETERS = get_parameters_dict(replication_mode = False,
                                                      bug_number=None)
-        path_to_seeds = parsedArguments["seeds"]
+        path_to_seeds = parsedArguments["seedFilePath"]
         if not os.path.exists(path_to_seeds):
             print(colored("path_to_seeds not found in the path_to_seeds folder", "red"))
             return 1
@@ -147,7 +146,6 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                                   maxDepth=max_depth,
                                   maxAssert=max_assert,
                                   seed=SEED,
-                                  theory=parsedArguments["theory"],
                                   fuzzing_parameters=ALL_FUZZING_PARAMETERS)
         mutant_file_paths = get_mutant_paths(path_to_temp_core_directory)
 
@@ -289,9 +287,9 @@ def main():
         if parsedArguments["solver"] is None:
             print(colored("--solver argument cannot be None", "red", attrs=["bold"]))
             return 1
-        if parsedArguments["solverbin"] is None:
-            print(colored("--solverbin argument cannot be None", "red", attrs=["bold"]))
-            return 1
+        #if parsedArguments["solverbin"] is None:
+            #print(colored("--solverbin argument cannot be None", "red", attrs=["bold"]))
+            #return 1
 
 
     """theory_provided = False

@@ -7,15 +7,19 @@ m = Model()
 m2 = Model()
 m3 = Model()
 
-m += (x[0] & x[1]) ^ x[2]
+t2 = (x[0] & x[1])
+t  = t2 ^ x[2]
+s =  ~(t)
+m += t
 print(m.constraints)
 
 #m.to_file("test2_out")
-#m = Model.from_file("C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/tries/test2_out")
+#m.to_file(fname = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/test3_out")
 
 solver = CPM_minizinc(cpm_model=m, subsolver="chuffed")
-solver.solve()
-print(solver.user_vars)
-print(solver.user_vars.pop().value())
-print(x.value())
-print(x[0].value() & x[1].value())
+solver.solve(time_limit=120)
+print(solver.status())
+#print(t.value())
+#print(t2.value())
+#print(s.value())
+#print(x.value())

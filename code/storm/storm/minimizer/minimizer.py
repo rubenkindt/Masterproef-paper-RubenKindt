@@ -15,7 +15,7 @@ limitations under the License.
 """
 
 from storm.fuzzer.fuzzer import generate_mutants
-from storm.fuzzer.helper_functions import insert_pushes_pops, add_check_sat_using
+from storm.fuzzer.helper_functions import insert_pushes_pops
 from storm.runner.solver_runner import solver_runner
 from storm.smt.smt_object import smtObject
 from storm.utils.file_operations import get_mutant_paths
@@ -28,7 +28,7 @@ from storm.utils.randomness import Randomness
 
 
 class minimize(object):
-    def __init__(self, dir_path, file_path, solverbin, maxDepth, maxAssert, SEED, parsedArguments, iteration):
+    def __init__(self, dir_path, file_path, maxDepth, maxAssert, SEED, parsedArguments, iteration):
         """
             filepath is a path to a dir containing the config file and the buggy mutant
         """
@@ -41,7 +41,7 @@ class minimize(object):
             shutil.rmtree(self.temp_dir)
         os.mkdir(self.temp_dir)
         self.orig_file_path = file_path
-        self.solverbin = solverbin
+        #self.solverbin = solverbin
         self.maxDepth = maxDepth
         self.maxAssert = maxAssert
         self.seed = SEED
@@ -109,15 +109,13 @@ class minimize(object):
         if self.incremental:
             mutant_file_paths.sort()
             insert_pushes_pops(mutant_file_paths, self.randomness)
-        for mutant_file_path in mutant_file_paths:
-            if self.check_sat_using is not None:
-                add_check_sat_using(mutant_file_path, self.check_sat_using)
+
         # run mutants
         unsat_mutants = []
         running_start = time.time()
         print(colored("Running Mutants.... ", "green", attrs=["bold"]))
         for mutant in mutant_file_paths:
-            output = solver_runner(solver_path=self.solverbin, smt_file=mutant, temp_core_folder=self.temp_dir,
+            output = solver_runner(smt_file=mutant, temp_core_folder=self.temp_dir,
                                    timeout=self.fuzzing_parameters["solver_timeout"], incremental="yes" if self.incremental else "no",
                                    solver=self.solver)
 
