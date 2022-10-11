@@ -25,8 +25,9 @@ from cpmpy.solvers.solver_interface import *
 def check_satisfiability(cpmpy_Object, timeout):
 
     #def check_sat(cpmpy_Object, output):
-    solFound = cpmpy_Object.solver.solve(timeout=timeout)
-    solverStatus = cpmpy_Object.solver.status().exitstatus
+    SolverLookup.get(cpmpy_Object.solver, cpmpy_Object.model).solve(timeout=timeout)
+    solFound = cpmpy_Object.solver
+    solverStatus = cpmpy_Object.model.status().exitstatus
 
     if solverStatus == ExitStatus.NOT_RUN:
         output = "unknown"

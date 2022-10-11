@@ -35,7 +35,7 @@ class cpmpyObject(object):
         self.model = None
         self.flatModel = None
         self.solution = None
-        self.solver = cpmpy.solvers.CPM_minizinc(self.model, subsolver="chuffed")
+        self.solver = "minizinc:chuffed"
 
 
         try:

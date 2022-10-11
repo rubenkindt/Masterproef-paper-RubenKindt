@@ -98,7 +98,7 @@ def flatten_cpmpymodel(cpmpyObject):
 
     # the objective
     if orig_model.objective_ is None:
-        return Model(*basecons)  # no objective, satisfaction problem
+        return cpmpyObject, Model(*basecons)  # no objective, satisfaction problem
     else:
         (newobj, newcons) = flatten_objective(orig_model.objective_)
         basecons += newcons

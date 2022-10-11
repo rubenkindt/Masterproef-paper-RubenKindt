@@ -23,7 +23,7 @@ import os
 from termcolor import colored
 import shutil
 import time
-from storm.utils.max_depth import get_max_depth
+#from storm.utils.max_depth import get_max_depth
 from storm.utils.randomness import Randomness
 
 
@@ -76,10 +76,12 @@ class minimize(object):
         file = open(self.stats_file, "a+")
         self.min_lines = self.get_number_of_lines(self.minimized_file_path)
         self.min_bytes = os.path.getsize(self.minimized_file_path)
-        max_depth = get_max_depth(self.minimized_file_path)
+        #max_depth = get_max_depth(self.minimized_file_path)
         end_time = time.time()
 
-        file.writelines("\n" + str(iteration) + "," + str(SEED) + "," + str(max_depth) + "," + str(self.min_assert) +
+        file.writelines("\n" + str(iteration) + "," + str(SEED) + "," +
+                        #str(max_depth) + "," +
+                        str(self.min_assert) +
                         "," + str(self.min_lines) + "," + str(self.min_bytes) + "," + str(self.number_of_queries) + "," +
                         str(end_time - start_time))
         file.close()

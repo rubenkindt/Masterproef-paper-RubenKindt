@@ -16,11 +16,13 @@ limitations under the License.
 
 import multiprocessing
 
+import cpmpy
+
 from storm.utils.flatten_model import flatten_cpmpymodel
 from storm.utils.randomness import Randomness
 from termcolor import colored
 from storm.fuzzer.helper_functions import export_mutants, enrich_true_and_false_nodes, \
-    pick_true_and_false_nodes_at_random, get_tree_depth
+    pick_true_and_false_nodes_at_random
 
 
 
@@ -29,9 +31,9 @@ def generate_mutants(cpmpy_Object, path_to_directory, maxDepth, maxAssert, seed,
     def generate_mutants_in_a_thread(cpmpy_Object, path_to_directory, seed, fuzzing_parameters):
         # We have to create a new randomness object here
         randomness = Randomness(seed)
-        model = cpmpy_Object.get_model()
+        #model = cpmpy_Object.get_model()
         print("####### Generating mutants at location: " + colored(path_to_directory, "blue", attrs=["bold"]))
-        get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert)
+        get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing_parameters)
         print("####### Some stats: ")
         print("\t\tNumber of assertions = " + colored(str(cpmpy_Object.get_total_number_of_assertions()), "yellow", attrs=["bold"]))
         print("\t\tNumber of " + colored("TRUE ", "green", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_true_nodes())), "yellow", attrs=["bold"]))
@@ -60,17 +62,14 @@ def generate_mutants(cpmpy_Object, path_to_directory, maxDepth, maxAssert, seed,
         else:
             print(colored("Nothing in TRUE or FALSE node. Nothing we can do here.", "red", attrs=["bold"]))
 
-
-    process = multiprocessing.Process(target=generate_mutants_in_a_thread, args=(cpmpy_Object,
-                                                                                 path_to_directory,
-                                                                                 seed,
-                                                                                 fuzzing_parameters))
-    process.start()
-    process.join(fuzzing_parameters["mutant_generation_timeout"])
-    if process.is_alive():
-        process.terminate()
-        print(colored("TIMEOUT WHILE GENERATING MUTANTS", "red", attrs=["bold"]))
-        return 1
+    generate_mutants_in_a_thread(cpmpy_Object,path_to_directory,seed,fuzzing_parameters)
+    #process = multiprocessing.Process(target=generate_mutants_in_a_thread, args=(cpmpy_Object,path_to_directory,seed,fuzzing_parameters))
+    #process.start()
+    #process.join(fuzzing_parameters["mutant_generation_timeout"])
+    #if process.is_alive():
+        #process.terminate()
+        #print(colored("TIMEOUT WHILE GENERATING MUTANTS", "red", attrs=["bold"]))
+        #return 1
     return 0
 
 def recursively_break_down_a_constraint_into_nodes(cpmpy_Object):
@@ -103,7 +102,7 @@ def recursively_break_down_a_constraint_into_nodes(cpmpy_Object):
         smt_Object.append_to_all_nodes(assertion)
 '''
 
-def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert):
+def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing_parameters):
     """
         Get truth values for all the leaves and sub-trees in the astVector
     """
@@ -122,6 +121,9 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert):
 
     print("####### Evaluating truth values for all nodes..")
     # Evaluate truth values of nodes in this assertion
+    m = cpmpy.Model()
+    m += cpmpy_Object.get_all_nodes()
+    cpmpy.SolverLookup.get(cpmpy_Object.solver,m)(time_limit=fuzzing_parameters["solver_timeout"])
 
     for node in cpmpy_Object.get_all_nodes():
         if node.value():

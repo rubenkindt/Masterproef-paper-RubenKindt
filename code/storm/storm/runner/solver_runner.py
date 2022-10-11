@@ -17,6 +17,7 @@ limitations under the License.
 import subprocess
 import os
 
+import cpmpy
 from cpmpy import *
 from cpmpy.solvers.solver_interface import ExitStatus
 from termcolor import colored
@@ -25,7 +26,7 @@ from termcolor import colored
 def solver_runner(cp_file, temp_core_folder, timeout, solver):
 
     temp_file_name = "_output.txt"
-    temp_file_path = temp_core_folder +  temp_file_name
+    temp_file_path = temp_core_folder + temp_file_name
 
     model = cpmpy.Model().from_file(cp_file)
     try :

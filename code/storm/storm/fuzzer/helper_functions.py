@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import os
+
 import cpmpy
 from termcolor import colored
 from storm.utils.file_operations import create_smt2_file
@@ -24,16 +26,13 @@ def export_mutants(mutants, path, cpmpy_Object):
     dummy_ast = cpmpy_Object.get_dummy_ast()
     for i, ast in enumerate(mutants):
         new_ast = copy.deepcopy(dummy_ast)
-        new_ast.resize(0)
+        #new_ast.resize(0)
 
-        for j, assertion in enumerate(ast):
-            new_ast.push(assertion)
+        new_ast += ast
 
-        m = cpmpy.Model()
-        m += new_ast
+        m = cpmpy.Model(new_ast)
         file_path = os.path.join(path, "mutant_" + str(i))
-        smt2_string = m.to_file(file_path)
-
+        m.to_file(file_path)
 
 def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_depth):
     """
@@ -91,9 +90,9 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
             #if get_tree_depth(node_1, max_depth) <= max_depth and get_tree_depth(node_2, max_depth) <= max_depth:
                 # Depth bound of the newly contructed tree met
             if node_1_type == "false" or node_2_type == "false":
-                smt_object.append_false_constructed_node((node_1 & node_2))
+                smt_object.append_false_constructed_node((node_1) & (node_2))
             else:
-                smt_object.append_true_constructed_node((node_1 & node_2))
+                smt_object.append_true_constructed_node((node_1) & (node_2))
 
 
 def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_assertions, randomness):
@@ -122,7 +121,7 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
                 if node_type == "true":
                     node = randomness.random_choice(cpmpy_Object.get_true_nodes())
                 if node_type == "false":
-                    node = Not(randomness.random_choice(cpmpy_Object.get_false_nodes()))
+                    node = ~(randomness.random_choice(cpmpy_Object.get_false_nodes()))
 
                 mutant_file.append(node)
             else:
@@ -135,47 +134,47 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
                 if constructed_node_type == "true":
                     node = randomness.random_choice(cpmpy_Object.get_true_constructed_nodes())
                 else:
-                    node = Not(randomness.random_choice(cpmpy_Object.get_false_constructed_nodes()))
+                    node = ~(randomness.random_choice(cpmpy_Object.get_false_constructed_nodes()))
                 mutant_file.append(node)
 
         mutants.append(mutant_file)
     return mutants
 
 
-def get_tree_depth(assertion, maxDepth, optimization=True):
-    def get_tree_depth_iterative(tree):
-        # Iterative algorithm to find the height of a tree
-        if not is_and(tree) and not is_or(tree):
-            return 0
-        q = []
-        q.append(tree)
-        height = 0
-        while (True):
-            nodeCount = len(q)
-            if nodeCount == 0:
-                return height
-            height += 1
-            # Optimization
-            # If the height has already exceeded the maxDepth, no need go any deeper
-            if optimization and height > maxDepth:
-                return maxDepth + 1
-            while nodeCount > 0:
-                node = q[0]
-                q.pop(0)
-                children = node.children()
-                left_child = children[0]
-                right_child = children[1]
-                if is_and(left_child) or is_or(left_child):
-                    q.append(left_child)
-                if is_and(right_child) or is_or(right_child):
-                    q.append(right_child)
-                nodeCount -= 1
-    try:
-        depth = get_tree_depth_iterative(tree=assertion)
-    except Exception as e:
-        print(colored("Exception while computing tree depth" + str(e)))
-        return 1000000
-    return depth
+# def get_tree_depth(assertion, maxDepth, optimization=True):
+#     def get_tree_depth_iterative(tree):
+#         # Iterative algorithm to find the height of a tree
+#         if not is_and(tree) and not is_or(tree):
+#             return 0
+#         q = []
+#         q.append(tree)
+#         height = 0
+#         while (True):
+#             nodeCount = len(q)
+#             if nodeCount == 0:
+#                 return height
+#             height += 1
+#             # Optimization
+#             # If the height has already exceeded the maxDepth, no need go any deeper
+#             if optimization and height > maxDepth:
+#                 return maxDepth + 1
+#             while nodeCount > 0:
+#                 node = q[0]
+#                 q.pop(0)
+#                 children = node.children()
+#                 left_child = children[0]
+#                 right_child = children[1]
+#                 if is_and(left_child) or is_or(left_child):
+#                     q.append(left_child)
+#                 if is_and(right_child) or is_or(right_child):
+#                     q.append(right_child)
+#                 nodeCount -= 1
+#     try:
+#         depth = get_tree_depth_iterative(tree=assertion)
+#     except Exception as e:
+#         print(colored("Exception while computing tree depth" + str(e)))
+#         return 1000000
+#     return depth
 
 
 '''def add_check_cp_using(exported_mutant_file_path, check_cp_using_option):

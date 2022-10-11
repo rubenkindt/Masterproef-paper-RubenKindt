@@ -1,0 +1,8 @@
+b = boolvar(shape=3)
+cons = (b[0] & b[1]) ^ b[2]
+m = Model([cons])
+something = SolverLookup.get("ortools",m)
+something.solve()
+print(something.status())
+print(m.status())
+print(m.constraints[0].value())

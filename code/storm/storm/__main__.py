@@ -26,7 +26,7 @@ from storm.STORMS_cpmpy.cpmpy_object import cpmpyObject
 from storm.utils.file_operations import get_all_smt_files_recursively, create_server_core_directory, refresh_directory, \
     get_mutant_paths, pick_a_supported_theory, record_soundness
 from storm.parsers.argument_parser import MainArgumentParser
-from storm.utils.max_depth import get_max_depth, count_asserts, count_lines
+from storm.utils.max_depth import count_asserts, count_lines
 from storm.utils.randomness import Randomness
 from z3 import *
 from storm.parameters import get_parameters_dict
@@ -51,15 +51,13 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
             print("####### RUNNING MUTANTS")
             start_time = time.time()
             for i, mutant_path in enumerate(mutant_file_paths):
-                output = solver_runner(solver_path=parsedArguments["solverbin"],
-                                       smt_file=mutant_path,
+                output = solver_runner(cp_file=mutant_path,
                                        temp_core_folder=path_to_temp_core_directory,
                                        timeout=ALL_FUZZING_PARAMETERS["solver_timeout"],
-                                       incremental=incrementality,
                                        solver = solver)
                 print("[" + parsedArguments["solver"] +"]\t"+ "[core: " + str(core) +"]\t", end="")
                 print("[seed_file: " + str(seed_file_number) +"]\t\t" + "[" + str(i+1) + "/" + str(len(mutant_file_paths)) + "]\t\t", end="")
-                print("[" + parsedArguments["theory"] +"]\t", end="")
+                #print("[" + parsedArguments["theory"] +"]\t", end="")
 
                 if output == "sat":
                     print(colored(output, "green", attrs=["bold"]))
@@ -69,17 +67,16 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                     print(colored("SOUNDNESS BUG", "white", "on_red", attrs=["bold"]))
                     print("SEED = " + str(SEED))
                     # Handle unsoundness
-                    record_soundness(home_directory=config["home"],
+                    record_soundness(home_directory=parsedArguments["home"],
                                      seed_file_path=seed_file_path,
                                      buggy_mutant_path=mutant_path,
                                      seed=SEED,
                                      mutant_number=i,
-                                     seed_theory=parsedArguments["theory"],
                                      fuzzing_parameters=fuzzing_parameters)
                     print(colored("Time to bug: ", "magenta", attrs=["bold"]) + str(time.time() - start_time))
                     print(colored("Iterations to bug: ", "magenta", attrs=["bold"]) + str(i+1))
-                elif output == "error":
-                    print(colored(output, "white", "on_red", attrs=["bold"]))
+                elif output.__contains__("error"):
+                    print(colored(output, "red", attrs=["bold"]))
                 else:
                     print(colored(output, "yellow", attrs=["bold"]))
                 os.remove(mutant_path)  # remove mutant when processed
@@ -113,7 +110,7 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         path_to_seed_file = os.path.join(parsedArguments["home"], "fse_repl", parsedArguments["reproduce"], "seedFile")
         print("Path to seed file for this bug = " + path_to_seed_file)
         seed_file_paths.append(path_to_seed_file)
-        parsedArguments["theory"] = ALL_FUZZING_PARAMETERS["theory"]
+        #parsedArguments["theory"] = ALL_FUZZING_PARAMETERS["theory"]
 
 
     randomness = Randomness(SEED)
@@ -164,18 +161,18 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
             #print(colored("NO", "red", attrs=["bold"]))
 
 
-        print("####### Adding check-sat-using options with prob: " + colored(str(ALL_FUZZING_PARAMETERS["check_sat_using"]), "yellow", attrs=["bold"]))
-        for mutant_file_path in mutant_file_paths:
-            if randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using"]) == "yes" and parsedArguments["solver"] == "z3":
-                check_sat_using_option = randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using_options"])
-                add_check_sat_using(mutant_file_path, check_sat_using_option)
+        #print("####### Adding check-sat-using options with prob: " + colored(str(ALL_FUZZING_PARAMETERS["check_sat_using"]), "yellow", attrs=["bold"]))
+        #for mutant_file_path in mutant_file_paths:
+            #if randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using"]) == "yes" and parsedArguments["solver"] == "z3":
+                #check_sat_using_option = randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using_options"])
+                #add_check_sat_using(mutant_file_path, check_sat_using_option)
 
 
         # If we are in bug repoduction mode, copy the buggy mutant to the bug folder in fse replication folder
         if reproduce:
             print("copying the buggy mutant")
             buggy_mutant = [i for i in mutant_file_paths if i.find(ALL_FUZZING_PARAMETERS["buggy_mutant"]) != -1][0]
-            path_to_bug_directory_in_fse_repl = os.path.join(config["home"], "storm", "fse_repl", parsedArguments["reproduce"])
+            path_to_bug_directory_in_fse_repl = os.path.join(parsedArguments["home"], "storm", "fse_repl", parsedArguments["reproduce"])
             print(colored("copying the buggy mutant to: ", "yellow", attrs=["bold"]) + path_to_bug_directory_in_fse_repl)
             shutil.copy2(buggy_mutant, path_to_bug_directory_in_fse_repl)
             if parsedArguments["solverbin"] is None:
@@ -183,19 +180,20 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                 continue
 
         # Spawn a new process and run mutants
-        process = multiprocessing.Process(target=run_mutants_in_a_thread, args=(path_to_temp_core_directory,
-                                                                                signal,
-                                                                                i,
-                                                                                file,
-                                                                                incrementality,
-                                                                                parsedArguments["solver"],
-                                                                                ALL_FUZZING_PARAMETERS))
-        process.start()
-        process.join(ALL_FUZZING_PARAMETERS["mutant_running_timeout"])
-        if process.is_alive():
-            process.terminate()
-            print(colored("TIMEOUT WHILE RUNNING THE MUTANTS", "red", attrs=["bold"]))
-            time.sleep(ALL_FUZZING_PARAMETERS["solver_timeout"])  # Wait for the solver to finish processing the last file before deleting the temp dir
+        run_mutants_in_a_thread(path_to_temp_core_directory,signal,i,file,incrementality,parsedArguments["solver"],ALL_FUZZING_PARAMETERS)
+        # process = multiprocessing.Process(target=run_mutants_in_a_thread, args=(path_to_temp_core_directory,
+        #                                                                         signal,
+        #                                                                         i,
+        #                                                                         file,
+        #                                                                         incrementality,
+        #                                                                         parsedArguments["solver"],
+        #                                                                         ALL_FUZZING_PARAMETERS))
+        # process.start()
+        # process.join(ALL_FUZZING_PARAMETERS["mutant_running_timeout"])
+        # if process.is_alive():
+        #     process.terminate()
+        #     print(colored("TIMEOUT WHILE RUNNING THE MUTANTS", "red", attrs=["bold"]))
+        #     time.sleep(ALL_FUZZING_PARAMETERS["solver_timeout"])  # Wait for the solver to finish processing the last file before deleting the temp dir
         refresh_directory(path_to_temp_core_directory)
 
 
@@ -237,11 +235,13 @@ def main():
 
         minimize_dir_path = os.path.dirname(os.path.realpath(parsedArguments["file_path"]))
         stats_file = os.path.join(minimize_dir_path, "min_stats.csv")
-        orig_maxDepth = get_max_depth(parsedArguments["file_path"])
+        #orig_maxDepth = get_max_depth(parsedArguments["file_path"])
         orig_asserts = count_asserts(parsedArguments["file_path"])
         orig_lines = count_lines(parsedArguments["file_path"])
         orig_size = os.path.getsize(parsedArguments["file_path"])
-        row_2 = "ORIGINAL,-," + str(orig_maxDepth) + "," + str(orig_asserts) + "," + str(orig_lines) + "," + str(orig_size) + ", ,"
+        row_2 = "ORIGINAL,-," + "," + str(orig_asserts) + "," + str(orig_lines) + "," + str(orig_size) + ", ,"
+                #str(orig_maxDepth) + \
+
         file = open(stats_file, "w")
         file.writelines("iteration, seed, maxDepth, maxAssert, line_numbers, bytes, number of queries, time\n" + row_2)
         file.close()
@@ -254,7 +254,6 @@ def main():
         def minimize_in_parallel(dir_path, file_path, solver_bin, maxDepth, maxAssert, seed, parsed_arguments, iteration):
             minimizer = minimize(dir_path=dir_path,
                                  file_path = file_path,
-                                 solverbin=solver_bin,
                                  maxDepth=maxDepth,
                                  maxAssert=maxAssert,
                                  SEED=seed,
@@ -269,7 +268,6 @@ def main():
         for i in range(cores):
             process = multiprocessing.Process(target=minimize_in_parallel, args=(minimize_dir_path,
                                                                                  parsedArguments["file_path"],
-                                                                                 parsedArguments["solverbin"],
                                                                                  64,
                                                                                  64,
                                                                                  i,
