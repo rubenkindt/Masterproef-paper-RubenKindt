@@ -73,7 +73,8 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
         #           AND(node1, node2) -> self.true
         if operator == "and":
             # Choose 2 nodes
-            if len(smt_object.get_true_nodes()) > 0 and len(smt_object.get_false_nodes()) > 0:
+            if len(smt_object.get_true_nodes()) > 0 and \
+                    len(smt_object.get_false_nodes()) > 0:
                 node_1_type = randomness.random_choice(["true", "false"])
                 node_2_type = randomness.random_choice(["true", "false"])
             elif len(smt_object.get_true_nodes()) == 0:
@@ -83,8 +84,10 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
                 node_1_type = "true"
                 node_2_type = "true"
 
-            node_1 = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes()) if node_1_type == "true" else randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
-            node_2 = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes()) if node_2_type == "true" else randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
+            node_1 = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes()) \
+                if node_1_type == "true" else randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
+            node_2 = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes()) \
+                if node_2_type == "true" else randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
 
             # Append if depth of both subtrees is <= depth
             #if get_tree_depth(node_1, max_depth) <= max_depth and get_tree_depth(node_2, max_depth) <= max_depth:

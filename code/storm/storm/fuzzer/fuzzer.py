@@ -123,7 +123,7 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing
     # Evaluate truth values of nodes in this assertion
     m = cpmpy.Model()
     m += cpmpy_Object.get_all_nodes()
-    cpmpy.SolverLookup.get(cpmpy_Object.solver,m)(time_limit=fuzzing_parameters["solver_timeout"])
+    m.solve(solver=cpmpy_Object.solver, time_limit=fuzzing_parameters["solver_timeout"].total_seconds())
 
     for node in cpmpy_Object.get_all_nodes():
         if node.value():

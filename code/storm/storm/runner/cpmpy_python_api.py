@@ -25,9 +25,11 @@ from cpmpy.solvers.solver_interface import *
 def check_satisfiability(cpmpy_Object, timeout):
 
     #def check_sat(cpmpy_Object, output):
-    SolverLookup.get(cpmpy_Object.solver, cpmpy_Object.model).solve(timeout=timeout)
-    solFound = cpmpy_Object.solver
-    solverStatus = cpmpy_Object.model.status().exitstatus
+    cpmpy_Object.model.solve(solver=cpmpy_Object.solver, time_limit=timeout.total_seconds())
+    solverStatus = cpmpy_Object.model.status()
+
+    # solFound = cpmpy_Object.solver
+    # solverStatus = cpmpy_Object.model.status().exitstatus
 
     if solverStatus == ExitStatus.NOT_RUN:
         output = "unknown"
@@ -64,12 +66,19 @@ def convert_model_to_expression(model): # org name convert_ast_to_expression
     return expression
 
 
-def get_model(ast):
-    s = Solver()
-    s.add(ast)
-    satis = s.check()
-    if satis != sat:
+def get_model(ast, solver):
+    model = Model()
+    model += ast
+    model.solver(solver=solver)
+    if model.status() != ExitStatus.OPTIMAL or model.status() != ExitStatus.FEASIBLE:
         print(colored("Why are you sending me an unsat ast ?", "red"))
         raise Exception
-    model = s.model()
+
+    # s = Solver()
+    # s.add(ast)
+    # satis = s.check()
+    # if satis != sat:
+    #     print(colored("Why are you sending me an unsat ast ?", "red"))
+    #     raise Exception
+    # model = s.model()
     return model

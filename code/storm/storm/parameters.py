@@ -78,8 +78,8 @@ def get_supported_theories(solver):
 parameters = {
         "max_depth": 20,
         "max_assert": 20,
-        "enrichment_steps": 1000,
-        "number_of_mutants": 1000,
+        "enrichment_steps": 10,
+        "number_of_mutants": 100,
         "mutant_generation_timeout" : 900, # 15 mins
         "mutant_running_timeout" : 900, # 15 mins
         "solver_timeout" : datetime.timedelta(minutes=2),

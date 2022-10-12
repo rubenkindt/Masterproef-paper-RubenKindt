@@ -108,9 +108,9 @@ class cpmpyObject(object):
 
     def get_model(self):
         if self.orig_satisfiability == "sat":
-            self.model = get_model(self.orig_ast)
+            self.model = get_model(self.orig_ast, self.solver)
         if self.orig_satisfiability == "unsat":
-            self.model = get_model(self.negated_model)
+            self.model = get_model(self.negated_model, self.solver)
         return self.model
 
 
