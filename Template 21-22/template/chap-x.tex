@@ -1,6 +1,7 @@
 \chapter{creation of fuzzer}
 \label{cha:x}
 \todo{intro ch x}
+In this chapter we will discuss how we build our fuzzers, what issues we had to circumvent and how we did that. 
 
 % own results, multiple runs due toe randomness, how measured
 % comparision with other fuzzers
@@ -11,23 +12,10 @@ Semantic Fusion
 \cite{43YinYang}
 een ref to chapter 2
 
-seed files came from the CPMpy repository the main branch and the csplib branch aswell from Hakank's repository downloaded on Tuesday 27/09/2022
-Storm downloaded on Tuesday 27/09/2022 from https://github.com/Practical-Formal-Methods/storm 
-https://github.com/Practical-Formal-Methods/storm/commit/55d091624523a0544112ffc339fe81103b3daa2b
-We also made sure that the seed files were able to be run in less then 60 sec either by reducing the amount of solver calls per example of in extreme situations removed some examples
-
-
-Storm take in SMT-lib seed files, we can convert them to minizinc and then using fzn2smt but It hasn't been maintained in over a decenta and doing multiple convertions only back could be tricky and would introduce multiple layers which can introduce bugs a normal user would ever see
-Therefore we will be refactoring STORM to fit our CPMpy
-
-
-Translating seeds from solver X to solver Y: 
-option 1 hardcode default solver of CPMpy to Y, less good modifying the language is something we want to avoid. May also not work when solver is hard coded in the seed.
-Option 2 interpret the seed and make changes so that the solver Y is run. Bit trickier as you cannot see the difference between model.solve() and solver.solve() because model and solver are variables.
 
 
 
-the need of having to rewrite negation of certain global functions
+
 
 
 

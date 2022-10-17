@@ -37,17 +37,17 @@ def solver_runner(cp_file, temp_core_folder, timeout, solver):
     # except Exception as e:
     #     return "error" + " " + str(e)
 
-    if model.status() == ExitStatus.NOT_RUN:
+    if model.status().exitstatus == ExitStatus.NOT_RUN:
         return "unknown"
-    if model.status() == ExitStatus.FEASIBLE:
+    if model.status().exitstatus == ExitStatus.FEASIBLE:
         return "sat"
-    if model.status() == ExitStatus.OPTIMAL:
+    if model.status().exitstatus == ExitStatus.OPTIMAL:
         return "sat"
-    if model.status() == ExitStatus.ERROR:
+    if model.status().exitstatus == ExitStatus.ERROR:
         return "error"
-    if model.status() == ExitStatus.UNKNOWN:
+    if model.status().exitstatus == ExitStatus.UNKNOWN:
         return "unknown"
-    if model.status() == ExitStatus.UNSATISFIABLE:
+    if model.status().exitstatus == ExitStatus.UNSATISFIABLE:
         return "unsat"
 
     return "unknown"

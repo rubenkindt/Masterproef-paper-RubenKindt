@@ -16,6 +16,8 @@ limitations under the License.
 import os
 
 import cpmpy
+from cpmpy.transformations.flatten_model import *
+from cpmpy.transformations.flatten_model import __is_flat_var
 from termcolor import colored
 from storm.utils.file_operations import create_smt2_file
 import copy
@@ -34,13 +36,56 @@ def export_mutants(mutants, path, cpmpy_Object):
         file_path = os.path.join(path, "mutant_" + str(i))
         m.to_file(file_path)
 
+def supportedNegFunction(expr):
+    # this is modified version of negated_normal(expr): from cpmpy/transformations/flatten_model.py which is still a work in progress
+
+    if __is_flat_var(expr):
+        return True
+
+    elif isinstance(expr, Comparison):
+        if expr.name == '==':
+            return True
+        elif expr.name == '!=':
+            return True
+        elif expr.name == '<=':
+            return True
+        elif expr.name == '<':
+            return True
+        elif expr.name == '>=':
+            return True
+        elif expr.name == '>':
+            return True
+        return True
+
+    elif isinstance(expr, Operator):
+        assert (expr.is_bool())
+
+        if expr.name == 'and':
+            return all([supportedNegFunction(arg) for arg in expr.args])
+        elif expr.name == 'or':
+            return all([supportedNegFunction(arg) for arg in expr.args])
+        elif expr.name == '->':
+            return supportedNegFunction(expr.args[0]) & supportedNegFunction(expr.args[1])
+        else:
+            raise NotImplementedError("negate_normal {}".format(expr))
+            #return expr == 0  # can't do better than this...
+
+    elif expr.name == 'xor':
+        return supportedNegFunction(expr.args[0]) & supportedNegFunction(expr.args[1])
+
+    else:
+        # global...
+        #raise NotImplementedError("negate_normal {}".format(expr))
+        return False
+
 def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_depth):
     """
         Populate true_constructed_nodes and false_constructed_nodes with more complex trees.
         These trees are created by AND-ing or NOT-ing random nodes in true_nodes and false_nodes
         Obviously this is for the case when the original formula is SAT and we have a model
     """
-    for i in range(enrichment_steps):
+    i = 0
+    while i < enrichment_steps:
         # Choose an operator
         operator = randomness.random_choice(["and", "not"])
 
@@ -59,11 +104,17 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
             if node_type == "false":
                 # if node type is false then negate it and add it to true constructed node
                 false_node = randomness.random_choice(smt_object.get_false_nodes() + smt_object.get_false_constructed_nodes())
-                smt_object.append_true_constructed_node(~(false_node))
+                if supportedNegFunction(false_node):
+                    smt_object.append_true_constructed_node(~(false_node))
+                else:
+                    i-=1
             if node_type == "true":
                 # if node type is true then negate it and add it to false constructed node
                 true_node = randomness.random_choice(smt_object.get_true_nodes() + smt_object.get_true_constructed_nodes())
-                smt_object.append_false_constructed_node(~(true_node))
+                if supportedNegFunction(true_node):
+                    smt_object.append_false_constructed_node(~(true_node))
+                else:
+                    i-=1
 
         #   If AND:
         #       node1, node2 = choose from +ve or -ve pool
@@ -96,6 +147,7 @@ def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_de
                 smt_object.append_false_constructed_node((node_1) & (node_2))
             else:
                 smt_object.append_true_constructed_node((node_1) & (node_2))
+        i+=1
 
 
 def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_assertions, randomness):
@@ -108,7 +160,8 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
     for i in range(number_of_mutants):
         mutant_file = list()    # A list of assertions
         number_of_assertions = randomness.get_a_non_prime_integer(max_assertions)
-        for i in range(number_of_assertions):
+        j = 0
+        while j < number_of_assertions:
             # Make a decision about picking either a simple node or an enriched node
             node_decision = randomness.random_choice(["simp", "simp","simp","enr","enr","enr","enr","enr","enr","enr"])
 
@@ -124,7 +177,11 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
                 if node_type == "true":
                     node = randomness.random_choice(cpmpy_Object.get_true_nodes())
                 if node_type == "false":
-                    node = ~(randomness.random_choice(cpmpy_Object.get_false_nodes()))
+                    node_2_neg = (randomness.random_choice(cpmpy_Object.get_false_nodes()))
+                    if supportedNegFunction(node_2_neg):
+                        node = ~node_2_neg
+                    else:
+                        j-=1
 
                 mutant_file.append(node)
             else:
@@ -137,8 +194,13 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
                 if constructed_node_type == "true":
                     node = randomness.random_choice(cpmpy_Object.get_true_constructed_nodes())
                 else:
-                    node = ~(randomness.random_choice(cpmpy_Object.get_false_constructed_nodes()))
+                    node_2_neg = (randomness.random_choice(cpmpy_Object.get_false_constructed_nodes()))
+                    if supportedNegFunction(node_2_neg):
+                        node = ~node_2_neg
+                    else:
+                        j-=1
                 mutant_file.append(node)
+            j+=1
 
         mutants.append(mutant_file)
     return mutants
