@@ -2,36 +2,41 @@
 \label{cha:impl}
 \label{impl:Intro}
 In this chapter we will discuss how we build our fuzzers, what issues we had to circumvent and how we did that. With first starting off how we got our seeds to fuzz upon.
+\todo{Proofread entire chapter}
 
-\section{title}
-\label{impl:seeds}
+\section{Obtaining seeds}
+\label{impl:obtainingSeeds}
+As discussed in a previous section (section \ref{fuzzing:generationMutation}) generating new inputs is significantly harder than mutation, but with the latter one we require a diverse set of seed files. Fortunately, the CPMpy team made a lot documentation and examples on how to model problems in their language. Ranging from easy examples to teach the language to advanced examples in order to showcase certain features. At the moment of writing most examples are still in a branch called "csplib" \footnote{\url{https://github.com/CPMpy/cpmpy/tree/csplib}} waiting to be merged with the main branch. We downloaded a copy of that branch on Tuesday 27th of September to be used as future seed files. 
 
+A second source of seeds files came from Hakan Kjellerstrand a retired software developer and independent researcher from Sweden. He has a big repository \footnote{\url{https://github.com/hakank/hakank/tree/master/cpmpy}} full of problem models which he solves in multiple ways, including CPMpy. We obtained a copy of all his CPMpy examples on Tuesday 27th of September to top off our collection of future seed files.
 
-seed files came from the CPMpy repository the main branch and the csplib branch aswell from Hakank's repository downloaded on Tuesday 27/09/2022
-Storm downloaded on Tuesday 27/09/2022 from https://github.com/Practical-Formal-Methods/storm 
-https://github.com/Practical-Formal-Methods/storm/commit/55d091624523a0544112ffc339fe81103b3daa2b
-We also made sure that the seed files were able to be run in less then 60 sec either by reducing the amount of solver calls per example of in extreme situations removed some examples
+After that we ran all examples to test that the base examples do not crash on their own and noticed that most examples run in less then ten seconds. The handful of examples that did run extremely long we did leave out or simplified to gain a speed up while solving of them. A last change we did to the future seed files is extracting the constraints from each example, we did this for a couple of reasons some files had a loop around the solve instruction combined with small changes or had multiple problems in one file. In order to extract these constraints we temporary modified CPMpy to extract the created model, constraints included, each time solve was called. This resulted in 9494 problem models which we will use as our seed files.
 
+%We also made sure that the seed files were able to be run in less then 60 sec either by reducing the amount of solver calls per example of in extreme situations removed some examples
 
-
-\section{STORM}
-Storm take in SMT-lib seed files, we can convert them to minizinc and then using fzn2smt but It hasn't been maintained in over a decenta and doing multiple convertions only back could be tricky and would introduce multiple layers which can introduce bugs a normal user would ever see
-Therefore we will be refactoring STORM to fit our CPMpy
-
-
-Translating seeds from solver X to solver Y: 
-option 1 hardcode default solver of CPMpy to Y, less good modifying the language is something we want to avoid. May also not work when solver is hard coded in the seed.
-Option 2 interpret the seed and make changes so that the solver Y is run. Bit trickier as you cannot see the difference between model.solve() and solver.solve() because model and solver are variables.
+\section{Modifying STORM}
+\label{impl:modifyingSTROM}
+Our first technique of finding bugs is heavily based on STORM which we shortly discussed before in section \ref{fuzzing:testingWithFuzzers}, which we altered to be able to find bugs in constraint programming languages and specifically CPMpy. We started with downloading STORM from the repository \footnote{\url{https://github.com/Practical-Formal-Methods/storm}} on Tuesday 27th September.
+%https://github.com/Practical-Formal-Methods/storm/commit/55d091624523a0544112ffc339fe81103b3daa2b
+The original plan was to convert our seeds to FlatZinc using the MiniZinc API provided bu CPMpy to then convert that to SMT-LIB \cite{72bofill2010system} using Miquel Bofill et al.'s fzn2smt-tool to then be able to use STORM like it was build originally. Unfortunate and a bit predictable, this way of working did not work out. On top of fzn2smt being more then a decade old, the multiple transformation layers that could introduces conversion bugs and the unclear way back from SMT-LIB prevented this path from being investigated by us.
+Therefore, we decided to refactoring STORM in order to fit CPMpy, in order to do this we need to rewrite the detection, labeling and construction of (sub)constraints. This refactoring did come with some downsides, some features of STORM we did not need no longer work like incremental solving or  the input obfuscation that was build-in. A bigger downside came with the refactoring of the negation function of STORM, as CPMpy is still in active development is not always available and that was felt while trying to negate global functions. I.e. when trying to invert (sub)constraints which include AllDifferent([var1, var2, var3]) using CPMpy, it crashed. This is of course a "bug" (more specific not yet implemented) in CPMpy, but vital to the fuzzer. So here we had the choice of adding the missing negation of global functions to CPMpy or to limit our fuzzer to not use the missing features. We choose to limit the fuzzer, since we are trying to detect bugs in CPMpy with different tools and extending the language ourselves does not fit in the vision of this dissertation. The resulting limitation on our fuzzer only influences the speed of generating new constraints and it can theoretically now get stuck but this has not happened yet, so we believe it to be a acceptable limitation.
 
 
-
-the need of having to rewrite negation of certain global functions since CPMpy is still in development and not all global functions can be inverted. This is a bigger divergent to the implementations by the original authors of STORM using. Here we had the choice of adding some missing features to CPMpy (like the negation of certain global functions) or to limit our fuzzer to not use the missing features. We choose to limit the fuzzer, since we are trying to detect bugs with different tools and extending the language ourself does not fit in de context of this thesis.
-%this limitation check will have a speed pentalty in the enrichment step (the step where we create complexer functions) but is speed relevant here?
-nested functions with global function inside are giving problems
+%Storm take in SMT-lib seed files, we can convert them to minizinc and then using fzn2smt but It hasn't been maintained in over a decenta and doing multiple convertions only back could be tricky and would introduce multiple layers which can introduce bugs a normal user would ever see
+%Therefore we will be refactoring STORM to fit our CPMpy
+%Translating seeds from solver X to solver Y: 
+%option 1 hardcode default solver of CPMpy to Y, less good modifying the language is something we want to avoid. May also not work when solver is hard coded in the seed.
+%Option 2 interpret the seed and make changes so that the solver Y is run. Bit trickier as you cannot see the difference between model.solve() and solver.solve() because model and solver are variables.
+%
+%the need of having to rewrite negation of certain global functions since CPMpy is still in development and not all global functions can be inverted. This is a bigger divergent to the implementations by the original authors of STORM using. 
+%Here we had the choice of adding some missing features to CPMpy (like the negation of certain global functions) or to limit our fuzzer to not use the missing features. We choose to limit the fuzzer, since we are trying to detect bugs with different tools and extending the language ourself does not fit in de context of this thesis.
+%%this limitation check will have a speed pentalty in the enrichment step (the step where we create complexer functions) but is speed relevant here?
+%nested functions with global function inside are giving problems
 
 
 \section{Conclusion}
 \label{impl:conclusion}
+\todo{write conclusion}
 
 %%% Local Variables: 
 %%% mode: latex

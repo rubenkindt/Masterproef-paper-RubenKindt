@@ -5,11 +5,11 @@ The rise of fuzzing came with Miller giving his classroom assignment \cite{21Fuz
 In the last thirty years the technique of fuzzing has changed significantly and various innovations have come forward. In this chapter we will look at prevalent classifications made, what the fuzzer expects as input, what we can expect as output and we will look at the most popular fuzzers.
 
 \section{Classifications}
-\label{cha:2:Classifications}
+\label{fuzzing:Classifications}
 The three most popular classifications are: how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT) \cite{30FuzzingHackartandscience, 12Fuzzingasurvey, 13manes2019survey}.
 
 \subsection{Generation and mutation}
-\label{cha:2:generationMutation}
+\label{fuzzing:generationMutation}
 A fuzzer can construct inputs for a PUT in two ways, it can generate input itself or it can modify parts from an existing input, called seeds. While Generation is more common when it comes to smaller inputs, the opposite is true for larger inputs where modification has the upper hand. This is caused by the fact that generating semi-valid input becomes a lot harder the longer the input becomes. For example, generating the word "Fuzzing" by uniformly random sample of ASCII symbols, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger semi-valid inputs. With mutation we can start with larger and already valid input and then make modifications to create semi-valid inputs. With this last technique the diversity of the seeding inputs does become quite important. Ideally, we would have an unlimited diverse set of inputs, but that may not always be available. A workaround to this issue could be the paper by Alexandre Rebert et al. \cite{14rebert2014seedselecting} they propose that seed selection algorithms can improve results and compare random seed selection to the minimal subset of seeds with the highest code coverage among other algorithms. 
 
 \subsection{Input structure}
@@ -51,6 +51,7 @@ A potential reason to the inactivity of Google on the AFL project could be the d
 Google is not the only one to come forward with a fuzzer. Even Microsoft has jumped on the bandwagon of fuzzing with its OneFuzz\footnote{\url{https://github.com/microsoft/onefuzz}}, a self-hosted Fuzzing-As-A-Service platform which is intended to be integrated with the CI/CD pipeline. Although looking at the given stars on the Github repository, it looks like Google's tools are more popular than Microsoft's ones. The last prominent fuzzer we will look at is the LibFuzzer\footnote{\url{https://llvm.org/docs/LibFuzzer.html}} made by LLVM, a generation based gray box fuzzer which is a part of the bigger LLVM project\footnote{\url{https://github.com/llvm/llvm-project/}} with the focus on the C ecosystem. Being in the same ecosystem as AFL, LibFuzzer can be used together with AFL and even share the same seed inputs.
 
 \subsection{Testing CP and SMT with Fuzzers}
+\label{fuzzing:testingWithFuzzers}
 Until now we discussed fuzzers more generally, we would like to deliberate specific fuzzers build for testing constraint programming languages (CP) and satisfiability modulo theory (SMT) solvers.
 \begin{figure}
 	\centering
@@ -75,7 +76,7 @@ A last fuzzer we will discuss is Falcon, a fuzzer that extends the search space 
 When using STORM as the underlying fuzzer with the knowledge of the configuration space the authors managed to increase the code coverage by 17.2 to 18.8\%. When knowing that SMT solver like Z3 and CVC4 contain more than 700 000 and 100 000 lines of code respectively means that any percentage is a significant amount of extra lines covered.
 
 \section{Types of bugs}
-\label{cha:2:TypesOfBugs}
+\label{fuzzing:TypesOfBugs}
 Not only can we classify fuzzers, but we can also classify the types of bugs found by the fuzzers, as done in a recent paper \cite{1mansur2020detecting} by Muhammad Numair Mansur et al. being crashes, wrongly satisfied, wrongly unsatisfied or a hanging input+ provided to the PUT. With some of these bugs being less acceptable than others. For example, as Muhammad Numair Mansur et al. describes, a crash is preferred for a constraint programming language (CP) over a wrongly unsatisfied model, since there is no way for the user to know that the solver failed in that last case (except for differentiation testing, more on that later). Meaning that the user will treat the result (wrongly) as correct, comparing this to a crash where it is clear that something went wrong is more transparent for the user. With hanging inputs, the user cannot draw incorrect conclusions and with wrongly satisfied models the user could check the model's instances and confirm the result before using it further. This is due to the fact that problems are frequently NP-hard meaning they are easy to confirm but hard to solve. 
 
 For practical reasons we will be adding a wrong model, unknown and a hanging input to an unknown category using a timeout. We are aware that the types of bugs can be classified in even more detail, for example crashes into buffer overflows, invalid memory addressing and so on, but we choose to stay with a more general overview for now. An interesting classification to be added is the knowledge whether or not the bug is in the parser part of the PUT or not. The put could already fail on inputs during the interpretation of the inputs and as discussed, we would also like to detect bugs deeper in the PUT. As the authors of "Semantic Fuzzing with Zest" \cite{22SemanticFuzzing} would classify, is the bug in the syntactical or in the semantical part of the program?
@@ -92,7 +93,7 @@ Unfortunately, neither crash based nor differential testing is ideal: crash base
 In situations where the existence of analogue programs would be a limited factor metamorphic testing could be a solution. This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the amount of models reduces (or remains equal). Or that the amount of models remain the same when giving an equivalent formula or adding a tautology compared to the original. This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available transformation.
 
 \section{The oracle problem}
-\label{cha:2:OracleProblem}
+\label{fuzzing:OracleProblem}
 The oracle problem describes the issue of telling if a PUTs output was, given the input, correct or not. As expressed in "The Oracle Problem in Software Testing: A Survey": 
 \begin{quote}
 	"Given an input for a system, the challenge of distinguishing the corresponding desired, correct behavior from potentially incorrect behavior is called the test oracle problem."
@@ -102,7 +103,7 @@ The oracle problem describes the issue of telling if a PUTs output was, given th
 In their paper they discuss four categories: specified test oracles, derived test oracles, implicit test oracles and the absence of test oracles. The biggest category would be the specified test oracles which contains all the possible encoding of specifications like modeling languages UML, Event-B and more. Their derived test oracles classification contains all forms of knowledge obtained from documentation on how the program should work or by knowledge of previous versions of the program. The last two oracles' categories come down to the use of knowing that crashes are always unwanted and the human oracle like crowdsourcing respectively.
 
 \subsection{Handling the oracle problem}
-\label{cha:2:handelingOracelproblem}
+\label{fuzzing:handelingOracelproblem}
 Although the approach of by Bugariu and M\"uller in "Automatically testing string solvers" \cite{9bugariu2020automaticallyTestingStringSolvers} falls in the first category being, a black box fuzzer, their approach is innovative. While most fuzzers either use crashes or differential testing (more on that later) to find bugs, they know the (un)satisfiability of their formulas by the way of they are constructed. For satisfiable formulas they generate trivial formulas and then by satisfiability preserving transformations increase the complexity and for unsatisfiable formulas they use \mbox{$\neg$ A $\land$ A'}, with A' being an equivalent formula but different formula for A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation. This technique of creating formulas satisfiable by construction has also been applied to SMT solvers by Muhammad Numair Mansur et al. called STORM \cite{1mansur2020detecting} which uses mutational input creation compared to the previous generation based techniques. In the paper the authors dissect all SMT assertions into their sub-formulas and create an initial pool. In this pool the sub-formulas are checked if they satisfy or not and with this knowledge new formulas are created for the population pool with ground truth, from this pool new theories are created and tested. This makes that STORM does not need an oracle to test the entire theory, but only the smaller sub-formulas.
 
 

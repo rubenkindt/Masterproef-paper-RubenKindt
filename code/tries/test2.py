@@ -25,13 +25,13 @@ i=intvar(2,2,name="i")
 m=Model()
 m+= i==2
 
-m += not(not(i==2))
+m += ~(~(i==2))
 
 #m = Model().from_file("C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm/temp/soundness/0/mutant_0")
 
 
 #m=flatten_model(m)
-m.solve()
+m.solve(solver="minizinc:osicbc")
 m.status()
 print(m.status())
 
