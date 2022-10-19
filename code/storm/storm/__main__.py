@@ -18,6 +18,7 @@ import argparse
 import multiprocessing
 import time
 from termcolor import colored
+from storm import *
 from storm.fuzzer.fuzzer import generate_mutants
 from storm.minimizer.minimizer import minimize
 from storm.runner.solver_runner import solver_runner
@@ -72,7 +73,8 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                                      buggy_mutant_path=mutant_path,
                                      seed=SEED,
                                      mutant_number=i,
-                                     fuzzing_parameters=fuzzing_parameters)
+                                     fuzzing_parameters=fuzzing_parameters,
+                                     parsedArguments=parsedArguments)
                     print(colored("Time to bug: ", "magenta", attrs=["bold"]) + str(time.time() - start_time))
                     print(colored("Iterations to bug: ", "magenta", attrs=["bold"]) + str(i+1))
                 elif output.__contains__("error"):
@@ -219,63 +221,63 @@ def main():
     reproduction_mode = True if parsedArguments["reproduce"] is not None else False
 
     # Minimization mode
-    if False and parsedArguments["min"]:
-        if parsedArguments["file_path"] is None:
-            print(colored("--file_path argument cannot be None", "red", attrs=["bold"]))
-            return 1
-        if parsedArguments["solverbin"] is None:
-            print(colored("--solverbin argument cannot be None", "red", attrs=["bold"]))
-            return 1
-        if parsedArguments["solver"] is None:
-            print(colored("--solver argument cannot be None", "red", attrs=["bold"]))
-            return 1
-        #if parsedArguments["theory"] is None:
-            #print(colored("--theory argument cannot be None", "red", attrs=["bold"]))
-            #return 1
-
-        minimize_dir_path = os.path.dirname(os.path.realpath(parsedArguments["file_path"]))
-        stats_file = os.path.join(minimize_dir_path, "min_stats.csv")
-        #orig_maxDepth = get_max_depth(parsedArguments["file_path"])
-        orig_asserts = count_asserts(parsedArguments["file_path"])
-        orig_lines = count_lines(parsedArguments["file_path"])
-        orig_size = os.path.getsize(parsedArguments["file_path"])
-        row_2 = "ORIGINAL,-," + "," + str(orig_asserts) + "," + str(orig_lines) + "," + str(orig_size) + ", ,"
-                #str(orig_maxDepth) + \
-
-        file = open(stats_file, "w")
-        file.writelines("iteration, seed, maxDepth, maxAssert, line_numbers, bytes, number of queries, time\n" + row_2)
-        file.close()
-
-        temp_dir = os.path.join(minimize_dir_path, "temp")
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
-        os.mkdir(temp_dir)
-
-        def minimize_in_parallel(dir_path, file_path, solver_bin, maxDepth, maxAssert, seed, parsed_arguments, iteration):
-            minimizer = minimize(dir_path=dir_path,
-                                 file_path = file_path,
-                                 maxDepth=maxDepth,
-                                 maxAssert=maxAssert,
-                                 SEED=seed,
-                                 parsedArguments=parsed_arguments,
-                                 iteration=iteration)
-
-        # Run minimizer in parallel
-        if parsedArguments["cores"] is None:
-            cores = 1
-        else:
-            cores = int(parsedArguments["cores"])
-        for i in range(cores):
-            process = multiprocessing.Process(target=minimize_in_parallel, args=(minimize_dir_path,
-                                                                                 parsedArguments["file_path"],
-                                                                                 64,
-                                                                                 64,
-                                                                                 i,
-                                                                                 parsedArguments,
-                                                                                 i))
-            process.start()
-            os.system("taskset -p -c " + str(i) + " " + str(process.pid))
-        return 0
+    # if False and parsedArguments["min"]:
+    #     if parsedArguments["file_path"] is None:
+    #         print(colored("--file_path argument cannot be None", "red", attrs=["bold"]))
+    #         return 1
+    #     if parsedArguments["solverbin"] is None:
+    #         print(colored("--solverbin argument cannot be None", "red", attrs=["bold"]))
+    #         return 1
+    #     if parsedArguments["solver"] is None:
+    #         print(colored("--solver argument cannot be None", "red", attrs=["bold"]))
+    #         return 1
+    #     #if parsedArguments["theory"] is None:
+    #         #print(colored("--theory argument cannot be None", "red", attrs=["bold"]))
+    #         #return 1
+    #
+    #     minimize_dir_path = os.path.dirname(os.path.realpath(parsedArguments["file_path"]))
+    #     stats_file = os.path.join(minimize_dir_path, "min_stats.csv")
+    #     #orig_maxDepth = get_max_depth(parsedArguments["file_path"])
+    #     orig_asserts = count_asserts(parsedArguments["file_path"])
+    #     orig_lines = count_lines(parsedArguments["file_path"])
+    #     orig_size = os.path.getsize(parsedArguments["file_path"])
+    #     row_2 = "ORIGINAL,-," + "," + str(orig_asserts) + "," + str(orig_lines) + "," + str(orig_size) + ", ,"
+    #             #str(orig_maxDepth) + \
+    #
+    #     file = open(stats_file, "w")
+    #     file.writelines("iteration, seed, maxDepth, maxAssert, line_numbers, bytes, number of queries, time\n" + row_2)
+    #     file.close()
+    #
+    #     temp_dir = os.path.join(minimize_dir_path, "temp")
+    #     if os.path.exists(temp_dir):
+    #         shutil.rmtree(temp_dir)
+    #     os.mkdir(temp_dir)
+    #
+    #     def minimize_in_parallel(dir_path, file_path, solver_bin, maxDepth, maxAssert, seed, parsed_arguments, iteration):
+    #         minimizer = minimize(dir_path=dir_path,
+    #                              file_path = file_path,
+    #                              maxDepth=maxDepth,
+    #                              maxAssert=maxAssert,
+    #                              SEED=seed,
+    #                              parsedArguments=parsed_arguments,
+    #                              iteration=iteration)
+    #
+    #     # Run minimizer in parallel
+    #     if parsedArguments["cores"] is None:
+    #         cores = 1
+    #     else:
+    #         cores = int(parsedArguments["cores"])
+    #     for i in range(cores):
+    #         process = multiprocessing.Process(target=minimize_in_parallel, args=(minimize_dir_path,
+    #                                                                              parsedArguments["file_path"],
+    #                                                                              64,
+    #                                                                              64,
+    #                                                                              i,
+    #                                                                              parsedArguments,
+    #                                                                              i))
+    #         process.start()
+    #         os.system("taskset -p -c " + str(i) + " " + str(process.pid))
+    #     return 0
 
 
     if not reproduction_mode:

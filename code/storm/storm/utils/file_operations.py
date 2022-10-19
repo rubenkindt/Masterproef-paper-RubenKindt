@@ -101,7 +101,7 @@ def pick_a_supported_theory(path_to_benchmark, solver, seed):
             return theory
 
 
-def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters):
+def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters, parsedArguments):
     temp_dir = os.path.join(home_directory, "temp")
     print(colored("Creating a soundness folder at: ", "magenta", attrs=["bold"]) + temp_dir)
     print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
@@ -132,5 +132,8 @@ def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mu
     error_logs += "\nConfiguration: " + "\n"
     error_logs += str(fuzzing_parameters)
     error_logs += "\n"
+    error_logs += str(parsedArguments)
+    error_logs += "\n"
+    error_logs += "solver: "+ str(parsedArguments["solver"])
 
     create_file(error_logs, os.path.join(path_to_bug_dir, "error_logs.txt"))

@@ -1,1 +1,0 @@
-"boolvar and boolvar" does not work needs to be "boolvar & boolvar"
