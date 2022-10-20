@@ -182,6 +182,7 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
                         node = ~node_2_neg
                     else:
                         j-=1
+                        continue
 
                 mutant_file.append(node)
             else:
@@ -199,6 +200,7 @@ def pick_true_and_false_nodes_at_random(cpmpy_Object, number_of_mutants, max_ass
                         node = ~node_2_neg
                     else:
                         j-=1
+                        continue
                 mutant_file.append(node)
             j+=1
 

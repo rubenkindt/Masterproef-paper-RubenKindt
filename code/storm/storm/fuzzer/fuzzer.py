@@ -126,10 +126,13 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing
     m.solve(solver="minizinc:chuffed", time_limit=fuzzing_parameters["solver_timeout"].total_seconds())
 
     for node in cpmpy_Object.get_all_nodes():
-        if node.value():
-            cpmpy_Object.append_true_node(node)
-        else:
-            cpmpy_Object.append_false_node(node)
+        try:
+            if node.value():
+                cpmpy_Object.append_true_node(node)
+            else:
+                cpmpy_Object.append_false_node(node)
+        except TypeError:
+            continue
 
     '''for node in smt_Object.get_all_nodes():
         if model.eval(node, model_completion=True) == True:

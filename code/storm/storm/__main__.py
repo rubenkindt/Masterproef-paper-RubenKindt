@@ -25,7 +25,7 @@ from storm.runner.solver_runner import solver_runner
 from storm.smt.smt_object import smtObject
 from storm.STORMS_cpmpy.cpmpy_object import cpmpyObject
 from storm.utils.file_operations import get_all_smt_files_recursively, create_server_core_directory, refresh_directory, \
-    get_mutant_paths, pick_a_supported_theory, record_soundness
+    get_mutant_paths, pick_a_supported_theory, record_soundness, record_error
 from storm.parsers.argument_parser import MainArgumentParser
 from storm.utils.max_depth import count_asserts, count_lines
 from storm.utils.randomness import Randomness
@@ -79,6 +79,14 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                     print(colored("Iterations to bug: ", "magenta", attrs=["bold"]) + str(i+1))
                 elif output.__contains__("error"):
                     print(colored(output, "red", attrs=["bold"]))
+                    record_error(home_directory=parsedArguments["home"],
+                                     seed_file_path=seed_file_path,
+                                     buggy_mutant_path=mutant_path,
+                                     seed=SEED,
+                                     mutant_number=i,
+                                     fuzzing_parameters=fuzzing_parameters,
+                                     parsedArguments=parsedArguments,
+                                     errorType=output)
                 else:
                     print(colored(output, "yellow", attrs=["bold"]))
                 os.remove(mutant_path)  # remove mutant when processed
@@ -122,13 +130,13 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         # Refresh core directory
         refresh_directory(path_to_temp_core_directory)
         incrementality = randomness.random_choice(ALL_FUZZING_PARAMETERS["incremental"])
-        print("####### [" + str(i) + "] seed: ", end="")
+        print("####### [" + str(i) + "/" + str(len(seed_file_paths)) + "] file: " + file, end="")
         #smt_Object = smtObject(file_path=file, path_to_mutant_folder=path_to_temp_core_directory)
         cpmpy_Object = cpmpyObject(file_path=file, path_to_mutant_folder=path_to_temp_core_directory)
 
         if not cpmpy_Object.get_readeble():
             print(colored("Was not able to parse the cpmpy pickled file", "red"))
-            return 1
+            continue
 
         cpmpy_Object.check_satisfiability(timeout=ALL_FUZZING_PARAMETERS["solver_timeout"])
         if cpmpy_Object.get_orig_satisfiability() == "timeout":

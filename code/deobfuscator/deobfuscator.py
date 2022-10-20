@@ -15,10 +15,43 @@ def __main__():
             if file.startswith('mutant'):
                 allSoundnessBugs.append((root,file))
 
+    allSoundnessBugs.sort()
+
     for folder, fileName in allSoundnessBugs:
         if alreadyHasMin(folder):
             continue
         minimize(folder, fileName)
+
+def minimize(folderPath, fileName):
+    m = cpmpy.Model().from_file(folderPath+"/"+fileName)
+    try:
+        unsatCons = musx(m.constraints)
+    except Exception as e:
+        return
+    unsatModel = Model(unsatCons)
+    unsatModel.to_file(folderPath+"/minimized")
+
+    print()
+    print(folderPath+"/"+fileName)
+
+    constraints = ""
+    for con in unsatModel.constraints:
+        constraints += str(con)
+    print(constraints)
+
+    if not constraints.__contains__(" == 0 == 0"):
+        storeIntrestingFile(folderPath, fileName, constraints)
+
+def storeIntrestingFile(folderPath, fileName, constraints):
+    if os.name == 'posix':
+        intPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/temp/interesting.txt"
+    else:
+        intPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm/temp/interesting.txt"
+
+    strin = folderPath+"/"+fileName+"\n"+constraints+"\n"
+    file = open(intPath,"a")
+    file.write(strin)
+    file.close()
 
 def alreadyHasMin(folder):
     """checks if folder has already a file starting with 'minimized'
@@ -29,17 +62,6 @@ def alreadyHasMin(folder):
             if file.startswith("minimized"):
                 return True
     return False
-
-def minimize(folderPath, fileName):
-    m = cpmpy.Model().from_file(folderPath+"/"+fileName)
-    unsatCons = musx(m.constraints)
-    unsatModel = Model(unsatCons)
-    unsatModel.to_file(folderPath+"/minimized")
-
-    print()
-    print(folderPath+"/"+fileName)
-    for con in unsatModel.constraints:
-        print(con)
 
 def checkAgain(folder, fileName):
     file = folder+"/"+fileName
@@ -54,5 +76,5 @@ def checkAgain(folder, fileName):
     #print(m2.status())
     
     assert m.status().exitstatus.name != m2.status().exitstatus.name
-    
+
 __main__()

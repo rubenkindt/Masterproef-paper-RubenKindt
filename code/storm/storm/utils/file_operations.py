@@ -134,6 +134,43 @@ def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mu
     error_logs += "\n"
     error_logs += str(parsedArguments)
     error_logs += "\n"
-    error_logs += "solver: "+ str(parsedArguments["solver"])
+    error_logs += "solver: " + str(parsedArguments["solver"])
+
+    create_file(error_logs, os.path.join(path_to_bug_dir, "error_logs.txt"))
+
+def record_error(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters, parsedArguments, errorType):
+    temp_dir = os.path.join(home_directory, "temp")
+    print(colored("Creating a error folder at: ", "magenta", attrs=["bold"]) + temp_dir)
+    print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
+    print(colored("buggy mutant file path: ", "magenta", attrs=["bold"]) + buggy_mutant_path)
+    # check if the error folder exists
+    path_to_error_folder = os.path.join(temp_dir, "error")
+    number_of_directories = 0
+    for r, d, f in os.walk(path_to_error_folder):
+        number_of_directories = len(d)
+        break
+
+    if not os.path.exists(path_to_error_folder):
+        os.mkdir(path_to_error_folder)
+
+    # Create a directory for the bug
+    path_to_bug_dir = os.path.join(path_to_error_folder, str(number_of_directories))
+    os.mkdir(path_to_bug_dir)
+
+    # copy the orig file and the mutant to the directory for the bug
+    shutil.copy2(seed_file_path, path_to_bug_dir)
+    shutil.copy2(buggy_mutant_path, path_to_bug_dir)
+
+    error_logs = "Some info on this bug:\n"
+    error_logs += "seed to run_storm() function: " + str(seed) + "\n"
+    error_logs += "Path to original file: " + seed_file_path + "\n"
+    error_logs += "This was the [" + str(mutant_number) + "]th mutant\n"
+    #error_logs += "Seed theory: " + seed_theory + "\n"
+    error_logs += "\nConfiguration: " + "\n"
+    error_logs += str(fuzzing_parameters)
+    error_logs += "\n"
+    error_logs += str(parsedArguments)
+    error_logs += "\n"
+    error_logs += "error Type: " + str(errorType)
 
     create_file(error_logs, os.path.join(path_to_bug_dir, "error_logs.txt"))

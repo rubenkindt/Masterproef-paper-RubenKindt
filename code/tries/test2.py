@@ -2,19 +2,6 @@ from cpmpy import *
 from cpmpy.transformations.flatten_model import *
 from musx import musx
 
-# x = boolvar(shape=3)
-# m = Model()
-# m2 = Model()
-# m3 = Model()
-#
-# t = (x[0]) & (x[1])
-# # t  = t2 ^ x[2]
-# # s =  ~(t)
-# m += t
-# print(m.constraints)
-# i=intvar(0,100000000,3)
-#
-#
 # b = boolvar(shape=3)
 # cons = ~(b[0] | b[1])
 # m = Model([(cons)])
@@ -27,13 +14,15 @@ from musx import musx
 #
 # m += ~(~(i==2))
 
-file = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm/temp/soundness/0/minimized"
+file ="C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm/try2/error/1/mutant_221"
+
+m2 = Model().from_file(file)
+#mu = musx(m2.constraints)
+#mu.to_file("C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm/try2/error/1/minimized")
+m2.solve()
+print(m2.status())
 
 m = Model().from_file(file)
 m.solve(solver="ortools")
 m.status()
 print(m.status())
-
-m2 = Model().from_file(file)
-m2.solve(solver="minizinc:chuffed")
-print(m2.status())
