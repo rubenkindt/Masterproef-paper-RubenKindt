@@ -25,8 +25,14 @@ from cpmpy.solvers.solver_interface import *
 def check_satisfiability(cpmpy_Object, timeout):
 
     #def check_sat(cpmpy_Object, output):
-    cpmpy_Object.model.solve(solver=cpmpy_Object.solver, time_limit=timeout.total_seconds())
-    solverStatus = cpmpy_Object.model.status()
+    try:
+        cpmpy_Object.model.solve(solver=cpmpy_Object.solver, time_limit=timeout.total_seconds())
+        solverStatus = cpmpy_Object.model.status()
+
+    except Exception as e:
+        if str(e).__contains__("time-out"):
+            return "timeout"
+        return "error"
 
     # solFound = cpmpy_Object.solver
     # solverStatus = cpmpy_Object.model.status().exitstatus

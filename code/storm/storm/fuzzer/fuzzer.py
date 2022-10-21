@@ -131,7 +131,7 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing
                 cpmpy_Object.append_true_node(node)
             else:
                 cpmpy_Object.append_false_node(node)
-        except TypeError:
+        except Exception:
             continue
 
     '''for node in smt_Object.get_all_nodes():
