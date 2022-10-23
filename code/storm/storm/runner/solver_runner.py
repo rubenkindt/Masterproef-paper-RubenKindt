@@ -30,12 +30,11 @@ def solver_runner(cp_file, temp_core_folder, timeout, solver):
 
     model = cpmpy.Model().from_file(cp_file)
 
-    solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
-
-    # try:
-    #     solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
-    # except Exception as e:
-    #     return "error" + " " + str(e)
+    #solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
+    try:
+        solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
+    except Exception as e:
+        return "error" + " " + str(e)
 
     if model.status().exitstatus == ExitStatus.NOT_RUN:
         return "unknown"
