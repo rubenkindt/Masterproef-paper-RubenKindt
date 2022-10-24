@@ -68,6 +68,7 @@ code/notes/Strange behaviour cpmpy.txt
 
 # more testing files
 code/examples/test/*
+code/tries/*
 
 #to many output files
 code/results/*
