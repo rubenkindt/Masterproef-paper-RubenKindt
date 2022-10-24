@@ -15,7 +15,10 @@ limitations under the License.
 """
 
 import os
+import re
 import shutil
+
+import cpmpy
 from termcolor import colored
 from storm.parameters import get_supported_theories
 from storm.parameters import get_parameters_dict
@@ -103,9 +106,6 @@ def pick_a_supported_theory(path_to_benchmark, solver, seed):
 
 def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters, parsedArguments):
     temp_dir = os.path.join(home_directory, "temp")
-    print(colored("Creating a soundness folder at: ", "magenta", attrs=["bold"]) + temp_dir)
-    print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
-    print(colored("buggy mutant file path: ", "magenta", attrs=["bold"]) + buggy_mutant_path)
     # check if the soundness folder exists
     path_to_soundness_folder = os.path.join(temp_dir, "soundness")
     number_of_directories = 0
@@ -119,6 +119,9 @@ def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mu
     # Create a directory for the bug
     path_to_bug_dir = os.path.join(path_to_soundness_folder, str(number_of_directories))
     os.mkdir(path_to_bug_dir)
+    print(colored("Creating a soundness folder at: ", "magenta", attrs=["bold"]) + temp_dir + "/" + path_to_bug_dir)
+    print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
+    print(colored("buggy mutant file path: ", "magenta", attrs=["bold"]) + buggy_mutant_path)
 
     # copy the orig file and the mutant to the directory for the bug
     shutil.copy2(seed_file_path, path_to_bug_dir)
@@ -140,9 +143,7 @@ def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mu
 
 def record_error(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters, parsedArguments, errorType):
     temp_dir = os.path.join(home_directory, "temp")
-    print(colored("Creating a error folder at: ", "magenta", attrs=["bold"]) + temp_dir)
-    print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
-    print(colored("buggy mutant file path: ", "magenta", attrs=["bold"]) + buggy_mutant_path)
+
     # check if the error folder exists
     path_to_error_folder = os.path.join(temp_dir, "error")
     number_of_directories = 0
@@ -156,6 +157,9 @@ def record_error(home_directory, seed_file_path, buggy_mutant_path, seed, mutant
     # Create a directory for the bug
     path_to_bug_dir = os.path.join(path_to_error_folder, str(number_of_directories))
     os.mkdir(path_to_bug_dir)
+    print(colored("Creating a error folder at: ", "magenta", attrs=["bold"]) + temp_dir + "/" + path_to_bug_dir)
+    print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
+    print(colored("buggy mutant file path: ", "magenta", attrs=["bold"]) + buggy_mutant_path)
 
     # copy the orig file and the mutant to the directory for the bug
     shutil.copy2(seed_file_path, path_to_bug_dir)
@@ -174,3 +178,46 @@ def record_error(home_directory, seed_file_path, buggy_mutant_path, seed, mutant
     error_logs += "error Type: " + str(errorType)
 
     create_file(error_logs, os.path.join(path_to_bug_dir, "error_logs.txt"))
+
+
+def record_crash(home_directory, cpmpy_Object, seed_file_path, seed, mutant_number, fuzzing_parameters, parsedArguments, crashTrace, errorType):
+    temp_dir = os.path.join(home_directory, "temp")
+
+    # check if the crash folder exists
+    path_to_crash_folder = os.path.join(temp_dir, "crash")
+    number_of_directories = 0
+    for r, d, f in os.walk(path_to_crash_folder):
+        number_of_directories = len(d)
+        break
+
+    if not os.path.exists(path_to_crash_folder):
+        os.mkdir(path_to_crash_folder)
+
+    # Create a directory for the crash
+    safeErrorType = re.sub('[^a-zA-Z0-9 ]', '', errorType) # remove all non (a-z A-Z 0-9 and " ") chachaters
+    path_to_bug_dir = os.path.join(path_to_crash_folder, safeErrorType + str(number_of_directories))
+    os.mkdir(path_to_bug_dir)
+    #print(colored("Creating a error folder at: ", "magenta", attrs=["bold"]) + temp_dir + "/" + str(number_of_directories))
+    #print(colored("seed file path: ", "magenta", attrs=["bold"]) + seed_file_path)
+
+    # copy the orig file and the mutant to the directory for the bug
+    shutil.copy2(seed_file_path, path_to_bug_dir)
+
+    error_logs = "Some info on this crash:\n"
+    error_logs += "seed to run_storm() function: " + str(seed) + "\n"
+    error_logs += "Path to original file: " + seed_file_path + "\n"
+    error_logs += "This was the [" + str(mutant_number) + "]th mutant\n"
+    #error_logs += "Seed theory: " + seed_theory + "\n"
+    error_logs += "\nConfiguration: " + "\n"
+    error_logs += str(fuzzing_parameters)
+    error_logs += "\n"
+    error_logs += str(parsedArguments)
+    error_logs += "\n"
+    error_logs += "crash trace: " + "\n" + str(crashTrace)
+
+    create_file(error_logs, os.path.join(path_to_bug_dir, "crash_logs.txt"))
+    #cpmpy.Model(cpmpy_Object.get_all_nodes()).to_file(path_to_bug_dir + "allNodes")
+    lst = []
+    lst.append(cpmpy_Object.get_true_constructed_nodes())
+    lst.append(cpmpy_Object.get_false_constructed_nodes())
+    #cpmpy.Model(lst).to_file(path_to_bug_dir + "constructed_nodes")

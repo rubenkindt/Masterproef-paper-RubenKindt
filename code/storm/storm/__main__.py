@@ -25,7 +25,7 @@ from storm.runner.solver_runner import solver_runner
 from storm.smt.smt_object import smtObject
 from storm.STORMS_cpmpy.cpmpy_object import cpmpyObject
 from storm.utils.file_operations import get_all_smt_files_recursively, create_server_core_directory, refresh_directory, \
-    get_mutant_paths, pick_a_supported_theory, record_soundness, record_error
+    get_mutant_paths, pick_a_supported_theory, record_soundness, record_error, record_crash
 from storm.parsers.argument_parser import MainArgumentParser
 from storm.utils.max_depth import count_asserts, count_lines
 from storm.utils.randomness import Randomness
@@ -36,6 +36,7 @@ from storm.utils.file_operations import append_row
 from storm.utils.file_operations import get_all_seed_files_recursively
 import time
 import os
+import traceback
 
 ALL_FUZZING_PARAMETERS = None
 
@@ -52,10 +53,25 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
             print("####### RUNNING MUTANTS")
             start_time = time.time()
             for i, mutant_path in enumerate(mutant_file_paths):
-                output = solver_runner(cp_file=mutant_path,
-                                       temp_core_folder=path_to_temp_core_directory,
-                                       timeout=ALL_FUZZING_PARAMETERS["solver_timeout"],
-                                       solver = solver)
+                try:
+                    output = solver_runner(cp_file=mutant_path,
+                                           temp_core_folder=path_to_temp_core_directory,
+                                           timeout=ALL_FUZZING_PARAMETERS["solver_timeout"],
+                                           solver = solver)
+                except Exception as e:
+                    print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                    record_crash(home_directory=parsedArguments["home"],
+                                 cpmpy_Object=cpmpy_Object,
+                                 seed_file_path=file,
+                                 seed=SEED,
+                                 mutant_number=i,
+                                 fuzzing_parameters=ALL_FUZZING_PARAMETERS,
+                                 parsedArguments=parsedArguments,
+                                 crashTrace=traceback.format_exc(),
+                                 errorType=str(e))
+                    os.remove(mutant_path)
+                    continue
+
                 print("[" + parsedArguments["solver"] +"]\t"+ "[core: " + str(core) +"]\t", end="")
                 print("[seed_file: " + str(seed_file_number) +"]\t\t" + "[" + str(i+1) + "/" + str(len(mutant_file_paths)) + "]\t\t", end="")
                 #print("[" + parsedArguments["theory"] +"]\t", end="")
@@ -148,12 +164,25 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         max_assert = ALL_FUZZING_PARAMETERS["max_assert"]
 
         # Generate all mutants at once for this file in a thread with a timeout
-        signal = generate_mutants(cpmpy_Object=cpmpy_Object, # init pool
-                                  path_to_directory=path_to_temp_core_directory,
-                                  maxDepth=max_depth,
-                                  maxAssert=max_assert,
-                                  seed=SEED,
-                                  fuzzing_parameters=ALL_FUZZING_PARAMETERS)
+        try:
+            signal = generate_mutants(cpmpy_Object=cpmpy_Object, # init pool
+                                      path_to_directory=path_to_temp_core_directory,
+                                      maxDepth=max_depth,
+                                      maxAssert=max_assert,
+                                      seed=SEED,
+                                      fuzzing_parameters=ALL_FUZZING_PARAMETERS)
+        except Exception as e:
+            print(colored("Crash", "red", attrs=["bold"]))
+            print(str(e))
+            record_crash(home_directory=parsedArguments["home"],
+                         cpmpy_Object=cpmpy_Object,
+                         seed_file_path=file,
+                         seed=SEED,
+                         mutant_number=i,
+                         fuzzing_parameters=ALL_FUZZING_PARAMETERS,
+                         parsedArguments=parsedArguments,
+                         crashTrace=traceback.format_exc(),
+                         errorType=str(e))
         mutant_file_paths = get_mutant_paths(path_to_temp_core_directory)
 
         if len(mutant_file_paths) == 0:

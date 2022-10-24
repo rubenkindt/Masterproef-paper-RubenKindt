@@ -37,7 +37,10 @@ def export_mutants(mutants, path, cpmpy_Object):
         m.to_file(file_path)
 
 def supportedNegFunction(expr):
-    # this is modified version of negated_normal(expr): from cpmpy/transformations/flatten_model.py which is still a work in progress
+    # this is a patch to circumvent the bug of negating a global function
+    # part come from negated_normal(expr): from cpmpy/transformations/flatten_model.py which may have changed when you read this
+
+    return True
 
     if __is_flat_var(expr):
         return True
@@ -75,8 +78,8 @@ def supportedNegFunction(expr):
 
     else:
         # global...
-        #raise NotImplementedError("negate_normal {}".format(expr))
-        return False
+        raise NotImplementedError("negate_normal {}".format(expr))
+        #return False
 
 def enrich_true_and_false_nodes(smt_object, enrichment_steps, randomness, max_depth):
     """

@@ -126,13 +126,19 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing
     m.solve(solver="minizinc:chuffed", time_limit=fuzzing_parameters["solver_timeout"].total_seconds())
 
     for node in cpmpy_Object.get_all_nodes():
-        try:
-            if node.value():
-                cpmpy_Object.append_true_node(node)
-            else:
-                cpmpy_Object.append_false_node(node)
-        except Exception:
-            continue
+        if node.value():
+            cpmpy_Object.append_true_node(node)
+        else:
+            cpmpy_Object.append_false_node(node)
+
+        # patch to circomvent TypeError in .value() of a sum that gests converted into a wsum
+        # try:
+        #     if node.value():
+        #         cpmpy_Object.append_true_node(node)
+        #     else:
+        #         cpmpy_Object.append_false_node(node)
+        # except Exception:
+        #     continue
 
     '''for node in smt_Object.get_all_nodes():
         if model.eval(node, model_completion=True) == True:

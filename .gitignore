@@ -1,4 +1,3 @@
-
 #LaTeX files to ignore
 
 *.aux
@@ -69,6 +68,7 @@ code/notes/Strange behaviour cpmpy.txt
 # more testing files
 code/examples/test/*
 code/tries/*
+code/deobfuscator/*.txt
 
 #to many output files
 code/results/*
