@@ -1,6 +1,11 @@
+import os
+import re
+import shutil
+import traceback
+
 from cpmpy import *
-import os, re, traceback, shutil
 from termcolor import colored
+
 
 def solveWith(lstConstraints, solver, timeout=None):
     """ parameters
@@ -58,7 +63,7 @@ def recordCrash(executionDir, seedFolder, seedName, solver, trace=None, errorNam
     create_file(crash_logs, os.path.join(path_to_bug_dir, "crash_logs.txt"))
 
 
-def recordDiff(executionDir, seedFolder, seedName, solvers, difference):
+def recordDiff(executionDir, seedFolder, seedName, potentialNrDiff=None, potentialStatusDiff=None):
     # parts copied and or modified from STORM's soundness logging function
 
     # check if the crash folder exists
@@ -74,26 +79,24 @@ def recordDiff(executionDir, seedFolder, seedName, solvers, difference):
         os.mkdir(path_to_crash_folder)
 
     # Create a directory for the crash
-    safeErrorType = re.sub('[^a-zA-Z0-9 ]', '', " ".join(solvers))  # remove all non (a-z A-Z 0-9 and " ") characters
-    path_to_bug_dir = os.path.join(path_to_crash_folder, safeErrorType + str(number_of_directories))
+    path_to_bug_dir = os.path.join(path_to_crash_folder, str(number_of_directories))
     os.mkdir(path_to_bug_dir)
 
     shutil.copy2(seedFolder + "/" + seedName, path_to_bug_dir)
 
-    crash_logs = "seed: " + str(seedFolder + "/" + seedName) + "\n"
-    crash_logs += "disagreeing solvers: " + str(solvers) + "\n"
-    if difference == "nr+status":
-        crash_logs += "difference is both nr of solution and status" + "\n"
-    elif difference == "nr":
-        crash_logs += "difference is amount of solution" + "\n"
-    elif difference == "status":
-        crash_logs += "difference is status" + "\n"
+    crash_logs = "seed: " + str(seedFolder + "/" + seedName) + "\n" + "\n"
+    if len(potentialNrDiff) > 1:
+        crash_logs += "difference in amount of solution: "
+        crash_logs += str(potentialNrDiff) + "\n"
+    if len(potentialStatusDiff) > 1:
+        crash_logs += "difference in status: "
+        crash_logs += str(potentialStatusDiff) + "\n"
 
-    create_file(crash_logs, os.path.join(path_to_bug_dir, "crash_logs.txt"))
+    create_file(crash_logs, os.path.join(path_to_bug_dir, "diff_logs.txt"))
 
 
 def __main__():
-    solvers = ["ortools", "gurobi"] #"minizinc:gurobi", , "minizinc:chuffed"]
+    solvers = ["ortools", "gurobi"] # "minizinc:gurobi", , "minizinc:chuffed"]
     timeout = 5 * 60  # 5 minutes
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting"
@@ -110,11 +113,11 @@ def __main__():
         status = []
         print("file " + str(counter) + "/" + str(len(seedPaths)) + ": " + fileName)
         for solver in solvers:
-            m = Model().from_file(folder + "/" + fileName)
             try:
+                m = Model().from_file(folder + "/" + fileName)
                 sol = m.solveAll(solver=solver, time_limit=timeout, solution_limit=100)
                 nrOfsol.append((sol, solver))
-                status.append((m.status().exitstatus, solver))
+                status.append((m.status().exitstatus.name, solver))
             # except NotImplementedError:
             #     nrOfsol=0
             #
@@ -134,27 +137,8 @@ def __main__():
         if len(set(nrOfsol)) <= 1 and len(set(status)) <= 1:
             continue
 
-        solverWithDiffNr = []
-        solverWithDiffstatus = []
-        for item in set(nrOfsol):
-            solverWithDiffNr.append(item[1])
-        for item in set(nrOfsol):
-            solverWithDiffstatus.append(item[1])
-
-        if len(solverWithDiffNr) > 1 and len(solverWithDiffstatus) > 1:
-            difference = "nr+status"
-            diffSolvers = solverWithDiffNr + solverWithDiffstatus
-        elif len(solverWithDiffNr) > 1:
-            difference = "nr"
-            diffSolvers = solverWithDiffNr
-        elif len(solverWithDiffstatus) > 1:
-            difference = "status"
-            diffSolvers = solverWithDiffstatus
-        else:
-            raise Exception("this should not happen")
-
-        recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName, solvers=diffSolvers,
-                   difference=difference)
+        recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                   potentialNrDiff=nrOfsol, potentialStatusDiff=status)
 
 if __name__ == "__main__":
     __main__()
