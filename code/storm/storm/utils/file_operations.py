@@ -194,7 +194,7 @@ def record_crash(home_directory, cpmpy_Object, seed_file_path, seed, mutant_numb
         os.mkdir(path_to_crash_folder)
 
     # Create a directory for the crash
-    safeErrorType = re.sub('[^a-zA-Z0-9 ]', '', errorType) # remove all non (a-z A-Z 0-9 and " ") chachaters
+    safeErrorType = re.sub('[^a-zA-Z0-9 ]', '', errorType) # remove all non (a-z A-Z 0-9 and " ") characters
     path_to_bug_dir = os.path.join(path_to_crash_folder, safeErrorType + str(number_of_directories))
     os.mkdir(path_to_bug_dir)
     #print(colored("Creating a error folder at: ", "magenta", attrs=["bold"]) + temp_dir + "/" + str(number_of_directories))
