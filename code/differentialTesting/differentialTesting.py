@@ -1,22 +1,13 @@
 import os
 import re
 import shutil
+import argparse
+import gc
 import traceback
 
 from cpmpy import *
 from termcolor import colored
 
-
-def solveWith(lstConstraints, solver, timeout=None):
-    """ parameters
-        list of constraints,
-        which solver you want to be solving
-        timeout in seconds
-        result
-        the resulting model
-    """
-    m = cpmpy.Model(lstConstraints)
-    m.solve(solver=solver, time_limit=timeout)
 
 def create_file(data, path): # copied from STORM (https://github.com/Practical-Formal-Methods/storm)
     file = open(path, "w")
@@ -31,7 +22,6 @@ def getSeeds(path):
                 continue
             seedPath.append((root, file))
     return seedPath
-
 
 def recordCrash(executionDir, seedFolder, seedName, solver, trace=None, errorName=None):
     # parts copied and or modified from STORM's soundness logging function
@@ -94,8 +84,13 @@ def recordDiff(executionDir, seedFolder, seedName, potentialNrDiff=None, potenti
 
     create_file(crash_logs, os.path.join(path_to_bug_dir, "diff_logs.txt"))
 
-
 def __main__():
+    parser = argparse.ArgumentParser(description='--startAt for starting at a specify seed nr')
+    parser.add_argument('--startAt', type=int, nargs='?',
+                        help='the bug-catcher likes to fill the swap space and crash ')
+    args = parser.parse_args()
+
+
     solvers = ["ortools", "gurobi"] # "minizinc:gurobi", , "minizinc:chuffed"]
     timeout = 5 * 60  # 5 minutes
     if os.name == 'posix':
@@ -109,8 +104,11 @@ def __main__():
     counter = 0
     for folder, fileName in seedPaths:
         counter += 1
+        if counter < args.startAt:
+            continue
         nrOfsol = []
         status = []
+        gc.collect()
         print("file " + str(counter) + "/" + str(len(seedPaths)) + ": " + fileName)
         for solver in solvers:
             try:
