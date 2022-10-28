@@ -4,6 +4,7 @@ import shutil
 import argparse
 import gc
 import traceback
+import random
 
 from cpmpy import *
 from termcolor import colored
@@ -91,7 +92,7 @@ def __main__():
     args = parser.parse_args()
 
 
-    solvers = ["ortools", "gurobi"] # "minizinc:gurobi", , "minizinc:chuffed"]
+    solvers = ["gurobi", "ortools"] # "minizinc:gurobi", , "minizinc:chuffed"]
     timeout = 5 * 60  # 5 minutes
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting"
@@ -101,6 +102,7 @@ def __main__():
         executionPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/diffTesting"
 
     seedPaths = getSeeds(seedPath)
+    #random.shuffle(seedPaths) # for debugging purposes
     counter = 0
     for folder, fileName in seedPaths:
         counter += 1
@@ -132,7 +134,11 @@ def __main__():
         if len(status) == 0 or len(nrOfsol) == 0:
             continue
 
-        if len(set(nrOfsol)) <= 1 and len(set(status)) <= 1:
+        nrs=[]
+        for i in nrOfsol:
+            nrs.append(i[0])
+
+        if len(set(nrs)) <= 1:# and len(set(status)) <= 1:
             continue
 
         recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName,

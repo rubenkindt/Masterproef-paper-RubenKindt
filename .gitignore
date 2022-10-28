@@ -49,7 +49,7 @@ Template 21-22/template/masterproef.synctex.gz
 #temp output files
 *_output.txt
 *_WithMiniZinc*.py
-code/.idea/.name
+code/.idea/*
 
 #CPMpy generated files
 *17b
@@ -58,18 +58,16 @@ code/.idea/.name
 *5x5_puzzle
 *50_puzzel
 *a_puzzle
-code/examples/junk/*
-code/examples/forDiffTesting/*
-code/results/storm/temp/*
+code/examples/*
 
 #my notes
 code/notes/*
-code/notes/Strange behaviour cpmpy.txt
 
 # more testing files
-code/examples/test/*
 code/tries/*
+code/ipynb2py/*
 code/deobfuscator/*.txt
 
 #to many output files
 code/results/*
+code/differentialTesting/killedByOOMKiller.txt

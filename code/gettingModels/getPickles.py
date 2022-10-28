@@ -1,5 +1,8 @@
 import subprocess
 import os
+from datetime import datetime
+import random
+
 from termcolor import colored
 
 
@@ -43,9 +46,9 @@ def solver_runner(solver_path, fileName, folderPath, timeout=60, solver=None):
 
 
 if os.name == 'posix':
-    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/non-flattened"
+    folder = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/original"
 else:
-    folder = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples/non-flattened"
+    folder = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples/original"
 
 filelist = []
 for directory, dirs, filenames in os.walk(folder):
@@ -58,8 +61,10 @@ for directory, dirs, filenames in os.walk(folder):
 
 count = 0
 ##filelist= [("bowls_and_oranges.py", folder)]
+random.seed(datetime.now())
+random.shuffle(filelist)
 for nameOfFile, path in filelist:
-    solver_runner("python3", nameOfFile, path)
+    solver_runner("python3.8", nameOfFile, path)
     print(str(count + 1) + "/" + str(len(filelist)) + "testing: " + str(path) + "/ " + str(nameOfFile.replace(".py","")))
     for f_name in os.listdir(path):
         if f_name.startswith("Pickled"):

@@ -4,13 +4,16 @@
 In this chapter we will discuss how we build our fuzzers, what issues we had to circumvent and how we did that. With first starting off how we got our seeds to fuzz upon.
 \todo{Proofread entire chapter}
 
+\section{Software versions used}
+Throughout this paper we used CPMpy version V0.9.9 (commit \href{https://github.com/CPMpy/cpmpy/commit/e79b3afedc934a9437c2ddb3a9f54d7e2d7bd3ee}{e79b3af}) unless specified otherwise. This version was chosen simply because it was the latest release version at the time of testing the first technique. All techniques were developed in Python3.8, the MiniZinc solvers came with minizinc-python \footnote{\url{https://github.com/MiniZinc/minizinc-python}} release version 0.7.0 (commit \url{https://github.com/MiniZinc/minizinc-python/commit/a195cf63fcfbc98665d70ab64efb5424db25bd7e}{a195cf6}). For the proprietary solver Gurobi \footnote{\url{https://www.gurobi.com/}} we used version 9.5.2.
+
 \section{Obtaining seeds}
 \label{impl:obtainingSeeds}
 As discussed in a previous section (section \ref{fuzzing:generationMutation}) generating new inputs is significantly harder than mutation, but with the latter one we require a diverse set of seed files. Fortunately, the CPMpy team made a lot documentation and examples on how to model problems in their language. Ranging from easy examples to teach the language to advanced examples in order to showcase certain features. At the moment of writing most examples are still in a branch called "csplib" \footnote{\url{https://github.com/CPMpy/cpmpy/tree/csplib}} waiting to be merged with the main branch. We downloaded a copy of that branch on Tuesday 27th of September to be used as future seed files. 
 
 A second source of seeds files came from Hakan Kjellerstrand a retired software developer and independent researcher from Sweden. He has a big repository \footnote{\url{https://github.com/hakank/hakank/tree/master/cpmpy}} full of problem models which he solves in multiple ways, including CPMpy. We obtained a copy of all his CPMpy examples on Tuesday 27th of September to top off our collection of future seed files.
 
-After that we ran all examples to test that the base examples do not crash on their own and noticed that most examples run in less then ten seconds. The handful of examples that did run extremely long we did leave out or simplified to gain a speed up while solving of them. A last change we did to the future seed files is extracting the constraints from each example, we did this for a couple of reasons some files had a loop around the solve instruction combined with small changes or had multiple problems in one file. In order to extract these constraints we temporary modified CPMpy to extract the created model, constraints included, each time solve was called. This resulted in 9494 problem models which we will use as our seed files.
+After that we ran all examples to test that the base examples do not crash on their own and noticed that most examples run in less then ten seconds. The handful of examples that did run extremely long we did leave out or simplified to gain a speed up while solving of them. A last change we did to the future seed files is extracting the constraints from each example, we did this for a couple of reasons some files had a loop around the solve instruction combined with small changes or had multiple problems in one file. In order to extract these constraints we temporary modified CPMpy to extract the created model, constraints included, each time solve was called. This resulted in over nine thousand problem models which we will use as our seed files.
 
 %We also made sure that the seed files were able to be run in less then 60 sec either by reducing the amount of solver calls per example of in extreme situations removed some examples
 
@@ -21,6 +24,9 @@ Our first technique of finding bugs is heavily based on STORM which we shortly d
 The original plan was to convert our seeds to FlatZinc using the MiniZinc API provided bu CPMpy to then convert that to SMT-LIB \cite{72bofill2010system} using Miquel Bofill et al.'s fzn2smt-tool to then be able to use STORM like it was build originally. Unfortunate and a bit predictable, this way of working did not work out. On top of fzn2smt being more then a decade old, the multiple transformation layers that could introduces conversion bugs and the unclear way back from SMT-LIB prevented this path from being investigated by us.
 Therefore, we decided to refactoring STORM in order to fit CPMpy, in order to do this we need to rewrite the detection, labeling and construction of (sub)constraints. This refactoring did come with some downsides, some features of STORM we did not need no longer work like incremental solving or  the input obfuscation that was build-in. A bigger downside came with the refactoring of the negation function of STORM, as CPMpy is still in active development is not always available and that was felt while trying to negate global functions. I.e. when trying to invert (sub)constraints which include AllDifferent([var1, var2, var3]) using CPMpy, it crashed. This is of course a "bug" (more specific not yet implemented) in CPMpy, but vital to the fuzzer. So here we had the choice of adding the missing negation of global functions to CPMpy or to limit our fuzzer to not use the missing features. We choose to limit the fuzzer, since we are trying to detect bugs in CPMpy with different tools and extending the language ourselves does not fit in the vision of this dissertation. The resulting limitation on our fuzzer only influences the speed of generating new constraints and it can theoretically now get stuck but this has not happened yet, so we believe it to be a acceptable limitation.
 
+
+\todo{this part}
+with the modified storm we shoice to use the non--flattend seeds as input so that we can flatten them inside STORM in order to get all possible sub -sxpressions to create 
 
 %Storm take in SMT-lib seed files, we can convert them to minizinc and then using fzn2smt but It hasn't been maintained in over a decenta and doing multiple convertions only back could be tricky and would introduce multiple layers which can introduce bugs a normal user would ever see
 %Therefore we will be refactoring STORM to fit our CPMpy
@@ -33,11 +39,10 @@ Therefore, we decided to refactoring STORM in order to fit CPMpy, in order to do
 %%this limitation check will have a speed pentalty in the enrichment step (the step where we create complexer functions) but is speed relevant here?
 %nested functions with global function inside are giving problems
 
-\section{difftesting}
-with the modified storm we shoice to use the non--flattend seeds as input so that we can flatten them inside STORM in order to get all possible sub -sxpressions to create 
+\section{Differential testing}
+With differential testing we step a bit further way from the fuzzing world but not that far since this can be integrated as an check to see if the fuzzer preformed correctly. With the previous technique this was not needed due knowing the correct solution in advance. The way this tester is written is quite easy we test a given input on multiple solver and search if there is any difference in outputs.
+However after finishing we discovered that only two solver, namely "ortools" and "gurobi"-solver are able to search all solutions for problem models that contain global function. More are able to find all solutions for SAT problems, but that is not the main objective of this dissertation. This limitation to only two solvers results in only able to compare two different implementations and has a risk of overlapping bugs. Preferably, we would have three or more solvers to be able to compare between them and also able to automatically show us which of the solver is likely to be wrong. In the future more solvers will be available withing CPMpy, but right now the tests are preformed with two solvers.
 
-
-we continue to develop in python more specifically version 3.8 and unless specified use CPMpy v0.9.9 (commit \href{https://github.com/CPMpy/cpmpy/commit/e79b3afedc934a9437c2ddb3a9f54d7e2d7bd3ee}{e79b3af}) which was the latest at the time of starting with the implementation phase of this thesis
 \section{metamorphic testing}
 
 
