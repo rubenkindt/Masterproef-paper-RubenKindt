@@ -1,8 +1,8 @@
 set PYTHONPATH=%PYTHONPATH%;C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\storm
 cd C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\storm
-python3.8 C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\storm\storm\__main__.py --seed 123 --solver ortools --seedFilePath C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\examples\junk
+python3.8 C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\storm\storm\__main__.py --seed 123 --solver ortools --seedFilePath C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\examples\storm --home /home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/
 
 
 export PYTHONPATH="/home/user/Desktop/Thesis/Masterproef-paper/code/storm/"
 cd /home/user/Desktop/Thesis/Masterproef-paper/code/storm/
-python3.8 /home/user/Desktop/Thesis/Masterproef-paper/code/storm/storm/__main__.py --seed 123 --solver gurobi --seedFilePath /home/user/Desktop/Thesis/Masterproef-paper/code/examples/junk --home /home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/
+python3.8 /home/user/Desktop/Thesis/Masterproef-paper/code/storm/storm/__main__.py --seed 123 --solver gurobi --seedFilePath /home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm --home /home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/

@@ -90,7 +90,17 @@ Unfortunately, neither crash based nor differential testing is ideal: crash base
 
 \subsection{Metamorphic testing}
 \label{fuzzing:MetamorphicTesting}
-In situations where the existence of analogue programs would be a limited factor metamorphic testing could be a solution. This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the amount of models reduces (or remains equal). Or that the amount of models remain the same when giving an equivalent formula or adding a tautology compared to the original. \todo{proofread this sence} This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available transformation.
+In situations where the existence of analogue programs would be a limited factor metamorphic testing could be a solution. A nicely worded definition would be 
+
+\begin{quote}
+	\label{quote:MetaMorphic}
+	"Metamorphic testing (...) involves generating new test cases from existing ones, where the expected result of a new test case can be generated from the result of an existing test via a metamorphic relation. By comparing the results of the
+	original test with the new one we can identify cases where the metamorphic relations are broken (...)".
+	\newline
+	-\"{O}zg\"{u}r Akg\"{u}n et al. in "Metamorphic Testing of Constraint Solvers" \cite{50akgun2018metamorphic}.
+\end{quote}
+
+\noindent This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the amount of models reduces (or remains equal). Or that the amount of models remain the same when giving an equivalent formula or adding a tautology compared to the original. \todo{proofread this sence} This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available transformation.
 
 \section{The oracle problem}
 \label{fuzzing:OracleProblem}

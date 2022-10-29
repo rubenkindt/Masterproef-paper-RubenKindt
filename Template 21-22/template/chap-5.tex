@@ -9,9 +9,10 @@ Throughout this paper we used CPMpy version V0.9.9 (commit \href{https://github.
 
 \section{Obtaining seeds}
 \label{impl:obtainingSeeds}
-As discussed in a previous section (section \ref{fuzzing:generationMutation}) generating new inputs is significantly harder than mutation, but with the latter one we require a diverse set of seed files. Fortunately, the CPMpy team made a lot documentation and examples on how to model problems in their language. Ranging from easy examples to teach the language to advanced examples in order to showcase certain features. At the moment of writing most examples are still in a branch called "csplib" \footnote{\url{https://github.com/CPMpy/cpmpy/tree/csplib}} waiting to be merged with the main branch. We downloaded a copy of that branch on Tuesday 27th of September to be used as future seed files. 
+As discussed in a previous section (section \ref{fuzzing:generationMutation}) generating new inputs is significantly harder than mutation, but with the latter one we require a diverse set of seed files. Fortunately, the CPMpy team made a lot documentation and examples on how to model problems in their language. Ranging from easy examples to teach the language to advanced examples in order to showcase certain features. 
+At the moment of writing most examples are found in the main branch and some extras can be found the "csplib" branch \footnote{\url{https://github.com/CPMpy/cpmpy/tree/csplib}} waiting to be merged with the main branch. We downloaded a copy of that branch on Tuesday 27th of September to be used as future seed files. 
 
-A second source of seeds files came from Hakan Kjellerstrand a retired software developer and independent researcher from Sweden. He has a big repository \footnote{\url{https://github.com/hakank/hakank/tree/master/cpmpy}} full of problem models which he solves in multiple ways, including CPMpy. We obtained a copy of all his CPMpy examples on Tuesday 27th of September to top off our collection of future seed files.
+A second source of seeds files came from Hakan Kjellerstrand a retired software developer and independent researcher from Sweden which was found while reading \cite{18bleukx2022model} and got recommended by Ignace Bleukx. He has a big repository \footnote{\url{https://github.com/hakank/hakank/tree/master/cpmpy}} full of problem models which he solves in multiple ways, including CPMpy. We obtained a copy of all his CPMpy examples on Tuesday 27th of September to top off our collection of future seed files.
 
 After that we ran all examples to test that the base examples do not crash on their own and noticed that most examples run in less then ten seconds. The handful of examples that did run extremely long we did leave out or simplified to gain a speed up while solving of them. A last change we did to the future seed files is extracting the constraints from each example, we did this for a couple of reasons some files had a loop around the solve instruction combined with small changes or had multiple problems in one file. In order to extract these constraints we temporary modified CPMpy to extract the created model, constraints included, each time solve was called. This resulted in over nine thousand problem models which we will use as our seed files.
 
@@ -28,6 +29,9 @@ Therefore, we decided to refactoring STORM in order to fit CPMpy, in order to do
 \todo{this part}
 with the modified storm we shoice to use the non--flattend seeds as input so that we can flatten them inside STORM in order to get all possible sub -sxpressions to create 
 
+%problems limited by global fucntions of used seeds (somewhat fine),
+%onlt 'and' and 'not' combinations
+
 %Storm take in SMT-lib seed files, we can convert them to minizinc and then using fzn2smt but It hasn't been maintained in over a decenta and doing multiple convertions only back could be tricky and would introduce multiple layers which can introduce bugs a normal user would ever see
 %Therefore we will be refactoring STORM to fit our CPMpy
 %Translating seeds from solver X to solver Y: 
@@ -43,8 +47,17 @@ with the modified storm we shoice to use the non--flattend seeds as input so tha
 With differential testing we step a bit further way from the fuzzing world but not that far since this can be integrated as an check to see if the fuzzer preformed correctly. With the previous technique this was not needed due knowing the correct solution in advance. The way this tester is written is quite easy we test a given input on multiple solver and search if there is any difference in outputs.
 However after finishing we discovered that only two solver, namely "ortools" and "gurobi"-solver are able to search all solutions for problem models that contain global function. More are able to find all solutions for SAT problems, but that is not the main objective of this dissertation. This limitation to only two solvers results in only able to compare two different implementations and has a risk of overlapping bugs. Preferably, we would have three or more solvers to be able to compare between them and also able to automatically show us which of the solver is likely to be wrong. In the future more solvers will be available withing CPMpy, but right now the tests are preformed with two solvers.
 
+%problems Gurobi outputting Not_run
+%ony 2 solvers
+
 \section{metamorphic testing}
 
+
+\section{creation of sat and unsat formulas}
+see paper 43 p 4
+Semantic Fusion
+\cite{43YinYang}
+een ref to chapter 2
 
 \section{Conclusion}
 \label{impl:conclusion}
