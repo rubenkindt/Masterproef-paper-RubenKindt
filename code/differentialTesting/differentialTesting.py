@@ -2,7 +2,6 @@ import os
 import re
 import shutil
 import argparse
-import gc
 import traceback
 import random
 
@@ -102,7 +101,6 @@ def __main__():
         executionPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/diffTesting"
 
     seedPaths = getSeeds(seedPath)
-    #random.shuffle(seedPaths) # for debugging purposes
     counter = 0
     for folder, fileName in seedPaths:
         counter += 1
@@ -110,7 +108,6 @@ def __main__():
             continue
         nrOfsol = []
         status = []
-        gc.collect()
         print("file " + str(counter) + "/" + str(len(seedPaths)) + ": " + fileName)
         for solver in solvers:
             try:
