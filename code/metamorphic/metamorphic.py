@@ -145,7 +145,9 @@ def __main__():
                    potentialNrDiff=nrOfsol, potentialStatusDiff=status)"""
 
 def satMutation(satModel):
-    metamorphicMutations = ["expandingAllDiff","expandAllEqual","addNewVar2AllEqual","TrueAndCons", "FalseOrCons", "xorCons", "==1", "!=0"]
+    metamorphicMutations = ["expandingAllDiff","AllDiff~(==)","expandAllEqual","AllEqual~(!=)","addNewVar2AllEqual",
+                            "TrueAndCons", "FalseOrCons", "xorCons", "==1", "!=0", "sementicFusion+",
+                            "addRandomIntRestrictions", "True->cons", "cons->True", "cons1<=>cons2"]
     choice = random.choice(metamorphicMutations)
     if choice == "expandingAllDiff":
         newcons = []
@@ -157,12 +159,32 @@ def satMutation(satModel):
             else:
                 newcons += [cons]
         satModel.modifModel = Model(newcons)
+    elif choice == "AllDiff~(==)":
+        newcons = []
+        for cons in satModel.modifModel.constraints:
+            if cons.name == 'alldifferent' and len(cons.args) <= 5:
+                for i, arg1 in enumerate(cons.args):
+                    for arg2 in cons.args[i:]:
+                        newcons += [~(arg1 == arg2)]
+            else:
+                newcons += [cons]
+        satModel.modifModel = Model(newcons)
     elif choice == "expandAllEqual":
         newcons = []
         for cons in satModel.modifModel.constraints:
             if cons.name == 'allequal':
                 for arg1 in cons.args[1:]:
                     newcons += [cons.args[0] == arg1.name]
+            else:
+                newcons += [cons]
+        satModel.modifModel = Model(newcons)
+    elif choice == "AllEqual~(!=)":
+        newcons = []
+        for cons in satModel.modifModel.constraints:
+            if cons.name == 'allequal' and len(cons.args) <= 5:
+                for i, arg1 in enumerate(cons.args):
+                    for arg2 in cons.args[i:]:
+                        newcons += [~(arg1 != arg2)]
             else:
                 newcons += [cons]
         satModel.modifModel = Model(newcons)
@@ -251,6 +273,36 @@ def satMutation(satModel):
                 cons.args[0] = yr
 
         satModel.modifModel = Model(newcons)
+    elif choice == "addRandomIntRestrictions":
+        newcons = []
+        newcons += satModel.modifModel.constraints
+        for loopVar in range(random.randint(1, 3)):
+            i = intvar(lb=0, ub=10, shape=1, name="beep")
+            if random.random() < 0.5:
+                newcons += [i > random.randint(1, 9)]
+            else:
+                newcons += [i < random.randint(1, 9)]
+        satModel.modifModel = Model(newcons)
+    elif choice == "True->cons":
+        newcons = []
+        for cons in satModel.modifModel.constraints:
+            temp = Model([True])
+            if random.random() < 0.5:
+                newcons += [(temp.constraints[0]).implies(cons)]
+            else:
+                newcons += [cons]
+        satModel.modifModel = Model(newcons)
+    elif choice == "cons->True":
+        newcons = []
+        for cons in satModel.modifModel.constraints:
+            temp = Model([True])
+            if random.random() < 0.5:
+                newcons += [cons.implies(temp.constraints[0])]
+            else:
+                newcons += [cons]
+        satModel.modifModel = Model(newcons)
+    elif choice == "cons1<=>cons2":
+        ToDo
 
 if __name__ == "__main__":
     __main__()
