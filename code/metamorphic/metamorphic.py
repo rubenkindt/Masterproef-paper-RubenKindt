@@ -25,12 +25,28 @@ class metaModel():
                 self.origModel = Model().from_file(self.seedFile)
                 self.modifModel = copy.deepcopy(self.origModel)
             except Exception as e:
-                pass
+                print(colored("failed to read seed" + str(e), "orange", attrs=["bold"]))
 
 def create_file(data, path):
     file = open(path, "w")
     file.write(data)
     file.close()
+
+def recursiflySearch(cons, name):
+    # returns a constraint with the matchin name, if found, else return None
+    foundMax = None
+    if not hasattr(cons, "args"):
+        return foundMax
+    for arg in cons.args:
+        if hasattr(arg,"name"):
+            if arg.name == name:
+                foundMax = arg
+                return foundMax
+            else:
+                foundMax = recursiflySearch(arg, name)
+                if foundMax is not None:
+                    return foundMax
+    return foundMax
 
 def getSeeds(path):
     seedPath = []
@@ -70,7 +86,7 @@ def recordCrash(executionDir, seedFolder, seedName, solver, trace=None, errorNam
 
     create_file(crash_logs, os.path.join(path_to_bug_dir, "crash_logs.txt"))
 
-def recordDiff(executionDir, seedFolder, seedName, potentialNrDiff=None, potentialStatusDiff=None):
+def recordDiff(executionDir, seedFolder, seedName, diffStatus=None):
     # parts copied and or modified from STORM's soundness logging function
 
     # check if the crash folder exists
@@ -92,12 +108,9 @@ def recordDiff(executionDir, seedFolder, seedName, potentialNrDiff=None, potenti
     shutil.copy2(seedFolder + "/" + seedName, path_to_bug_dir)
 
     crash_logs = "seed: " + str(seedFolder + "/" + seedName) + "\n" + "\n"
-    if len(potentialNrDiff) > 1:
-        crash_logs += "difference in amount of solution: "
-        crash_logs += str(potentialNrDiff) + "\n"
-    if len(potentialStatusDiff) > 1:
+    if len(diffStatus) > 1:
         crash_logs += "difference in status: "
-        crash_logs += str(potentialStatusDiff) + "\n"
+        crash_logs += str(diffStatus) + "\n"
 
     create_file(crash_logs, os.path.join(path_to_bug_dir, "diff_logs.txt"))
 
@@ -115,10 +128,10 @@ def __main__():
     timeout = 5 * 60  # 5 minutes
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic"
-        executionPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/metamorphic"
+        resultsPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/metamorphic"
     else:
         seedPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic"
-        executionPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/metamorphic"
+        resultsPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/metamorphic"
     solvers = ["gurobi", "ortools"]  # "minizinc:gurobi", , "minizinc:chuffed"]
 
     seedPaths = getSeeds(seedPath)
@@ -131,124 +144,145 @@ def __main__():
         print("file " + str(counter) + "/" + str(len(seedPaths)) + ": " + fileName)
         mmodel = metaModel(solver=random.choice(solvers),seedF=folder + "/" + fileName)
 
-        for i in range(1,10):
-            mmodel.origModel.solve(solver=mmodel.solver, time_out=timeout)
-            mutation(mmodel)
-        
-        """m = Model().from_file(folder + "/" + fileName)
-        sol = m.solveAll(solver=solver, time_limit=timeout, solution_limit=100)
-        print(colored("Crash" + str(e), "red", attrs=["bold"]))
-        recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
-                    trace=traceback.format_exc(), errorName=str(e), solver=solver)
+        try:
+            mmodel.origModel.solve(solver=mmodel.solver, time_limit=timeout)
+        except Exception as e:
+            print(colored("Crash of seed" + str(e), "orange", attrs=["bold"]))
+            continue
 
-        recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName,
-                   potentialNrDiff=nrOfsol, potentialStatusDiff=status)"""
+        for i in range(1,1):
+            satMutation(mmodel)
+
+        try:
+            mmodel.modifModel.solve(solver=mmodel.solver, time_limit=timeout)
+            status = mmodel.modifModel.status().exitstatus
+        except Exception as e:
+            print(colored("Crash" + str(e), "red", attrs=["bold"]))
+            recordCrash(executionDir=resultsPath, seedFolder=folder, seedName=fileName,
+                        trace=traceback.format_exc(), errorName=str(e), solver=mmodel.solver)
+            continue
+
+        if (status != ExitStatus.OPTIMAL) or (status != ExitStatus.FEASABLE):
+            recordDiff(executionDir=resultsPath, seedFolder=folder, seedName=fileName, diffStatus=status)
+            continue
+
 
 def satMutation(satModel):
     metamorphicMutations = ["expandingAllDiff","AllDiff~(==)","expandAllEqual","AllEqual~(!=)","addNewVar2AllEqual",
-                            "TrueAndCons", "FalseOrCons", "xorCons", "==1", "!=0", "sementicFusion+",
-                            "addRandomIntRestrictions", "True->cons", "cons->True", "cons1<=>cons2"]
+                            "TrueAndCons", "consAndCons2", "FalseOrCons", "xorCons", "==1", "!=0", "==2>=|<=", ">=|<=2==",
+                            "sementicFusion+", "addRandomIntRestrictions", "True->cons", "cons->cons2",
+                            "cons1==cons2", "addSmall2Max", "addSmall2Min", "addZero2Sum", "uselessAny", "uselessAll"]
     choice = random.choice(metamorphicMutations)
+    newcons = []
     if choice == "expandingAllDiff":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            if cons.name == 'alldifferent' and len(cons.args) <= 5:
+            if cons.name == 'alldifferent' and len(cons.args) <= 20:
                 for i, arg1 in enumerate(cons.args):
-                    for arg2 in cons.args[i:]:
-                        newcons += [arg1 != arg2]
+                    for arg2 in cons.args[i+1:]:
+                        newcons += [(arg1) != (arg2)]
             else:
                 newcons += [cons]
-        satModel.modifModel = Model(newcons)
     elif choice == "AllDiff~(==)":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            if cons.name == 'alldifferent' and len(cons.args) <= 5:
+            if cons.name == 'alldifferent' and len(cons.args) <= 20:
                 for i, arg1 in enumerate(cons.args):
-                    for arg2 in cons.args[i:]:
-                        newcons += [~(arg1 == arg2)]
+                    for arg2 in cons.args[i+1:]:
+                        newcons += [~((arg1) == (arg2))]
             else:
                 newcons += [cons]
-        satModel.modifModel = Model(newcons)
     elif choice == "expandAllEqual":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            if cons.name == 'allequal':
+            if cons.name == 'allequal' and len(cons.args) <= 20:
                 for arg1 in cons.args[1:]:
-                    newcons += [cons.args[0] == arg1.name]
+                    newcons += [(cons.args[0]) == (arg1)]
             else:
                 newcons += [cons]
-        satModel.modifModel = Model(newcons)
     elif choice == "AllEqual~(!=)":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            if cons.name == 'allequal' and len(cons.args) <= 5:
+            if cons.name == 'allequal' and len(cons.args) <= 20:
                 for i, arg1 in enumerate(cons.args):
-                    for arg2 in cons.args[i:]:
-                        newcons += [~(arg1 != arg2)]
+                    for arg2 in cons.args[i+1:]:
+                        newcons += [~((arg1) != (arg2))]
             else:
                 newcons += [cons]
-        satModel.modifModel = Model(newcons)
     elif choice == "addNewVar2AllEqual":
-        newcons = []
         for cons in satModel.modifModel.constraints:
             if cons.name == 'allequal':
                 if isinstance(cons.args[0], variables._BoolVarImpl):
                     var = boolvar()
                     allVar = cons.args+[var]
-                    newcons += AllEqual(random.shuffle(allVar))
+                    random.shuffle(allVar)
+                    newcons += [AllEqual(allVar)]
 
                 if isinstance(cons.args[0], variables._IntVarImpl) or isinstance(cons.args[0], variables._NumVarImpl):
                     var = intvar(lb=cons.args[0].lb, ub=cons.args[0].ub)
                     allVar = cons.args+[var]
-                    newcons += AllEqual(random.shuffle(allVar))
+                    random.shuffle(allVar)
+                    newcons += [AllEqual(allVar)]
             else:
                 newcons += [cons]
-        satModel.modifModel = Model(newcons)
     elif choice == "TrueAndCons":
-        newcons = []
         for cons in satModel.modifModel.constraints:
             if random.random() > 0.5:
                 newcons += [(cons) & True]
             else:
                 newcons += [True & (cons)]
-        satModel.modifModel = Model(newcons)
+    elif choice == "consAndCons2":
+        for i, cons in enumerate(satModel.modifModel.constraints):
+            if len(satModel.modifModel.constraints[i+1:])>=1 and random.random() > 0.1:
+                randCons = random.choice(satModel.modifModel.constraints[i+1:])
+                newcons += [(randCons) & (cons) & (randCons)]
+            else:
+                newcons += [cons]
     elif choice == "FalseOrCons":
-        newcons = []
         for cons in satModel.modifModel.constraints:
             if random.random() > 0.5:
                 newcons += [False | (cons)]
             else:
                 newcons += [(cons) | False]
-        satModel.modifModel = Model(newcons)
     elif choice == "xorCons":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            newcons += Xor([False, True, True] + [cons])
-        satModel.modifModel = Model(newcons)
+            newcons += [Xor([False, True, True] + [cons])]
     elif choice == "==1":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            newcons += [cons == 1]
-        satModel.modifModel = Model(newcons)
+            newcons += [(cons) == 1]
     elif choice == "!=0":
-        newcons = []
         for cons in satModel.modifModel.constraints:
-            newcons += [cons != 0]
-        satModel.modifModel = Model(newcons)
+            newcons += [(cons) != 0]
+    elif choice == "==2>=|<=":
+        for cons in satModel.modifModel.constraints:
+            if hasattr(cons, "name") and cons.name == "==":
+                if random.random() < 0.5:
+                    newcons += [(cons.args[0]) <= (cons.args[1])]
+                else:
+                    newcons += [(cons.args[0]) >= (cons.args[1])]
+            else:
+                newcons += [cons]
+    elif choice == ">=|<=2==":
+        for cons in satModel.modifModel.constraints:
+            if hasattr(cons, "name") and cons.name == "<=":
+                newcons += [(cons.args[0]) < ((cons.args[1]) + 1)]
+            elif hasattr(cons, "name") and cons.name == ">=":
+                newcons += [((cons.args[0]) + 1) > (cons.args[1])]
+            elif hasattr(cons, "name") and cons.name == "<":
+                newcons += [((cons.args[0]) + 1) <= (cons.args[1])]
+            elif hasattr(cons, "name") and cons.name == ">":
+                newcons += [(cons.args[0]) >= ((cons.args[1]) + 1)]
+            else:
+                newcons += [cons]
     elif choice == "sementicFusion+":
-        newcons = []
         firstCons = None
         secCons = None
         for i, cons in enumerate(satModel.modifModel.constraints):
-            if firstCons is None and isinstance(cons, Comparison) and \
+            if firstCons is None and isinstance(cons, expressions.core.Comparison) and \
                     (isinstance(cons.args[0], variables._IntVarImpl) or isinstance(cons.args[0], variables._NumVarImpl)):
                 firstCons = cons
                 continue
-            elif secCons is None and firstCons is not None and isinstance(cons, Comparison) and \
+            elif secCons is None and firstCons is not None and isinstance(cons, expressions.core.Comparison) and \
                     (isinstance(cons.args[0], variables._IntVarImpl) or isinstance(cons.args[0], variables._NumVarImpl)):
                 secCons = cons
                 continue
-            newcons += cons
+            newcons += [cons]
 
         if secCons is None:
             return
@@ -260,49 +294,87 @@ def satMutation(satModel):
         yr = (z - x)
         firstCons.args[0] = xr
         secCons.args[0] = yr
-        newcons += firstCons & secCons  # will not do anything useful if both constraints come from the same file
+        newcons += [(firstCons) & (secCons)]
 
-        for i, cons in enumerate(newcons):
-            if hasattr(cons.args[0], "name") and cons.args[0].name == x.name and random.random() < 0.1:
-                cons.args[0] = xr
-            if hasattr(cons.args[0], "name") and cons.args[1].name == x.name and random.random() < 0.1:
-                cons.args[0] = xr
-            if hasattr(cons.args[0], "name") and cons.args[0].name == y.name and random.random() < 0.1:
-                cons.args[0] = yr
-            if hasattr(cons.args[0], "name") and cons.args[1].name == y.name and random.random() < 0.1:
-                cons.args[0] = yr
-
-        satModel.modifModel = Model(newcons)
+        #replace some X, Y by xr, yr
+        for j, cons in enumerate(newcons):
+            if hasattr(cons, "args"):
+                for i, arg in enumerate(cons.args):
+                    if hasattr(arg, "name") and arg.name == x.name and random.random() < 0.5:
+                        cons.args[i] = xr
+                    if hasattr(arg, "name") and arg.name == y.name and random.random() < 0.5:
+                        cons.args[i] = yr
     elif choice == "addRandomIntRestrictions":
-        newcons = []
-        newcons += satModel.modifModel.constraints
         for loopVar in range(random.randint(1, 3)):
             i = intvar(lb=0, ub=10, shape=1, name="beep")
             if random.random() < 0.5:
-                newcons += [i > random.randint(1, 9)]
+                newcons += [i > random.randint(1, 5)]
             else:
-                newcons += [i < random.randint(1, 9)]
-        satModel.modifModel = Model(newcons)
+                newcons += [i < random.randint(6, 9)]
+            newcons += satModel.modifModel.constraints
     elif choice == "True->cons":
-        newcons = []
         for cons in satModel.modifModel.constraints:
             temp = Model([True])
-            if random.random() < 0.5:
+            if random.random() < 0.2:
                 newcons += [(temp.constraints[0]).implies(cons)]
+            elif random.random() < 0.2:
+                newcons += [(cons).implies(temp.constraints[0])]
             else:
-                newcons += [cons]
-        satModel.modifModel = Model(newcons)
-    elif choice == "cons->True":
-        newcons = []
+                newcons += [(cons)]
+    elif choice == "cons->cons2":
+        for i, cons in enumerate(satModel.modifModel.constraints):
+            if random.random() < 0.2:
+                cons2 = random.choice(satModel.modifModel.constraints)
+                newcons += [(cons)]
+                newcons += [(cons).implies(cons2)]
+            else:
+                newcons += [(cons)]
+    elif choice == "cons1==cons2":
+        for i, cons in enumerate(satModel.modifModel.constraints):
+            if random.random() < 0.2:
+                cons2 = random.choice(satModel.modifModel.constraints)
+                newcons += [(cons)]
+                newcons += [(cons) == (cons2)]
+            else:
+                newcons += [(cons)]
+    elif choice == "addSmall2Max":
         for cons in satModel.modifModel.constraints:
-            temp = Model([True])
-            if random.random() < 0.5:
-                newcons += [cons.implies(temp.constraints[0])]
-            else:
-                newcons += [cons]
-        satModel.modifModel = Model(newcons)
-    elif choice == "cons1<=>cons2":
-        ToDo
+            maxCons = recursiflySearch(cons, "max")
+            if maxCons is not None:
+                randArg = random.choice(maxCons.args)
+                maxCons.args += [intvar(lb=randArg.lb, ub=randArg.ub+1)]
+                random.shuffle(maxCons)
+            newcons += [(cons)]
+    elif choice == "addSmall2Min":
+        for cons in satModel.modifModel.constraints:
+            minCons = recursiflySearch(cons, "min")
+            if minCons is not None:
+                randArg = random.choice(minCons.args)
+                minCons.args += [intvar(lb=randArg.lb+1, ub=randArg.ub)]
+            newcons += [cons]
+    elif choice == "addZero2Sum":
+        for cons in satModel.modifModel.constraints:
+            minCons = recursiflySearch(cons, "sum")
+            if minCons is not None:
+                minCons.args += [intvar(lb=0, ub=0)]
+            newcons += [cons]
+    elif choice == "uselessAny":
+        cons = intvar(lb=0, ub=1) == 0
+        lst = [False, False, (cons)]
+        random.shuffle(lst)
+        newcons += [any(lst)]
+        newcons += satModel.modifModel.constraints
+    elif choice == "uselessAll":
+        cons = intvar(lb=0, ub=1) == 0
+        lst = [True, (cons), True]
+        random.shuffle(lst)
+        newcons += [all(lst)]
+        newcons += satModel.modifModel.constraints
+    else:
+        NotImplementedError("this choice is not implemented: " + choice)
+
+    random.shuffle(newcons)
+    satModel.modifModel = Model(newcons)
 
 if __name__ == "__main__":
     __main__()
