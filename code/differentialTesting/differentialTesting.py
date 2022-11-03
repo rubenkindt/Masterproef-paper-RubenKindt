@@ -4,6 +4,7 @@ import shutil
 import argparse
 import traceback
 import random
+import json
 
 from cpmpy import *
 from termcolor import colored
@@ -89,9 +90,23 @@ def __main__():
     parser.add_argument('--startAt', type=int, nargs='?',
                         help='the bug-catcher likes to fill the swap space and crash ')
     args = parser.parse_args()
-
-
-    solvers = ["gurobi", "ortools"] # "minizinc:gurobi", , "minizinc:chuffed"]
+    solveAll = True
+    if solveAll:
+        solvers = ["gurobi", "ortools"] # "minizinc:gurobi", , "minizinc:chuffed"]
+    else:
+        
+        solvers = ['ortools', 'gurobi', 'pysat', 'pysat:cadical', 'pysat:gluecard3', 'pysat:gluecard4',
+                   'pysat:glucose3', 'pysat:glucose4', 'pysat:lingeling', 'pysat:maplechrono', 'pysat:maplecm',
+                   'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh',
+                    'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
+                    'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
+                    'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
+                    'minizinc:lcg', 'minizinc:mip', 'minizinc:org.chuffed.chuffed', 'minizinc:org.gecode.gecode',
+                    'minizinc:org.gecode.gist', 'minizinc:org.minizinc.findmus', 'minizinc:org.minizinc.globalizer',
+                    'minizinc:org.minizinc.mip.coin-bc', 'minizinc:org.minizinc.mip.cplex',
+                    'minizinc:org.minizinc.mip.gurobi', 'minizinc:org.minizinc.mip.scip',
+                    'minizinc:org.minizinc.mip.xpress', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
+                    'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
     timeout = 5 * 60  # 5 minutes
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting"
@@ -110,35 +125,138 @@ def __main__():
         status = []
         print("file " + str(counter) + "/" + str(len(seedPaths)) + ": " + fileName)
         for solver in solvers:
-            try:
-                m = Model().from_file(folder + "/" + fileName)
-                sol = m.solveAll(solver=solver, time_limit=timeout, solution_limit=100)
-                nrOfsol.append((sol, solver))
-                status.append((m.status().exitstatus.name, solver))
-            # except NotImplementedError:
-            #     nrOfsol=0
-            #
-            #     while m.solve(solver=solver, time_limit=timeout) and nrOfsol<=100:
-            #         m +=
-            #     nrOfsol = (nrOfsol, solver)
-            #     status.append((m.status().exitstatus, solver))
-            except Exception as e:
-                # crash
-                print(colored("Crash" + str(e), "red", attrs=["bold"]))
-                recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
-                            trace=traceback.format_exc(), errorName=str(e), solver=solver)
+            if solveAll:
+                try:
+                    m = Model().from_file(folder + "/" + fileName)
+                    sol = m.solveAll(solver=solver, time_limit=timeout, solution_limit=100)
+                    nrOfsol.append((sol, solver))
+                    status.append((m.status().exitstatus.name, solver))
+                except Exception as e:
+                    # crash
+                    print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                    recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                                trace=traceback.format_exc(), errorName=str(e), solver=solver)
+            else:
+                try:
+                    m = Model().from_file(folder + "/" + fileName)
+                    m.solve(solver=solver, time_limit=timeout)
+                    s = m.status().exitstatus.name
+                    if s == "OPTIMAL" or s == "FEASIBLE":
+                        s = "sat"
+                    status.append((s, solver))
+                except NotImplementedError as e:
+                    pass
+                except minizinc.error.MiniZincError as e: # all passed errors are already logged
+                    if str(e) == "cannot load cplex dll, specify --cplex-dll":
+                        pass
+                    elif solver == "minizinc:gecode" and str(
+                            e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
+                        pass
+                    elif solver == "minizinc:gist" and str(
+                            e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
+                        pass
+                    elif solver == "minizinc:org.gecode.gecode" and str(
+                            e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
+                        pass
+                    elif solver == "minizinc:org.gecode.gist" and str(
+                            e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
+                        pass
+                    elif solver == "minizinc:restart" and str(
+                            e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
+                        pass
+                    elif solver == "minizinc:set" and str(
+                            e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
+                        pass
+                    elif solver == "minizinc:org.minizinc.mip.scip" and str(e).__contains__(
+                            "Failed to load plugin. Tried libscip, scip,"):
+                        pass
+                    elif solver == "minizinc:org.minizinc.mip.xpress" and str(e).__contains__(
+                            "Failed to load plugin. Tried xprs, "):
+                        pass
+                    elif solver == "minizinc:xpress" and str(e).__contains__("Failed to load plugin. Tried xprs, "):
+                        pass
+                    elif solver == "minizinc:scip" and str(e).__contains__(
+                            "Failed to load plugin. Tried libscip, scip, "):
+                        pass
+                    else:
+                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                                    trace=traceback.format_exc(), errorName=str(e), solver=solver)
+                except json.decoder.JSONDecodeError as e:
+                    if str(e) == "Expecting value: line 1 column 1 (char 0)":
+                        pass
+                    else:
+                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                                    trace=traceback.format_exc(), errorName=str(e), solver=solver)
+                except ValueError as e:
+                    if solver == "pysat:minisat-gh" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:minisat22" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:minicard" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:mergesat3" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:maplesat" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:maplecm" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:maplechrono" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:lingeling" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:glucose4" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:glucose3" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:gluecard3" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:gluecard4" and str(e) == "Wrong bound: last_val":
+                        pass
+                    elif solver == "pysat:cadical" and str(e) == "Wrong bound: last_val":
+                        pass
+                    else:
+                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                                    trace=traceback.format_exc(), errorName=str(e), solver=solver)
+                except AttributeError as e:
+                    if solver == "gurobi" and str(e) == "'list' object has no attribute 'shape'":
+                        pass
+                    else:
+                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                                    trace=traceback.format_exc(), errorName=str(e), solver=solver)
+                except Exception as e:
+                    if str(e) == "CPM_pysat: only satisfaction, does not support an objective function":
+                        pass
+                    else:
+                        # crash
+                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                                    trace=traceback.format_exc(), errorName=str(e), solver=solver)
 
-        if len(status) == 0 or len(nrOfsol) == 0:
-            continue
-
-        nrs=[]
-        for i in nrOfsol:
-            nrs.append(i[0])
-
-        if len(set(nrs)) <= 1:# and len(set(status)) <= 1:
-            continue
-
-        recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+        if solveAll:
+            if len(status) == 0 or len(nrOfsol) == 0:
+                continue
+            nrs=[]
+            for i in nrOfsol:
+                nrs.append(i[0])
+            if len(set(nrs)) <= 1:# and len(set(status)) <= 1:
+                continue
+            recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName,
+                   potentialNrDiff=nrOfsol, potentialStatusDiff=status)
+        else:
+            if len(status) == 0:
+                continue
+            statuses=[]
+            for i in status:
+                statuses.append(i[0])
+            if len(set(statuses)) <= 1:
+                continue
+            recordDiff(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                    potentialNrDiff=nrOfsol, potentialStatusDiff=status)
 
 if __name__ == "__main__":
