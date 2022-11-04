@@ -5,6 +5,7 @@ import argparse
 import traceback
 import random
 import json
+import minizinc
 
 from cpmpy import *
 from termcolor import colored
@@ -90,7 +91,7 @@ def __main__():
     parser.add_argument('--startAt', type=int, nargs='?',
                         help='the bug-catcher likes to fill the swap space and crash ')
     args = parser.parse_args()
-    solveAll = True
+    solveAll = False
     if solveAll:
         solvers = ["gurobi", "ortools"] # "minizinc:gurobi", , "minizinc:chuffed"]
     else:
@@ -116,6 +117,8 @@ def __main__():
         executionPath = "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/diffTesting"
 
     seedPaths = getSeeds(seedPath)
+    random.seed(123)
+    random.shuffle(seedPaths)
     counter = 0
     for folder, fileName in seedPaths:
         counter += 1
@@ -133,7 +136,7 @@ def __main__():
                     status.append((m.status().exitstatus.name, solver))
                 except Exception as e:
                     # crash
-                    print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                    print(colored("Crash " + str(e), "red", attrs=["bold"]))
                     recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                 trace=traceback.format_exc(), errorName=str(e), solver=solver)
             else:
@@ -147,7 +150,7 @@ def __main__():
                 except NotImplementedError as e:
                     pass
                 except minizinc.error.MiniZincError as e: # all passed errors are already logged
-                    if str(e) == "cannot load cplex dll, specify --cplex-dll":
+                    if str(e).__contains__("cannot load"):
                         pass
                     elif solver == "minizinc:gecode" and str(
                             e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
@@ -167,26 +170,23 @@ def __main__():
                     elif solver == "minizinc:set" and str(
                             e) == "MiniZinc stopped with a non-zero exit code, but did not output an error message. ":
                         pass
-                    elif solver == "minizinc:org.minizinc.mip.scip" and str(e).__contains__(
-                            "Failed to load plugin. Tried libscip, scip,"):
+                    elif solver == "minizinc:org.minizinc.mip.scip" and str(e).__contains__("Failed to load plugin"):
                         pass
-                    elif solver == "minizinc:org.minizinc.mip.xpress" and str(e).__contains__(
-                            "Failed to load plugin. Tried xprs, "):
+                    elif solver == "minizinc:org.minizinc.mip.xpress" and str(e).__contains__("Failed to load plugin"):
                         pass
-                    elif solver == "minizinc:xpress" and str(e).__contains__("Failed to load plugin. Tried xprs, "):
+                    elif solver == "minizinc:xpress" and str(e).__contains__("Failed to load plugin"):
                         pass
-                    elif solver == "minizinc:scip" and str(e).__contains__(
-                            "Failed to load plugin. Tried libscip, scip, "):
+                    elif solver == "minizinc:scip" and str(e).__contains__("Failed to load plugin"):
                         pass
                     else:
-                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        print(colored("Crash " + str(e), "red", attrs=["bold"]))
                         recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                     trace=traceback.format_exc(), errorName=str(e), solver=solver)
                 except json.decoder.JSONDecodeError as e:
-                    if str(e) == "Expecting value: line 1 column 1 (char 0)":
+                    if str(e).__contains__("Expecting value: line 1 column"):
                         pass
                     else:
-                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        print(colored("Crash " + str(e), "red", attrs=["bold"]))
                         recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                     trace=traceback.format_exc(), errorName=str(e), solver=solver)
                 except ValueError as e:
@@ -219,14 +219,18 @@ def __main__():
                     elif solver == "pysat:cadical" and str(e) == "Wrong bound: last_val":
                         pass
                     else:
-                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        print(colored("Crash " + str(e), "red", attrs=["bold"]))
                         recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                     trace=traceback.format_exc(), errorName=str(e), solver=solver)
                 except AttributeError as e:
                     if solver == "gurobi" and str(e) == "'list' object has no attribute 'shape'":
                         pass
+                    elif solver == "gurobi" and str(e) == "'bool' object has no attribute 'is_bool'":
+                        pass
+                    elif solver == "ortools" and str(e) == "'bool' object has no attribute 'is_bool'":
+                        pass
                     else:
-                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        print(colored("Crash " + str(e), "red", attrs=["bold"]))
                         recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                     trace=traceback.format_exc(), errorName=str(e), solver=solver)
                 except Exception as e:
@@ -234,7 +238,7 @@ def __main__():
                         pass
                     else:
                         # crash
-                        print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                        print(colored("Crash " + str(e), "red", attrs=["bold"]))
                         recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                     trace=traceback.format_exc(), errorName=str(e), solver=solver)
 
