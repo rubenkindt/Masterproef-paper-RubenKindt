@@ -108,6 +108,16 @@ def __main__():
                     'minizinc:org.minizinc.mip.gurobi', 'minizinc:org.minizinc.mip.scip',
                     'minizinc:org.minizinc.mip.xpress', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
                     'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
+
+        solvers = ['ortools', 'gurobi', 'pysat', 'pysat:cadical', 'pysat:gluecard3', 'pysat:gluecard4',
+                   'pysat:glucose3', 'pysat:glucose4', 'pysat:lingeling', 'pysat:maplechrono', 'pysat:maplecm',
+                   'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh',
+                   'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
+                   'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
+                   'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
+                   'minizinc:lcg', 'minizinc:mip', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
+                   'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
+        
     timeout = 5 * 60  # 5 minutes
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting"
