@@ -25,7 +25,7 @@ class metaModel():
                 self.origModel = Model().from_file(self.seedFile)
                 self.modifModel = copy.deepcopy(self.origModel)
             except Exception as e:
-                print(colored("failed to read seed" + str(e), "orange", attrs=["bold"]))
+                print(colored("failed to read seed" + str(e), "green", attrs=["bold"]))
 
 def create_file(data, path):
     file = open(path, "w")
@@ -427,7 +427,7 @@ def __main__():
     if arguments.seed is None:
         arguments.seed = 123
     random.seed(arguments.seed)
-    timeout = 5 * 60  # 5 minutes
+    timeout = 2 * 60  # 5 minutes
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic"
         resultsPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/metamorphic"

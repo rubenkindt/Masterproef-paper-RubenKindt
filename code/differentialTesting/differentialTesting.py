@@ -8,6 +8,7 @@ import json
 import minizinc
 
 from cpmpy import *
+from gurobipy import GurobiError
 from termcolor import colored
 
 
@@ -116,19 +117,6 @@ def differentialTest(folder, fileName, seed=123):
     solvers = ['ortools', 'gurobi', 'pysat', 'pysat:cadical', 'pysat:gluecard3', 'pysat:gluecard4',
                'pysat:glucose3', 'pysat:glucose4', 'pysat:lingeling', 'pysat:maplechrono', 'pysat:maplecm',
                'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh',
-                'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
-                'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
-                'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
-                'minizinc:lcg', 'minizinc:mip', 'minizinc:org.chuffed.chuffed', 'minizinc:org.gecode.gecode',
-                'minizinc:org.gecode.gist', 'minizinc:org.minizinc.findmus', 'minizinc:org.minizinc.globalizer',
-                'minizinc:org.minizinc.mip.coin-bc', 'minizinc:org.minizinc.mip.cplex',
-                'minizinc:org.minizinc.mip.gurobi', 'minizinc:org.minizinc.mip.scip',
-                'minizinc:org.minizinc.mip.xpress', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
-                'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
-
-    solvers = ['ortools', 'gurobi', 'pysat', 'pysat:cadical', 'pysat:gluecard3', 'pysat:gluecard4',
-               'pysat:glucose3', 'pysat:glucose4', 'pysat:lingeling', 'pysat:maplechrono', 'pysat:maplecm',
-               'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh',
                'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
                'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
                'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
@@ -191,6 +179,11 @@ def differentialTest(folder, fileName, seed=123):
                     print(colored("Crash " + str(e), "red", attrs=["bold"]))
                     recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                 trace=traceback.format_exc(), errorName=str(e), solver=solver, solveAll=solveAll)
+            except GurobiError as e:
+                if str(e).__contains__("variable is less than zero for POW function"):
+                    pass
+                else:
+                    raise e
             except json.decoder.JSONDecodeError as e:
                 if str(e).__contains__("Expecting value: line 1 column"):
                     pass
@@ -199,31 +192,31 @@ def differentialTest(folder, fileName, seed=123):
                     recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                 trace=traceback.format_exc(), errorName=str(e), solver=solver, solveAll=solveAll)
             except ValueError as e:
-                if solver == "pysat:minisat-gh" and str(e) == "Wrong bound: last_val":
+                if solver == "pysat:minisat-gh" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:minisat22" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:minisat22" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:minicard" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:minicard" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:mergesat3" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:mergesat3" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:maplesat" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:maplesat" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:maplecm" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:maplecm" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:maplechrono" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:maplechrono" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:lingeling" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:lingeling" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:glucose4" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:glucose4" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:glucose3" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:glucose3" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:gluecard3" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:gluecard3" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:gluecard4" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:gluecard4" and str(e) == "Wrong bound: ":
                     pass
-                elif solver == "pysat:cadical" and str(e) == "Wrong bound: last_val":
+                elif solver == "pysat:cadical" and str(e) == "Wrong bound: ":
                     pass
                 elif solver == "pysat" and str(e).__contains__("Wrong bound:"):
                     pass
@@ -244,6 +237,11 @@ def differentialTest(folder, fileName, seed=123):
                                 trace=traceback.format_exc(), errorName=str(e), solver=solver, solveAll=solveAll)
             except NotImplementedError as e:
                 pass
+            except RuntimeError as e:
+                if str(e) == "Event loop is closed":
+                    pass
+                else:
+                    raise e
             except Exception as e:
                 if str(e) == "CPM_pysat: only satisfaction, does not support an objective function":
                     pass
