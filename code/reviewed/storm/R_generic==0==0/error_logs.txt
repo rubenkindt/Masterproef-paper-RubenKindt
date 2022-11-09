@@ -1,0 +1,9 @@
+Some info on this bug:
+seed to run_storm() function: 1234
+Path to original file: C:\Users\ruben\Desktop\Thesis\Masterproef-paper\code\examples\junk\sudoku_17_hints16650532485163155
+This was the [0]th mutant
+
+Configuration: 
+{'max_depth': 20, 'max_assert': 20, 'enrichment_steps': 100, 'number_of_mutants': 100, 'mutant_generation_timeout': 900, 'mutant_running_timeout': 900, 'solver_timeout': datetime.timedelta(seconds=120), 'check_cp_using': ['yes', 'no'], 'check_cp_using_options': [], 'incremental': ['no', 'no']}
+{'core': '0', 'cores': None, 'server': 'local', 'seed': '1234', 'ddebug': False, 'solver': 'ortools', 'reproduce': None, 'min': False, 'file_path': None, 'check_sat_using': None, 'home': 'C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/results/storm', 'seedFilePath': 'C:\\Users\\ruben\\Desktop\\Thesis\\Masterproef-paper\\code\\examples\\junk'}
+solver: ortools

@@ -1,0 +1,31 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/water_buckets116650531980321176
+solver: minizinc:float
+metaRelations: ['sementicFusion|']
+error reason: Expecting value: line 1 column 76 (char 75)
+error trace: Traceback (most recent call last):
+  File "metamorphic.py", line 485, in __main__
+    mmodel.modifModel.solve(solver=mmodel.solver, time_limit=timeout)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 140, in solve
+    ret = s.solve(time_limit=time_limit)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 166, in solve
+    mzn_result = mzn_inst.solve(**mzn_kwargs)
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 186, in solve
+    return asyncio.run(coroutine)
+  File "/usr/lib/python3.8/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 250, in solve_async
+    async for result in self.solutions(
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 388, in solutions
+    async for obj in decode_async_json_stream(
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/json.py", line 102, in decode_async_json_stream
+    obj = loads(buffer, cls=cls, **kw)
+  File "/usr/lib/python3.8/json/__init__.py", line 370, in loads
+    return cls(**kw).decode(s)
+  File "/usr/lib/python3.8/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.8/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 76 (char 75)
+

@@ -1,0 +1,1 @@
+from cpmpy import *x = intvar(0, 1, shape=1, name="x")m=Model()m += Circuit([x])nr = m.solve(solver="ortools", time_limit=5*60)

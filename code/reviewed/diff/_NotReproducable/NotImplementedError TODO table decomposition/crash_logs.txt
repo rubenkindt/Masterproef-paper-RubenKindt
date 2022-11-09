@@ -1,0 +1,22 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/hidato_table16650535508907185
+solver: gurobi
+error reason: TODO: table decomposition
+error trace: Traceback (most recent call last):
+  File "differentialTesting.py", line 118, in __main__
+    sol = m.solveAll(solver=solver, time_limit=timeout, solution_limit=100)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 162, in solveAll
+    s = SolverLookup.get(solver, self)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/utils.py", line 102, in get
+    return cls(model, subsolver=subname)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/gurobi.py", line 95, in __init__
+    super().__init__(name="gurobi", cpm_model=cpm_model)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/solver_interface.py", line 83, in __init__
+    self += cpm_model.constraints
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/gurobi.py", line 266, in __add__
+    self._post_constraint(con)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/gurobi.py", line 356, in _post_constraint
+    self += cpm_expr.decompose()
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/expressions/globalconstraints.py", line 251, in decompose
+    raise NotImplementedError("TODO: table decomposition")
+NotImplementedError: TODO: table decomposition
+

@@ -78,9 +78,12 @@ def recordCrash(mmodel, executionDir, seedFolder, seedName, solver, trace=None, 
     os.mkdir(path_to_bug_dir)
 
     shutil.copy2(seedFolder + "/" + seedName, path_to_bug_dir)
-
+    try:
+        mmodel.modifModel.to_file(path_to_bug_dir + "/_Modif")
+    except Exception:
+        pass
     crash_logs = "seed: " + str(seedFolder + "/" + seedName) + "\n"
-    crash_logs += "solver: " + str(solver) + "\n"
+    crash_logs += "solver: " + str(mmodel.solver) + "\n"
     crash_logs += "metaRelations: " + str(mmodel.metaRelations) + "\n"
     crash_logs += "error reason: " + errorName + "\n"
     crash_logs += "error trace: " + trace + "\n"
@@ -112,6 +115,7 @@ def recordDiff(mmodel, executionDir, seedFolder, seedName):
     except Exception:
         pass
     crash_logs = "seed: " + str(seedFolder + "/" + seedName) + "\n" + "\n"
+    crash_logs += "solver: " + str(solver) + "\n"
     crash_logs += "modifications" + str(mmodel.metaRelations) + "\n"
     crash_logs += "difference" + "original " + str(mmodel.origModel.status().exitstatus.name) + " _ " \
                   + "modified " + str(mmodel.modifModel.status().exitstatus.name) + "\n"
@@ -484,6 +488,30 @@ def __main__():
         try:
             mmodel.modifModel.solve(solver=mmodel.solver, time_limit=timeout)
             statusModi = mmodel.modifModel.status().exitstatus.name
+        except json.decoder.JSONDecodeError as e:
+            if str(e).__contains__("Expecting value: line 1 column"):
+                pass
+            else:
+                print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                recordCrash(mmodel, executionDir=resultsPath, seedFolder=folder, seedName=fileName,
+                            trace=traceback.format_exc(), errorName=str(e), solver=mmodel.solver)
+        except minizinc.error.MiniZincError as e:  # all passed errors are already logged
+            if str(e).__contains__("cannot load"):
+                pass
+            elif solver == "minizinc:org.minizinc.mip.scip" and str(e).__contains__("Failed to load plugin"):
+                pass
+            elif solver == "minizinc:org.minizinc.mip.xpress" and str(e).__contains__("Failed to load plugin"):
+                pass
+            elif solver == "minizinc:xpress" and str(e).__contains__("Failed to load plugin"):
+                pass
+            elif solver == "minizinc:scip" and str(e).__contains__("Failed to load plugin"):
+                pass
+            else:
+                print(colored("Crash" + str(e), "red", attrs=["bold"]))
+                recordCrash(mmodel, executionDir=resultsPath, seedFolder=folder, seedName=fileName,
+                            trace=traceback.format_exc(), errorName=str(e), solver=mmodel.solver)
+        except NotImplementedError as e:
+            pass
         except Exception as e:
             print(colored("Crash" + str(e), "red", attrs=["bold"]))
             recordCrash(mmodel, executionDir=resultsPath, seedFolder=folder, seedName=fileName,

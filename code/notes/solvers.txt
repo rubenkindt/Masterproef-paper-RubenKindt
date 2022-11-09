@@ -1,9 +1,0 @@
-add solve
-	ortools
-	gurobi
-	pysat
-	pysdd
-	minizinc
-
-['ortools', 'gurobi', 'pysat', 'pysat:gluecard3', 'pysat:gluecard4', 'pysat:glucose3', 'pysat:glucose4', 'pysat:maplechrono', 'pysat:maplecm', 'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh', 
-'minizinc:chuffed', 'minizinc:cp', 'minizinc:int', 'minizinc:lcg', 'minizinc:org.chuffed.chuffed', 'ortools', 'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc', 'minizinc:cp', 'minizinc:float', 'minizinc:gurobi', 'minizinc:int', 'minizinc:lcg', 'minizinc:mip', 'minizinc:org.chuffed.chuffed', 'minizinc:org.minizinc.mip.coin-bc', 'minizinc:org.minizinc.mip.gurobi', 'minizinc:osicbc']

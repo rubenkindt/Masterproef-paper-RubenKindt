@@ -1,4 +1,0 @@
-MiniZinc was not found on the system: no default driver could be initialised
-reinstalled minizinc bundel (with IDE) https://www.minizinc.org/software.html to
-C:\Program Files\MiniZinc
-and added C:\Program Files\MiniZinc\minizinc.exe in both path variables

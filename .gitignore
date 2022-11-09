@@ -43,6 +43,7 @@ Template 21-22/template/masterproef.synctex.gz
 #python developing env (pycharm)
 ./idea
 .idea/*
+**/.idea
 *.pyc
 *.iml
 
@@ -61,12 +62,17 @@ code/.idea/*
 code/examples/*
 
 #my notes
-code/notes/*
+code/notes/*.txt
+notes/*.txt
+notes/*
 
 # more testing files
 code/tries/*
 code/ipynb2py/*
 code/deobfuscator/*.txt
+
+#exception for found bugs
+!code/reviewed/*
 
 #to many output files
 code/results/*

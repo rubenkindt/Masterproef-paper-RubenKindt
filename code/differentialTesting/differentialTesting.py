@@ -74,7 +74,9 @@ def recordDiff(executionDir, seedFolder, seedName, solveAll, potentialNrDiff=Non
         os.mkdir(path_to_crash_folder)
 
     # Create a directory for the crash
-    path_to_bug_dir = os.path.join(path_to_crash_folder, str(number_of_directories))
+    statusDiffString = str(potentialStatusDiff)
+    safeErrorType = re.sub('[^a-zA-Z0-9 ]', '', statusDiffString)  # remove all non (a-z A-Z 0-9 and " ") characters
+    path_to_bug_dir = os.path.join(path_to_crash_folder, safeErrorType[:100] + str(number_of_directories))
     os.mkdir(path_to_bug_dir)
 
     shutil.copy2(seedFolder + "/" + seedName, path_to_bug_dir)
