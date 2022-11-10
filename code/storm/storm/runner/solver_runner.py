@@ -43,8 +43,11 @@ def solver_runner(cp_file, temp_core_folder, timeout, solver):
         return "error" + " " + str("solver ERROR")
     if model.status().exitstatus == ExitStatus.UNKNOWN:
         return "unknown"
-    if model.status().exitstatus == ExitStatus.UNSATISFIABLE:
+    if model.status().exitstatus == ExitStatus.UNSATISFIABLE and not str(model.constraints).__contains__(" == 0 == 0"):
         return "unsat"
+    else:
+        return "unknown"
+
 
 """
 def read_result(file_path, incremental):

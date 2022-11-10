@@ -1,0 +1,5 @@
+solveAll
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/tutorial/part216650539183148086
+
+difference in amount of solution: [(20, 'ortools'), (100, 'gurobi'), (20, 'minizinc:chuffed'), (20, 'minizinc:cp'), (20, 'minizinc:gecode'), (20, 'minizinc:gist'), (20, 'minizinc:int'), (20, 'minizinc:lcg'), (20, 'minizinc:ortools'), (20, 'minizinc:restart'), (20, 'minizinc:set')]
+difference in status: [('sat', 'ortools'), ('NOT_RUN', 'gurobi'), ('sat', 'minizinc:chuffed'), ('sat', 'minizinc:cp'), ('sat', 'minizinc:gecode'), ('sat', 'minizinc:gist'), ('sat', 'minizinc:int'), ('sat', 'minizinc:lcg'), ('sat', 'minizinc:ortools'), ('sat', 'minizinc:restart'), ('sat', 'minizinc:set')]

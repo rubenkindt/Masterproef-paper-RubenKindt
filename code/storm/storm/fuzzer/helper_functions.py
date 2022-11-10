@@ -37,11 +37,11 @@ def export_mutants(mutants, path, cpmpy_Object):
         m.to_file(file_path)
 
 def supportedNegFunction(expr):
-    # this is a patch to circumvent the bug of negating a global function
-    # part come from negated_normal(expr): from cpmpy/transformations/flatten_model.py which may have changed when you read this
 
     return True
 
+    # this is a patch to circumvent the bug of negating a global function
+    # part come from negated_normal(expr): from cpmpy/transformations/flatten_model.py which may have changed when you read this
     if __is_flat_var(expr):
         return True
 

@@ -1,0 +1,5 @@
+solveAll
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/number_of_days166505235642402
+
+difference in amount of solution: [(1, 'ortools'), (2, 'gurobi')]
+difference in status: [('sat', 'ortools'), ('NOT_RUN', 'gurobi')]

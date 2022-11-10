@@ -1,0 +1,5 @@
+solveAll
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/send_most_money16650521758194163
+
+difference in amount of solution: [(1, 'ortools'), (16, 'gurobi')]
+difference in status: [('sat', 'ortools'), ('NOT_RUN', 'gurobi')]

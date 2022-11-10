@@ -1,10 +1,12 @@
+import copy
 import os
 import re
 import shutil
 import argparse
-import copy
 import traceback
 import random
+import json
+import minizinc
 
 from cpmpy import *
 from cpmpy.expressions.core import Comparison
@@ -106,7 +108,9 @@ def recordDiff(mmodel, executionDir, seedFolder, seedName):
         os.mkdir(path_to_crash_folder)
 
     # Create a directory for the crash
-    path_to_bug_dir = os.path.join(path_to_crash_folder, str(number_of_directories))
+    diff = str(mmodel.solver) + " " + str(mmodel.origModel.status().exitstatus.name) + " " + str(mmodel.modifModel.status().exitstatus.name)
+    safeErrorType = re.sub('[^a-zA-Z0-9 ]', '', diff)  # remove all non safe
+    path_to_bug_dir = os.path.join(path_to_crash_folder, safeErrorType[:100] + str(number_of_directories))
     os.mkdir(path_to_bug_dir)
 
     shutil.copy2(seedFolder + "/" + seedName, path_to_bug_dir)
@@ -115,9 +119,9 @@ def recordDiff(mmodel, executionDir, seedFolder, seedName):
     except Exception:
         pass
     crash_logs = "seed: " + str(seedFolder + "/" + seedName) + "\n" + "\n"
-    crash_logs += "solver: " + str(solver) + "\n"
+    crash_logs += "solver: " + str(mmodel.solver) + "\n"
     crash_logs += "modifications" + str(mmodel.metaRelations) + "\n"
-    crash_logs += "difference" + "original " + str(mmodel.origModel.status().exitstatus.name) + " _ " \
+    crash_logs += "difference: " + "original " + str(mmodel.origModel.status().exitstatus.name) + " VS " \
                   + "modified " + str(mmodel.modifModel.status().exitstatus.name) + "\n"
 
     create_file(crash_logs, os.path.join(path_to_bug_dir, "diff_logs.txt"))
@@ -223,7 +227,7 @@ def satMutation(metaModel):
     newcons = []
     if choice == "expandingAllDiff":
         for cons in metaModel.modifModel.constraints:
-            if cons.name == 'alldifferent' and len(cons.args) <= 20:
+            if cons.name == 'alldifferent' and len(cons.args) <= 5:
                 for i, arg1 in enumerate(cons.args):
                     for arg2 in cons.args[i+1:]:
                         newcons += [(arg1) != (arg2)]
@@ -231,7 +235,7 @@ def satMutation(metaModel):
                 newcons += [cons]
     elif choice == "AllDiff~(==)":
         for cons in metaModel.modifModel.constraints:
-            if cons.name == 'alldifferent' and len(cons.args) <= 20:
+            if cons.name == 'alldifferent' and len(cons.args) <= 5:
                 for i, arg1 in enumerate(cons.args):
                     for arg2 in cons.args[i+1:]:
                         newcons += [~((arg1) == (arg2))]
@@ -239,7 +243,7 @@ def satMutation(metaModel):
                 newcons += [cons]
     elif choice == "expandAllEqual":
         for cons in metaModel.modifModel.constraints:
-            if cons.name == 'allequal' and len(cons.args) <= 20:
+            if cons.name == 'allequal' and len(cons.args) <= 5:
                 for arg1 in cons.args[1:]:
                     newcons += [(cons.args[0]) == (arg1)]
             else:
@@ -247,7 +251,7 @@ def satMutation(metaModel):
     elif choice == "AllEqual~(!=)":
         for cons in metaModel.modifModel.constraints:
             if hasattr(cons, "name") and hasattr(cons, "args"):
-                if cons.name == 'allequal' and len(cons.args) <= 20:
+                if cons.name == 'allequal' and len(cons.args) <= 5:
                     for i, arg1 in enumerate(cons.args):
                         for arg2 in cons.args[i+1:]:
                             newcons += [~((arg1) != (arg2))]
@@ -445,21 +449,8 @@ def __main__():
                'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
                'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
                'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
-               'minizinc:lcg', 'minizinc:mip', 'minizinc:org.chuffed.chuffed', 'minizinc:org.gecode.gecode',
-               'minizinc:org.gecode.gist', 'minizinc:org.minizinc.findmus', 'minizinc:org.minizinc.globalizer',
-               'minizinc:org.minizinc.mip.coin-bc', 'minizinc:org.minizinc.mip.cplex',
-               'minizinc:org.minizinc.mip.gurobi', 'minizinc:org.minizinc.mip.scip',
-               'minizinc:org.minizinc.mip.xpress', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
-               'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
-
-    solvers = ['ortools', 'gurobi', 'pysat', 'pysat:cadical', 'pysat:gluecard3', 'pysat:gluecard4',
-               'pysat:glucose3', 'pysat:glucose4', 'pysat:lingeling', 'pysat:maplechrono', 'pysat:maplecm',
-               'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh',
-               'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
-               'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
-               'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
-               'minizinc:lcg', 'minizinc:mip', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
-               'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
+               'minizinc:lcg', 'minizinc:mip', 'minizinc:ortools', 'minizinc:osicbc', 'minizinc:restart',
+               'minizinc:scip', 'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
     seedPaths = getSeeds(seedPath)
     random.shuffle(seedPaths)
     retry = 0
@@ -498,13 +489,13 @@ def __main__():
         except minizinc.error.MiniZincError as e:  # all passed errors are already logged
             if str(e).__contains__("cannot load"):
                 pass
-            elif solver == "minizinc:org.minizinc.mip.scip" and str(e).__contains__("Failed to load plugin"):
+            elif mmodel.solver == "minizinc:org.minizinc.mip.scip" and str(e).__contains__("Failed to load plugin"):
                 pass
-            elif solver == "minizinc:org.minizinc.mip.xpress" and str(e).__contains__("Failed to load plugin"):
+            elif mmodel.solver == "minizinc:org.minizinc.mip.xpress" and str(e).__contains__("Failed to load plugin"):
                 pass
-            elif solver == "minizinc:xpress" and str(e).__contains__("Failed to load plugin"):
+            elif mmodel.solver == "minizinc:xpress" and str(e).__contains__("Failed to load plugin"):
                 pass
-            elif solver == "minizinc:scip" and str(e).__contains__("Failed to load plugin"):
+            elif mmodel.solver == "minizinc:scip" and str(e).__contains__("Failed to load plugin"):
                 pass
             else:
                 print(colored("Crash" + str(e), "red", attrs=["bold"]))

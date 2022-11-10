@@ -32,33 +32,33 @@ def generate_mutants(cpmpy_Object, path_to_directory, maxDepth, maxAssert, seed,
         # We have to create a new randomness object here
         randomness = Randomness(seed)
         #model = cpmpy_Object.get_model()
-        print("####### Generating mutants at location: " + colored(path_to_directory, "blue", attrs=["bold"]))
+        #print("####### Generating mutants at location: " + colored(path_to_directory, "blue", attrs=["bold"]))
         get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing_parameters)
-        print("####### Some stats: ")
-        print("\t\tNumber of assertions = " + colored(str(cpmpy_Object.get_total_number_of_assertions()), "yellow", attrs=["bold"]))
-        print("\t\tNumber of " + colored("TRUE ", "green", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_true_nodes())), "yellow", attrs=["bold"]))
-        print("\t\tNumber of " + colored("FALSE ", "red", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_false_nodes())), "yellow", attrs=["bold"]))
+        #print("####### Some stats: ")
+        #print("\t\tNumber of assertions = " + colored(str(cpmpy_Object.get_total_number_of_assertions()), "yellow", attrs=["bold"]))
+        #print("\t\tNumber of " + colored("TRUE ", "green", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_true_nodes())), "yellow", attrs=["bold"]))
+        #print("\t\tNumber of " + colored("FALSE ", "red", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_false_nodes())), "yellow", attrs=["bold"]))
         # Check if there is anything in the true and false nodes in smt_Object
         if len(cpmpy_Object.get_true_nodes()) > 0 or len(cpmpy_Object.get_false_nodes()) > 0:
             enrichment_steps = fuzzing_parameters["enrichment_steps"]
             number_of_mutants = fuzzing_parameters["number_of_mutants"]
-            print("\t\tNumber of enrichment steps = " + colored(str(enrichment_steps), "yellow", attrs=["bold"]))
-            print("\t\tNumber of mutants = " + colored(str(number_of_mutants), "yellow", attrs=["bold"]))
-            print("\t\tMax Assert = " + colored(str(maxAssert), "yellow", attrs=["bold"]))
-            print("\t\tMax Depth = " + colored(str(maxDepth), "yellow", attrs=["bold"]))
-            print("####### Enriching the set of true and false nodes with more complex trees..")
+            #print("\t\tNumber of enrichment steps = " + colored(str(enrichment_steps), "yellow", attrs=["bold"]))
+            #print("\t\tNumber of mutants = " + colored(str(number_of_mutants), "yellow", attrs=["bold"]))
+            #print("\t\tMax Assert = " + colored(str(maxAssert), "yellow", attrs=["bold"]))
+            #print("\t\tMax Depth = " + colored(str(maxDepth), "yellow", attrs=["bold"]))
+            #print("####### Enriching the set of true and false nodes with more complex trees..")
             enrich_true_and_false_nodes(cpmpy_Object, enrichment_steps, randomness, maxDepth)
-            print("\t\tNumber of " + colored("CONSTRUCTED_TRUE ", "green", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_true_constructed_nodes())), "yellow", attrs=["bold"]))
-            print("\t\tNumber of " + colored("CONSTRUCTED_FALSE ", "red", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_false_constructed_nodes())), "yellow", attrs=["bold"]))
+            #print("\t\tNumber of " + colored("CONSTRUCTED_TRUE ", "green", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_true_constructed_nodes())), "yellow", attrs=["bold"]))
+            #print("\t\tNumber of " + colored("CONSTRUCTED_FALSE ", "red", attrs=["bold"]) + "nodes = " + colored(str(len(cpmpy_Object.get_false_constructed_nodes())), "yellow", attrs=["bold"]))
 
-            print("####### Generating the mutants by picking true and false nodes..")
+            #print("####### Generating the mutants by picking true and false nodes..")
             mutants = pick_true_and_false_nodes_at_random(cpmpy_Object = cpmpy_Object,
                                                           number_of_mutants=number_of_mutants,
                                                           max_assertions=maxAssert,
                                                           randomness=randomness)
-            print("####### Exporting mutants..")
+            #print("####### Exporting mutants..")
             export_mutants(mutants, path_to_directory, cpmpy_Object)
-            print("####### Done with exporting")
+            #print("####### Done with exporting")
         else:
             print(colored("Nothing in TRUE or FALSE node. Nothing we can do here.", "red", attrs=["bold"]))
 
@@ -106,7 +106,7 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing
     """
         Get truth values for all the leaves and sub-trees in the astVector
     """
-    print("####### Breaking up assertions into nodes..")
+    #print("####### Breaking up assertions into nodes..")
     #ast = smt_Object.get_orig_ast()
     #for assertion in ast:
         # our model is already flattened
@@ -119,7 +119,7 @@ def get_all_truth_values_in_astVector(cpmpy_Object, maxDepth, maxAssert, fuzzing
 
     recursively_break_down_a_constraint_into_nodes(cpmpy_Object)
 
-    print("####### Evaluating truth values for all nodes..")
+    #print("####### Evaluating truth values for all nodes..")
     # Evaluate truth values of nodes in this assertion
     m = cpmpy.Model()
     m += cpmpy_Object.get_all_nodes()

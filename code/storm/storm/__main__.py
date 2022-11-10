@@ -50,14 +50,19 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
             if signal == 1:
                 print(colored("\tExperienced timeout while exporting mutants. But we still were able to export some",
                               "magenta", attrs=["bold"]))
-            print("####### RUNNING MUTANTS")
+            #print("####### RUNNING MUTANTS")
             start_time = time.time()
             for i, mutant_path in enumerate(mutant_file_paths):
+                #print("[" + parsedArguments["solver"] +"]\t"+ "[core: " + str(core) +"]\t", end="")
+                #print("[seed_file: " + str(seed_file_number) +"]\t\t" + "[" + str(i+1) + "/" + str(len(mutant_file_paths)) + "]\t\t", end="")
                 try:
                     output = solver_runner(cp_file=mutant_path,
                                            temp_core_folder=path_to_temp_core_directory,
                                            timeout=ALL_FUZZING_PARAMETERS["solver_timeout"],
                                            solver = solver)
+                except RecursionError as e:
+                    #print(colored("already Found", "red", attrs=["bold"]))
+                    continue
                 except Exception as e:
                     print(colored("Crash" + str(e), "red", attrs=["bold"]))
                     record_crash(home_directory=parsedArguments["home"],
@@ -72,12 +77,12 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                     os.remove(mutant_path)
                     continue
 
-                print("[" + parsedArguments["solver"] +"]\t"+ "[core: " + str(core) +"]\t", end="")
-                print("[seed_file: " + str(seed_file_number) +"]\t\t" + "[" + str(i+1) + "/" + str(len(mutant_file_paths)) + "]\t\t", end="")
+
                 #print("[" + parsedArguments["theory"] +"]\t", end="")
 
                 if output == "sat":
-                    print(colored(output, "green", attrs=["bold"]))
+                    pass
+                    #print(colored(output, "green", attrs=["bold"]))
                 elif output == "unsat":
                     print(colored(output, "red", attrs=["bold"]))
                     print(mutant_path)
@@ -96,13 +101,13 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                 elif output.__contains__("error"):
                     print(colored(output, "red", attrs=["bold"]))
                     record_error(home_directory=parsedArguments["home"],
-                                     seed_file_path=seed_file_path,
-                                     buggy_mutant_path=mutant_path,
-                                     seed=SEED,
-                                     mutant_number=i,
-                                     fuzzing_parameters=fuzzing_parameters,
-                                     parsedArguments=parsedArguments,
-                                     errorType=output)
+                                 seed_file_path=seed_file_path,
+                                 buggy_mutant_path=mutant_path,
+                                 seed=SEED,
+                                 mutant_number=i,
+                                 fuzzing_parameters=fuzzing_parameters,
+                                 parsedArguments=parsedArguments,
+                                 errorType=output)
                 else:
                     print(colored(output, "yellow", attrs=["bold"]))
                 os.remove(mutant_path)  # remove mutant when processed
@@ -113,7 +118,17 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
     """
     time.sleep(wait)
     print("Running storm on a core")
+    if not os.path.exists(parsedArguments["home"]):
+        try:
+            os.mkdir(parsedArguments["home"])
+        except:
+            pass
     temp_directory = os.path.join(parsedArguments["home"], "temp")
+    if not os.path.exists(temp_directory):
+        try:
+            os.mkdir(temp_directory)
+        except:
+            pass
     path_to_temp_core_directory = os.path.join(temp_directory, parsedArguments["server"], "core_" + core)
     create_server_core_directory(temp_directory, parsedArguments["server"], core)
     seed_file_paths = []
@@ -193,18 +208,18 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
         #print("####### Setting incrementality with prob: " + colored(str(ALL_FUZZING_PARAMETERS["incremental"]), "yellow", attrs=["bold"]))
         #print("####### Incrementality: ", end="")
         #if incrementality == "yes":
-            #print(colored("YES", "green", attrs=["bold"]))
-            #mutant_file_paths.sort()
-            #insert_pushes_pops(mutant_file_paths, randomness)
+        #print(colored("YES", "green", attrs=["bold"]))
+        #mutant_file_paths.sort()
+        #insert_pushes_pops(mutant_file_paths, randomness)
         #else:
-            #print(colored("NO", "red", attrs=["bold"]))
+        #print(colored("NO", "red", attrs=["bold"]))
 
 
         #print("####### Adding check-sat-using options with prob: " + colored(str(ALL_FUZZING_PARAMETERS["check_sat_using"]), "yellow", attrs=["bold"]))
         #for mutant_file_path in mutant_file_paths:
-            #if randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using"]) == "yes" and parsedArguments["solver"] == "z3":
-                #check_sat_using_option = randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using_options"])
-                #add_check_sat_using(mutant_file_path, check_sat_using_option)
+        #if randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using"]) == "yes" and parsedArguments["solver"] == "z3":
+        #check_sat_using_option = randomness.random_choice(ALL_FUZZING_PARAMETERS["check_sat_using_options"])
+        #add_check_sat_using(mutant_file_path, check_sat_using_option)
 
 
         # If we are in bug repoduction mode, copy the buggy mutant to the bug folder in fse replication folder
@@ -242,13 +257,13 @@ def main():
     else:
         os.system("cls")
 
-    print(colored("############################", "blue", "on_white", attrs=["bold"]))
-    print(colored("  Welcome to storm v.1.0.0  ", "blue", "on_white", attrs=["bold"]))
-    print(colored("############################", "blue", "on_white", attrs=["bold"]))
+    #print(colored("############################", "blue", "on_white", attrs=["bold"]))
+    #print(colored("  Welcome to storm v.1.0.0  ", "blue", "on_white", attrs=["bold"]))
+    #print(colored("############################", "blue", "on_white", attrs=["bold"]))
     arguments = MainArgumentParser()
     arguments.parse_arguments(argparse.ArgumentParser())
     parsedArguments = arguments.get_arguments()
-    print(parsedArguments)
+    #print(parsedArguments)
     if parsedArguments["home"] is None and os.name == 'posix':
         parsedArguments["home"] = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/storm"
     if parsedArguments["home"] is None and os.name == 'nt':

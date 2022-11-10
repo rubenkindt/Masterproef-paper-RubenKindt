@@ -122,9 +122,8 @@ def differentialTest(folder, fileName, seed=123):
                'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
                'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
                'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
-               'minizinc:lcg', 'minizinc:mip', 'minizinc:osicbc', 'minizinc:restart', 'minizinc:scip',
-               'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
-        
+               'minizinc:lcg', 'minizinc:mip', 'minizinc:ortools', 'minizinc:osicbc', 'minizinc:restart',
+               'minizinc:scip', 'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
     timeout = 1 * 60
     if os.name == 'posix':
         executionPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/results/diffTesting"
@@ -194,31 +193,31 @@ def differentialTest(folder, fileName, seed=123):
                     recordCrash(executionDir=executionPath, seedFolder=folder, seedName=fileName,
                                 trace=traceback.format_exc(), errorName=str(e), solver=solver, solveAll=solveAll)
             except ValueError as e:
-                if solver == "pysat:minisat-gh" and str(e) == "Wrong bound: ":
+                if solver == "pysat:minisat-gh" and str(e).__contains__("Wrong bound: "):
                     pass
-                elif solver == "pysat:minisat22" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:minisat22" and str(e).__contains__("Wrong bound: "):
                     pass
-                elif solver == "pysat:minicard" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:minicard" and str(e).__contains__("Wrong bound: "):
                     pass
-                elif solver == "pysat:mergesat3" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:mergesat3" and str(e).__contains__("Wrong bound: "):
                     pass
-                elif solver == "pysat:maplesat" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:maplesat" and str(e).__contains__("Wrong bound: "):
                     pass
-                elif solver == "pysat:maplecm" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:maplecm" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:maplechrono" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:maplechrono" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:lingeling" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:lingeling" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:glucose4" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:glucose4" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:glucose3" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:glucose3" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:gluecard3" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:gluecard3" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:gluecard4" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:gluecard4" and str(e).__contains__( "Wrong bound: "):
                     pass
-                elif solver == "pysat:cadical" and str(e) == "Wrong bound: ":
+                elif solver == "pysat:cadical" and str(e).__contains__( "Wrong bound: "):
                     pass
                 elif solver == "pysat" and str(e).__contains__("Wrong bound:"):
                     pass
@@ -247,9 +246,7 @@ def differentialTest(folder, fileName, seed=123):
             except Exception as e:
                 if str(e) == "CPM_pysat: only satisfaction, does not support an objective function":
                     pass
-                elif str(e).__contains__("pickle.UnpicklingError") and str(e).__contains__("could not find MARK"):
-                    pass # did not read in a pickle file
-                elif str(e).__contains__("pickle.UnpicklingError") and str(e).__contains__("invalid load key, '5'"):
+                elif str(e).__contains__("pickle.UnpicklingError"):
                     pass # did not read in a pickle file
                 else:
                     # crash

@@ -60,6 +60,7 @@ However after finishing, we discovered that only two solver, namely "ortools" an
 
 While searching for all possible solutions for a given problem over multiple solvers gave us more data to compare in between solvers the restrictions mentioned limit the testing of finding all solutions. However, when we look at only searching for one solution for a given example we have always have more then enough solver to compare between. Most of the times 14 solvers where compared and we never gotten lower then 6 solver, this variation is due to the features used in the given problem the amount of solvers changed. If a problem happened to not use any global functions the SAT-solvers may be able to solve them allowing us to compare between up to 25 solvers. Given that we only search after a single solution we are limited in the what we can compare. For example, if solver A says that it found a satisfiable problem with the solution having values A and solver B says the same but with values B (with A $\neq$ B) the only thing we can compare is that both solver output the same "satisfiable". Since both solution A and B can be different solutions to the problem.
 
+%limit on solveAll of max 100 solutions for executing time reasons
 
 \section{metamorphic testing}
 
