@@ -1,0 +1,5 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/tutorial/part116650539487800758
+
+solver: ortools
+modifications['sementicFusion!=']
+difference: original OPTIMAL VS modified UNSATISFIABLE

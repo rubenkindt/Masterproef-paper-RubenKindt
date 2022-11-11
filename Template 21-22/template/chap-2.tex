@@ -61,7 +61,7 @@ Until now we discussed fuzzers more generally, we would like to deliberate speci
 \end{figure}
 One of those fuzzers is STORM which is a mutation based black box fuzzer created by Muhammad Numair Mansur et al. \cite{1mansur2020detecting} to find critical bugs (i.e., wrongly sat or wrongly unsat) in SMT solvers. In their paper \cite{1mansur2020detecting} they explain the inner working thoroughly, but briefly summarized STORM creates an initial pool of smaller formulas from existing formulas found in seeds, uses another solver to create models of those smaller formulas. To then construct more complex formulas with the knowledge of their ground truth, with this STORM can test the SMT solver as represented in figure \ref{fig:STORM}. This novel way of fuzzing SMT solvers with inputs that are satisfiable by construction and has been cited significantly, considering that it is a recent paper.
 
-
+\label{fuzzing:SemanticFusion}
 Another technique for fuzzing SMT solvers is the one proposed by Dominik Winterer et al. with their fuzzer YinYang \cite{43YinYang}, which uses "Semantic Fusion" to test the solvers.
 \begin{quote}
 	\label{quote:Fuzzing:YinYang}
@@ -100,7 +100,7 @@ In situations where the existence of analogue programs would be a limited factor
 	-\"{O}zg\"{u}r Akg\"{u}n et al. in "Metamorphic Testing of Constraint Solvers" \cite{50akgun2018metamorphic}.
 \end{quote}
 
-\noindent This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the amount of models reduces (or remains equal). Or that the amount of models remain the same when giving an equivalent formula or adding a tautology compared to the original. \todo{proofread this sence} This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available transformation.
+\noindent This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the amount of models reduces (or remains equal). Or that the amount of models remain the same when giving an equivalent formula or adding a tautology compared to the original. \todo{proofread this sence} This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available metamorphic transformation.
 
 \section{The oracle problem}
 \label{fuzzing:OracleProblem}
