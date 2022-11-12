@@ -1,8 +1,9 @@
 from cpmpy import *
 
 file ="3_coins1665053328231921"
+file= "minimized"
 m=Model().from_file(file)
-m.solve(solver="pysat")
+m.solve(solver="ortools")
 m.solve(solver="pysat:cadical")
 m.solve(solver="pysat:minisat-gh")
 m.solve(solver="pysat:minisat22")
