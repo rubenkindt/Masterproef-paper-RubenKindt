@@ -1,0 +1,4 @@
+constraint 2 fails with TypeError to .value() due to a vector multiplication of [7, 1] with [None, None] which is not catched
+cpmpy\expressions\core.py line 491
+
+(sum([7, 1] * [IV1615, IV1616])) == (IV1807)

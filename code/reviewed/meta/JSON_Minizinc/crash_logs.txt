@@ -1,5 +1,5 @@
 seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/water_buckets116650531980321176
-solver: minizinc:float
+solver: minizinc:experimental
 metaRelations: ['sementicFusion|']
 error reason: Expecting value: line 1 column 76 (char 75)
 error trace: Traceback (most recent call last):

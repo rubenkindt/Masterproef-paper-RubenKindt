@@ -1,6 +1,4 @@
 from cpmpy import *
-from cpmpy.transformations.flatten_model import *
-
 
 file ="minimized"
 
@@ -10,6 +8,7 @@ m2.solve(solver="minizinc:chuffed")
 print(m2.status())
 
 m = Model().from_file(file)
+m.solve(solver="gurobi")
 m.solve(solver="ortools")
 m.status()
 print(m.status())

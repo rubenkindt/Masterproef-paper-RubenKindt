@@ -1,0 +1,1 @@
+from cpmpy import *file = "water_buckets116650531980321176"m=Model().from_file(file)nr = m.solve(solver="minizinc:experimental", time_limit=5*60)nr = m.solve(solver="minizinc:gecode", time_limit=5*60)nr = m.solve(solver="minizinc:gist", time_limit=5*60)

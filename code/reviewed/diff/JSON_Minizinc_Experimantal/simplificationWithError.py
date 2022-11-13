@@ -24,7 +24,7 @@ def simplification(constraints, solver="gurobi", verbose=False):
             newPart = failing[lb:ub]
             m = Model(newPart)
             
-            if len(newPart) <= 1:
+            if len(newPart) < 1:
                 return failing
             try:
                 m.solve(solver=solver)
