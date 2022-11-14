@@ -1,0 +1,23 @@
+solve
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/advanced/counterfactual_explain16650536992053795
+solver: minizinc:coin-bc
+error reason: MiniZinc stopped with a non-zero exit code, but did not output an error message. 
+error trace: Traceback (most recent call last):
+  File "differentialTesting.py", line 144, in differentialTest
+    m.solve(solver=solver, time_limit=timeout)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 140, in solve
+    ret = s.solve(time_limit=time_limit)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 166, in solve
+    mzn_result = mzn_inst.solve(**mzn_kwargs)
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 186, in solve
+    return asyncio.run(coroutine)
+  File "/usr/lib/python3.8/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 250, in solve_async
+    async for result in self.solutions(
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 465, in solutions
+    raise parse_error(stderr)
+minizinc.error.MiniZincError: MiniZinc stopped with a non-zero exit code, but did not output an error message. 
+

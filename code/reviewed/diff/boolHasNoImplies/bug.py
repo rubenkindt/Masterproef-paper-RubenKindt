@@ -1,8 +1,6 @@
 from cpmpy import *
 
-b = boolvar()
 m = Model()
-m += True
+m += (1+1) > 3 # Could be a more complicated expression
 m += (m.constraints[0]).implies(True)
-nr = m.solve()
-print(m.status())
+m.solve(solver="minizinc:ortools")

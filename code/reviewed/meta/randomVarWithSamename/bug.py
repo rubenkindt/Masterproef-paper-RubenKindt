@@ -6,9 +6,9 @@ from cpmpy import *
 #     m += b == 4
 #     m.to_file("1")
 
-b = intvar(lb=3,ub=6)
 m2 = Model().from_file("1")
-m2 += b == 5
+j = intvar(lb=3,ub=6)
+m2 += j == 5
 m2.solve() # solver independent
-print(b.value())
+print(j.value())
 print(m2.status().exitstatus)

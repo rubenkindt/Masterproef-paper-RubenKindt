@@ -17,6 +17,8 @@ limitations under the License.
 import argparse
 import multiprocessing
 import time
+
+import minizinc
 from termcolor import colored
 from storm import *
 from storm.fuzzer.fuzzer import generate_mutants
@@ -37,6 +39,7 @@ from storm.utils.file_operations import get_all_seed_files_recursively
 import time
 import os
 import traceback
+import random
 
 ALL_FUZZING_PARAMETERS = None
 
@@ -60,10 +63,19 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                                            temp_core_folder=path_to_temp_core_directory,
                                            timeout=ALL_FUZZING_PARAMETERS["solver_timeout"],
                                            solver = solver)
+                except minizinc.error.MiniZincError as e:
+                    if str(e).__contains__("cannot load"):
+                        continue
                 except RecursionError as e:
-                    #print(colored("already Found", "red", attrs=["bold"]))
+                    # print(colored("already Found", "red", attrs=["bold"]))
+                    continue
+                except NotImplementedError:
+                    continue
+                except RuntimeError:
                     continue
                 except Exception as e:
+                    if str(e) == "CPM_pysat: only satisfaction, does not support an objective function":
+                        continue
                     print(colored("Crash" + str(e), "red", attrs=["bold"]))
                     record_crash(home_directory=parsedArguments["home"],
                                  cpmpy_Object=cpmpy_Object,
@@ -158,6 +170,15 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
     randomness.shuffle_list(seed_file_paths)
     # run the file and see if it is SAT or UNSAT
     for i, file in enumerate(seed_file_paths):
+        solvers = ['ortools', 'gurobi', 'pysat', 'pysat:cadical', 'pysat:gluecard3', 'pysat:gluecard4',
+                       'pysat:glucose3', 'pysat:glucose4', 'pysat:lingeling', 'pysat:maplechrono', 'pysat:maplecm',
+                       'pysat:maplesat', 'pysat:mergesat3', 'pysat:minicard', 'pysat:minisat22', 'pysat:minisat-gh',
+                       'minizinc:api', 'minizinc:cbc', 'minizinc:chuffed', 'minizinc:coin-bc', 'minizinc:coinbc',
+                       'minizinc:cp', 'minizinc:cplex', 'minizinc:experimental', 'minizinc:findmus', 'minizinc:float',
+                       'minizinc:gecode', 'minizinc:gist', 'minizinc:globalizer', 'minizinc:gurobi', 'minizinc:int',
+                       'minizinc:lcg', 'minizinc:mip', 'minizinc:ortools', 'minizinc:osicbc', 'minizinc:restart',
+                       'minizinc:scip', 'minizinc:set', 'minizinc:tool', 'minizinc:xpress']
+        parsedArguments["solver"] = random.choice(solvers)
         # Refresh core directory
         refresh_directory(path_to_temp_core_directory)
         incrementality = randomness.random_choice(ALL_FUZZING_PARAMETERS["incremental"])

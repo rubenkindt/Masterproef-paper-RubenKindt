@@ -17,6 +17,7 @@ limitations under the License.
 import os
 import re
 import shutil
+import time
 
 import cpmpy
 from termcolor import colored
@@ -141,6 +142,9 @@ def record_soundness(home_directory, seed_file_path, buggy_mutant_path, seed, mu
 
     create_file(error_logs, os.path.join(path_to_bug_dir, "error_logs.txt"))
 
+    create_file("epoch time", os.path.join(path_to_bug_dir, str(time.time())+".txt"))
+
+
 def record_error(home_directory, seed_file_path, buggy_mutant_path, seed, mutant_number, fuzzing_parameters, parsedArguments, errorType):
     temp_dir = os.path.join(home_directory, "temp")
 
@@ -176,6 +180,8 @@ def record_error(home_directory, seed_file_path, buggy_mutant_path, seed, mutant
     error_logs += str(parsedArguments)
     error_logs += "\n"
     error_logs += "error Type: " + str(errorType)
+    error_logs += "\n"
+    error_logs += "solver: " + str(parsedArguments["solver"])
 
     create_file(error_logs, os.path.join(path_to_bug_dir, "error_logs.txt"))
 
