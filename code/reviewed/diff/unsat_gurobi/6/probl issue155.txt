@@ -1,0 +1,4 @@
+solve
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/miss_manners16650519017740455
+
+difference in status: [('UNSATISFIABLE', 'ortools'), ('UNSATISFIABLE', 'gurobi'), ('ERROR', 'minizinc:api'), ('ERROR', 'minizinc:cbc'), ('sat', 'minizinc:chuffed'), ('ERROR', 'minizinc:coin-bc'), ('ERROR', 'minizinc:coinbc'), ('sat', 'minizinc:cp'), ('ERROR', 'minizinc:float'), ('ERROR', 'minizinc:gecode'), ('ERROR', 'minizinc:gist'), ('sat', 'minizinc:int'), ('sat', 'minizinc:lcg'), ('ERROR', 'minizinc:mip'), ('sat', 'minizinc:ortools'), ('ERROR', 'minizinc:osicbc'), ('ERROR', 'minizinc:restart'), ('ERROR', 'minizinc:set')]

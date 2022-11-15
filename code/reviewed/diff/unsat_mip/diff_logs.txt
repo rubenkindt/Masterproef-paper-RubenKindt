@@ -1,0 +1,4 @@
+solve
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/exodus16650527724432807
+
+difference in status: [('sat', 'ortools'), ('sat', 'gurobi'), ('UNSATISFIABLE', 'minizinc:api'), ('UNSATISFIABLE', 'minizinc:cbc'), ('UNSATISFIABLE', 'minizinc:coin-bc'), ('UNSATISFIABLE', 'minizinc:coinbc'), ('UNSATISFIABLE', 'minizinc:float'), ('UNSATISFIABLE', 'minizinc:mip'), ('sat', 'minizinc:ortools'), ('UNSATISFIABLE', 'minizinc:osicbc')]

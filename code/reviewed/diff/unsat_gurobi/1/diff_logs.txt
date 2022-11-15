@@ -1,0 +1,4 @@
+solve
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/bibd16650522531582546
+
+difference in status: [('sat', 'ortools'), ('UNSATISFIABLE', 'gurobi'), ('sat', 'minizinc:api'), ('sat', 'minizinc:cbc'), ('sat', 'minizinc:chuffed'), ('sat', 'minizinc:coin-bc'), ('sat', 'minizinc:coinbc'), ('sat', 'minizinc:cp'), ('sat', 'minizinc:float'), ('sat', 'minizinc:gecode'), ('sat', 'minizinc:gist'), ('sat', 'minizinc:int'), ('sat', 'minizinc:lcg'), ('sat', 'minizinc:mip'), ('sat', 'minizinc:ortools'), ('sat', 'minizinc:osicbc'), ('sat', 'minizinc:restart'), ('sat', 'minizinc:set')]

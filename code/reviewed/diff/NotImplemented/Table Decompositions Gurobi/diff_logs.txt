@@ -1,0 +1,5 @@
+solveAll
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/pentonomies16650531368916516
+
+difference in amount of solution: [(2, 'ortools'), (70, 'minizinc:chuffed'), (77, 'minizinc:cp'), (100, 'minizinc:gecode'), (100, 'minizinc:gist'), (75, 'minizinc:int'), (72, 'minizinc:lcg'), (4, 'minizinc:ortools'), (100, 'minizinc:restart'), (100, 'minizinc:set')]
+difference in status: [('sat', 'ortools'), ('sat', 'minizinc:chuffed'), ('sat', 'minizinc:cp'), ('sat', 'minizinc:gecode'), ('sat', 'minizinc:gist'), ('sat', 'minizinc:int'), ('sat', 'minizinc:lcg'), ('sat', 'minizinc:ortools'), ('sat', 'minizinc:restart'), ('sat', 'minizinc:set')]
