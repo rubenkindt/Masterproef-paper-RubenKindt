@@ -13,14 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-import subprocess
-import os
-
-import cpmpy
-from cpmpy import *
+import minizinc
 from cpmpy.solvers.solver_interface import ExitStatus
-from termcolor import colored
+from cpmpy import *
 
 
 def solver_runner(cp_file, temp_core_folder, timeout, solver):
@@ -28,22 +23,24 @@ def solver_runner(cp_file, temp_core_folder, timeout, solver):
     temp_file_name = "_output.txt"
     temp_file_path = temp_core_folder + temp_file_name
 
-    model = cpmpy.Model().from_file(cp_file)
+    modell = Model().from_file(cp_file)
 
     #solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
-    solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
+    sec = int(timeout.total_seconds())
 
-    if model.status().exitstatus == ExitStatus.NOT_RUN:
+    modell.solve(solver=solver, time_limit=sec)
+
+    if modell.status().exitstatus == ExitStatus.NOT_RUN:
         return "error" + " " + str("NOT_RUN")
-    if model.status().exitstatus == ExitStatus.FEASIBLE:
+    if modell.status().exitstatus == ExitStatus.FEASIBLE:
         return "sat"
-    if model.status().exitstatus == ExitStatus.OPTIMAL:
+    if modell.status().exitstatus == ExitStatus.OPTIMAL:
         return "sat"
-    if model.status().exitstatus == ExitStatus.ERROR:
+    if modell.status().exitstatus == ExitStatus.ERROR:
         return "error" + " " + str("solver ERROR")
-    if model.status().exitstatus == ExitStatus.UNKNOWN:
+    if modell.status().exitstatus == ExitStatus.UNKNOWN:
         return "unknown"
-    if model.status().exitstatus == ExitStatus.UNSATISFIABLE and not str(model.constraints).__contains__(" == 0 == 0"):
+    if modell.status().exitstatus == ExitStatus.UNSATISFIABLE and not str(modell.constraints).__contains__(" == 0 == 0"):
         return "unsat"
     else:
         return "unknown"

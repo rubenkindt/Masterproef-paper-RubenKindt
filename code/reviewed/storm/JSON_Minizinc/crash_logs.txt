@@ -1,0 +1,35 @@
+Some info on this crash:
+seed to run_storm() function: 123
+Path to original file: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm/sudoku_17_hints16650532792618148
+This was the [0]th mutant
+
+Configuration: 
+{'max_depth': 20, 'max_assert': 20, 'enrichment_steps': 100, 'number_of_mutants': 100, 'mutant_generation_timeout': 900, 'mutant_running_timeout': 900, 'solver_timeout': datetime.timedelta(seconds=120), 'check_cp_using': ['yes', 'no'], 'check_cp_using_options': [], 'incremental': ['no', 'no']}
+{'core': '0', 'cores': None, 'server': 'local', 'seed': '123', 'ddebug': False, 'solver': 'minizinc:findmus', 'reproduce': None, 'min': False, 'file_path': None, 'check_sat_using': None, 'home': '/home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/', 'seedFilePath': '/home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm'}
+crash trace: 
+Traceback (most recent call last):
+  File "/home/user/Desktop/Thesis/Masterproef-paper/code/storm/storm/__main__.py", line 62, in run_mutants_in_a_thread
+    output = solver_runner(cp_file=mutant_path,
+  File "/home/user/Desktop/Thesis/Masterproef-paper/code/storm/storm/runner/solver_runner.py", line 34, in solver_runner
+    solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 140, in solve
+    ret = s.solve(time_limit=time_limit)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 163, in solve
+    (mzn_kwargs, mzn_inst) = self._pre_solve(time_limit=time_limit, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 138, in _pre_solve
+    mzn_inst = minizinc.Instance(self.mzn_solver, copy_model)
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 100, in __init__
+    self.analyse()
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 599, in analyse
+    output = self._driver._run(["--model-interface-only"] + files, self._solver)
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/driver.py", line 232, in _run
+    for _ in decode_json_stream(output.stdout):
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/json.py", line 82, in decode_json_stream
+    obj = loads(line, cls=cls, **kw)
+  File "/usr/lib/python3.8/json/__init__.py", line 357, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.8/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.8/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

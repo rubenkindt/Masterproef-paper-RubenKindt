@@ -66,6 +66,12 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                 except minizinc.error.MiniZincError as e:
                     if str(e).__contains__("cannot load"):
                         continue
+                    elif str(e).__contains__("Failed to load plugin"):
+                        continue
+                    elif str(e).__contains__("MiniZinc stopped with a non-zero exit code, but did not output an error message."):
+                        continue
+                    else:
+                        raise e
                 except RecursionError as e:
                     # print(colored("already Found", "red", attrs=["bold"]))
                     continue
@@ -93,7 +99,7 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                 #print("[" + parsedArguments["theory"] +"]\t", end="")
 
                 if output == "sat":
-                    pass
+                    continue
                     #print(colored(output, "green", attrs=["bold"]))
                 elif output == "unsat":
                     print(colored(output, "red", attrs=["bold"]))
@@ -219,6 +225,7 @@ def run_storm(parsedArguments, core, SEED, wait, reproduce, rq3, fuzzing_params)
                          parsedArguments=parsedArguments,
                          crashTrace=traceback.format_exc(),
                          errorType=str(e))
+            continue
         mutant_file_paths = get_mutant_paths(path_to_temp_core_directory)
 
         if len(mutant_file_paths) == 0:

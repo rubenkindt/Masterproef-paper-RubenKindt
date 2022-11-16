@@ -1,0 +1,42 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/sudoku_17_hints16650532736445222
+solver: gurobi
+metaRelations: ['expandingAllDiff', '!=0', 'uselessAny', 'sementicFusion&']
+error reason: maximum recursion depth exceeded in __instancecheck__
+error trace: Traceback (most recent call last):
+  File "metamorphic.py", line 479, in __main__
+    mmodel.modifModel.solve(solver=mmodel.solver, time_limit=timeout)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 137, in solve
+    s = SolverLookup.get(solver, self)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/utils.py", line 102, in get
+    return cls(model, subsolver=subname)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/gurobi.py", line 95, in __init__
+    super().__init__(name="gurobi", cpm_model=cpm_model)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/solver_interface.py", line 83, in __init__
+    self += cpm_model.constraints
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/gurobi.py", line 258, in __add__
+    cpm_cons = flatten_constraint(cpm_con)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 135, in flatten_constraint
+    flatcons += flatten_constraint(e)  # add all at end
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 211, in flatten_constraint
+    (con, flatcons) = normalized_boolexpr(expr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 467, in normalized_boolexpr
+    return normalized_boolexpr(nnexpr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 467, in normalized_boolexpr
+    return normalized_boolexpr(nnexpr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 467, in normalized_boolexpr
+    return normalized_boolexpr(nnexpr)
+  [Previous line repeated 978 more times]
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 466, in normalized_boolexpr
+    nnexpr = negated_normal(lexpr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/flatten_model.py", line 609, in negated_normal
+    return expr == 0 # can't do better than this...
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/expressions/core.py", line 179, in __eq__
+    return Comparison("==", self, other)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/expressions/core.py", line 334, in __init__
+    super().__init__(name, [left, right])
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/expressions/core.py", line 110, in __init__
+    assert (is_any_list(arg_list)), "_list_ of arguments required, even if of length one e.g. [arg]"
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/expressions/utils.py", line 44, in is_any_list
+    return isinstance(arg, (list, tuple, np.ndarray))
+RecursionError: maximum recursion depth exceeded in __instancecheck__
+

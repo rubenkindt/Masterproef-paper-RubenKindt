@@ -1,0 +1,23 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/run_nonogram16650527151049743
+solver: minizinc:set
+metaRelations: ['sementicFusion!=', 'uselessAny', 'xorCons', 'addRandomIntRestrictions']
+error reason: MiniZinc error: Memory violation detected (segmentation fault).
+This is a bug. Please file a bug report using the MiniZinc bug tracker.
+error trace: Traceback (most recent call last):
+  File "metamorphic.py", line 479, in __main__
+    mmodel.modifModel.solve(solver=mmodel.solver, time_limit=timeout)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 140, in solve
+    ret = s.solve(time_limit=time_limit)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 163, in solve
+    (mzn_kwargs, mzn_inst) = self._pre_solve(time_limit=time_limit, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 138, in _pre_solve
+    mzn_inst = minizinc.Instance(self.mzn_solver, copy_model)
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 100, in __init__
+    self.analyse()
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/instance.py", line 599, in analyse
+    output = self._driver._run(["--model-interface-only"] + files, self._solver)
+  File "/home/user/.local/lib/python3.8/site-packages/minizinc/driver.py", line 234, in _run
+    raise parse_error(output.stderr)
+minizinc.error.MiniZincError: MiniZinc error: Memory violation detected (segmentation fault).
+This is a bug. Please file a bug report using the MiniZinc bug tracker.
+

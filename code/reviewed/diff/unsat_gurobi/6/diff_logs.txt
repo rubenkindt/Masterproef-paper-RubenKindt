@@ -1,4 +1,3 @@
-solve
-seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/miss_manners16650519017740455
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/miss_manners16650518983839905
 
-difference in status: [('UNSATISFIABLE', 'ortools'), ('UNSATISFIABLE', 'gurobi'), ('ERROR', 'minizinc:api'), ('ERROR', 'minizinc:cbc'), ('sat', 'minizinc:chuffed'), ('ERROR', 'minizinc:coin-bc'), ('ERROR', 'minizinc:coinbc'), ('sat', 'minizinc:cp'), ('ERROR', 'minizinc:float'), ('ERROR', 'minizinc:gecode'), ('ERROR', 'minizinc:gist'), ('sat', 'minizinc:int'), ('sat', 'minizinc:lcg'), ('ERROR', 'minizinc:mip'), ('sat', 'minizinc:ortools'), ('ERROR', 'minizinc:osicbc'), ('ERROR', 'minizinc:restart'), ('ERROR', 'minizinc:set')]
+difference in status: [('sat', 'ortools'), ('UNSATISFIABLE', 'gurobi'), ('sat', 'minizinc:api'), ('sat', 'minizinc:cbc'), ('sat', 'minizinc:chuffed'), ('sat', 'minizinc:coin-bc'), ('sat', 'minizinc:coinbc'), ('sat', 'minizinc:cp'), ('sat', 'minizinc:float'), ('sat', 'minizinc:gecode'), ('sat', 'minizinc:gist'), ('sat', 'minizinc:int'), ('sat', 'minizinc:lcg'), ('sat', 'minizinc:mip'), ('sat', 'minizinc:osicbc'), ('sat', 'minizinc:restart'), ('sat', 'minizinc:set')]

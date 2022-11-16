@@ -1,0 +1,5 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/giant_cat_army_riddle1665052998627782
+
+solver: gurobi
+modifications['sementicFusion^', 'cons1==cons2', 'expandAllEqual', 'uselessAny']
+difference: original UNSATISFIABLE VS modified FEASIBLE
