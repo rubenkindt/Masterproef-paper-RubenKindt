@@ -1,1 +1,0 @@
-from cpmpy import *file = "_Modif"m=Model().from_file(file)nr = m.solve(solver="minizinc:set")

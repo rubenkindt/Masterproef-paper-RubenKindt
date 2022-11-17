@@ -1,5 +1,6 @@
-from simplification import simplification
+# from musx2 import *
 from cpmpy import *
+# from simplification import *
 
 file = "17b16650534325711741"
 

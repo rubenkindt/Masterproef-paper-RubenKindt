@@ -1,0 +1,9 @@
+Some info on this bug:
+seed to run_storm() function: 123
+Path to original file: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm/csplib/prob049_number_partitioning16650537175584304
+This was the [52]th mutant
+
+Configuration: 
+{'max_depth': 20, 'max_assert': 20, 'enrichment_steps': 100, 'number_of_mutants': 100, 'mutant_generation_timeout': 900, 'mutant_running_timeout': 900, 'solver_timeout': datetime.timedelta(seconds=120), 'check_cp_using': ['yes', 'no'], 'check_cp_using_options': [], 'incremental': ['no', 'no']}
+{'core': '0', 'cores': None, 'server': 'local', 'seed': '123', 'ddebug': False, 'solver': 'gurobi', 'reproduce': None, 'min': False, 'file_path': None, 'check_sat_using': None, 'home': '/home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/', 'seedFilePath': '/home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm'}
+solver: gurobi

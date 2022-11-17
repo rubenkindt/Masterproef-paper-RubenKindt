@@ -1,0 +1,21 @@
+Some info on this crash:
+seed to run_storm() function: 123
+Path to original file: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm/csplib/prob005_auto_correlation16650537061803274
+This was the [0]th mutant
+
+Configuration: 
+{'max_depth': 20, 'max_assert': 20, 'enrichment_steps': 100, 'number_of_mutants': 100, 'mutant_generation_timeout': 900, 'mutant_running_timeout': 900, 'solver_timeout': datetime.timedelta(seconds=120), 'check_cp_using': ['yes', 'no'], 'check_cp_using_options': [], 'incremental': ['no', 'no']}
+{'core': '0', 'cores': None, 'server': 'local', 'seed': '123', 'ddebug': False, 'solver': 'gurobi', 'reproduce': None, 'min': False, 'file_path': None, 'check_sat_using': None, 'home': '/home/user/Desktop/Thesis/Masterproef-paper/code/results/storm/', 'seedFilePath': '/home/user/Desktop/Thesis/Masterproef-paper/code/examples/storm'}
+crash trace: 
+Traceback (most recent call last):
+  File "/home/user/Desktop/Thesis/Masterproef-paper/code/storm/storm/__main__.py", line 59, in run_mutants_in_a_thread
+    output = solver_runner(cp_file=mutant_path,
+  File "/home/user/Desktop/Thesis/Masterproef-paper/code/storm/storm/runner/solver_runner.py", line 34, in solver_runner
+    solFound = model.solve(solver=solver, time_limit=timeout.total_seconds())
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 140, in solve
+    ret = s.solve(time_limit=time_limit)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/gurobi.py", line 124, in solve
+    _ = self.grb_model.optimize(callback=solution_callback)
+  File "src/gurobipy/model.pxi", line 833, in gurobipy.Model.optimize
+  File "src/gurobipy/model.pxi", line 1277, in gurobipy.Model.update
+gurobipy.GurobiError: lower bound of x variable is less than zero for POW function

@@ -152,7 +152,7 @@ def semanticFusionIntInt(satModel, operation, invOperation):
     maxLb = operation(x.lb, y.lb) if operation(x.lb, y.lb) > operation(x.ub, y.ub) else operation(x.ub, y.ub)
     minUb = operation(x.lb, y.lb) if operation(x.lb, y.lb) < operation(x.ub, y.ub) else operation(x.ub, y.ub)
     try:
-        z = intvar(lb=maxLb, ub=minUb, name=str(random.randint(0,1000)))
+        z = intvar(lb=maxLb, ub=minUb, name="+" + str(random.randint(0,1000)))
     except Exception as e:
         return newcons
     xr = invOperation(z, y)
@@ -198,7 +198,7 @@ def semanticFusionBoolBool(satModel, invOperation):
 
     x = firstCons
     y = secCons
-    z = boolvar(name=str(random.randint(0,1000)))
+    z = boolvar(name="b"+str(random.randint(0,1000)))
     xr = invOperation(z, y)
     yr = invOperation(z, x)
     firstCons = xr
@@ -485,6 +485,7 @@ def __main__():
                 print(colored("Crash" + str(e), "red", attrs=["bold"]))
                 recordCrash(mmodel, executionDir=resultsPath, seedFolder=folder, seedName=fileName,
                             trace=traceback.format_exc(), errorName=str(e), solver=mmodel.solver)
+                continue
         except minizinc.error.MiniZincError as e:  # all passed errors are already logged
             if str(e).__contains__("cannot load"):
                 continue
@@ -500,6 +501,7 @@ def __main__():
                 print(colored("Crash" + str(e), "red", attrs=["bold"]))
                 recordCrash(mmodel, executionDir=resultsPath, seedFolder=folder, seedName=fileName,
                             trace=traceback.format_exc(), errorName=str(e), solver=mmodel.solver)
+                continue
         except NotImplementedError as e:
             continue
         except Exception as e:

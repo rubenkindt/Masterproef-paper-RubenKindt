@@ -1,3 +1,0 @@
-R = Reported on Github
-S = Solved on a Github branch
-U = User caused bug

@@ -1,1 +1,1 @@
-from cpmpy import *file = "_Modif"m=Model().from_file(file)nr = m.solve(solver="ortools")
+from cpmpy import *file = "almostMinimized"m=Model().from_file(file)nr = m.solve(solver="gurobi")

@@ -1,0 +1,19 @@
+Memory violation detected (segmentation fault)
+
+subsolver: int, cp, lcg, chuffed
+CPMpy: version v0.9.9 commit e79b3afedc934a9437c2ddb3a9f54d7e2d7bd3ee
+minizinc-python release version 0.7.0 commit {https://github.com/MiniZinc/minizinc-python/commit/a195cf63fcfbc98665d70ab64efb5424db25bd7e)
+
+
+While using CPMpy to model a problem and some Minzinc's subsolvers to solve the problem I found a memory violation.
+
+
+```python
+from cpmpy import *
+
+file = "inputFile" # don't forget to unzip first
+m = Model().from_file(file)
+m.solve(solver="minizinc:chuffed") # or int, cp, lcg, chuffed
+```
+
+bug found while working on my master thesis.
