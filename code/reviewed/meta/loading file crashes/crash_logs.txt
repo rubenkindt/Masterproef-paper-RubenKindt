@@ -1,0 +1,36 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/csplib/prob026_sport_scheduling16650537264701257
+solver: minizinc:ortools
+metaRelations: ['uselessAll', 'cons->cons2', 'sementicFusion!=', 'sementicFusion+']
+error reason: maximum recursion depth exceeded
+error trace: Traceback (most recent call last):
+  File "metamorphic.py", line 479, in __main__
+    mmodel.modifModel.solve(solver=mmodel.solver, time_limit=timeout)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/model.py", line 137, in solve
+    s = SolverLookup.get(solver, self)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/utils.py", line 102, in get
+    return cls(model, subsolver=subname)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 123, in __init__
+    super().__init__(name="minizinc:"+subsolver, cpm_model=cpm_model)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/solver_interface.py", line 83, in __init__
+    self += cpm_model.constraints
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/solvers/minizinc.py", line 327, in __add__
+    self.user_vars.update(get_variables(cpm_con))
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 46, in get_variables
+    vars_ += get_variables(subexpr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 49, in get_variables
+    vars_ += get_variables(subexpr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 49, in get_variables
+    vars_ += get_variables(subexpr)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 49, in get_variables
+    vars_ += get_variables(subexpr)
+  [Previous line repeated 982 more times]
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 53, in get_variables
+    return _uniquify(vars_)
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 78, in _uniquify
+    return [x for x in seq if not (x in seen or seen_add(x))]
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/transformations/get_variables.py", line 78, in <listcomp>
+    return [x for x in seq if not (x in seen or seen_add(x))]
+  File "/usr/local/lib/python3.8/dist-packages/cpmpy-0.9.9-py3.8.egg/cpmpy/expressions/variables.py", line 243, in __hash__
+    return hash(str(self))
+RecursionError: maximum recursion depth exceeded
+

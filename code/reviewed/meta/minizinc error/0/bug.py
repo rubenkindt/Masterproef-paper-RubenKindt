@@ -1,0 +1,1 @@
+from musx2 import *from cpmpy import *file = "_Modif"m = Model().from_file(file)m.solve(solver="minizinc:gist")

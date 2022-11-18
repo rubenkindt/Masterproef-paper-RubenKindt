@@ -1,0 +1,1 @@
+from cpmpy import *file = "almostMinimal"m = Model().from_file(file)print(m)

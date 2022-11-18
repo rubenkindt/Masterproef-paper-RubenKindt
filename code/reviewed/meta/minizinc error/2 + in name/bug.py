@@ -1,0 +1,1 @@
+from cpmpy import *b = boolvar(name=",")m = Model()m += b==0m.solve(solver="minizinc:cp")

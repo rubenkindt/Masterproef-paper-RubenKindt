@@ -1,6 +1,0 @@
- File "metamorphic.py", line 522, in <module>
-    __main__()
-  File "metamorphic.py", line 513, in __main__
-    if statusModi == 'FEASIBLE' or statusModi == 'OPTIMAL':
-UnboundLocalError: local variable 'statusModi' referenced before assignment
-

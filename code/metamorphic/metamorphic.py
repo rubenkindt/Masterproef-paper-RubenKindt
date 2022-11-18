@@ -152,7 +152,7 @@ def semanticFusionIntInt(satModel, operation, invOperation):
     maxLb = operation(x.lb, y.lb) if operation(x.lb, y.lb) > operation(x.ub, y.ub) else operation(x.ub, y.ub)
     minUb = operation(x.lb, y.lb) if operation(x.lb, y.lb) < operation(x.ub, y.ub) else operation(x.ub, y.ub)
     try:
-        z = intvar(lb=maxLb, ub=minUb, name="+" + str(random.randint(0,1000)))
+        z = intvar(lb=maxLb, ub=minUb, name=("i" + str(random.randint(0,1000))))
     except Exception as e:
         return newcons
     xr = invOperation(z, y)
@@ -198,7 +198,7 @@ def semanticFusionBoolBool(satModel, invOperation):
 
     x = firstCons
     y = secCons
-    z = boolvar(name="b"+str(random.randint(0,1000)))
+    z = boolvar(name=("b"+str(random.randint(0,1000))))
     xr = invOperation(z, y)
     yr = invOperation(z, x)
     firstCons = xr
@@ -263,13 +263,13 @@ def satMutation(metaModel):
         for cons in metaModel.modifModel.constraints:
             if cons.name == 'allequal':
                 if isinstance(cons.args[0], variables._BoolVarImpl):
-                    var = boolvar(name="b"+str(random.randint(0,1000)))
+                    var = boolvar(name=("b"+str(random.randint(0,1000))))
                     allVar = cons.args+[var]
                     random.shuffle(allVar)
                     newcons += [AllEqual(allVar)]
 
                 if isinstance(cons.args[0], variables._IntVarImpl) or isinstance(cons.args[0], variables._NumVarImpl):
-                    var = intvar(lb=cons.args[0].lb, ub=cons.args[0].ub, name="i"+str(random.randint(0,1000)))
+                    var = intvar(lb=cons.args[0].lb, ub=cons.args[0].ub, name=("i"+str(random.randint(0,1000))))
                     allVar = cons.args+[var]
                     random.shuffle(allVar)
                     newcons += [AllEqual(allVar)]
@@ -361,7 +361,7 @@ def satMutation(metaModel):
             newcons += metaModel.modifModel.constraints
     elif choice == "True->cons":
         for cons in metaModel.modifModel.constraints:
-            t = intvar(lb=0, ub=1, name="i"+str(random.randint(0,1000)))
+            t = intvar(lb=0, ub=1, name=("i"+str(random.randint(0,1000))))
             temp = Model([t<=0]) #always True
             if random.random() < 0.2:
                 newcons += [(temp.constraints[0]).implies(cons)]
@@ -390,29 +390,29 @@ def satMutation(metaModel):
             maxCons = recursiflySearch(cons, "max")
             if maxCons is not None:
                 randArg = random.choice(maxCons.args)
-                maxCons.args += (intvar(lb=randArg.lb, ub=randArg.ub+1, name="i"+str(random.randint(0,1000))),)
+                maxCons.args += (intvar(lb=randArg.lb, ub=randArg.ub+1, name=("i"+str(random.randint(0,1000)))),)
             newcons += [(cons)]
     elif choice == "addSmall2Min":
         for cons in metaModel.modifModel.constraints:
             minCons = recursiflySearch(cons, "min")
             if minCons is not None:
                 randArg = random.choice(minCons.args)
-                minCons.args += (intvar(lb=randArg.lb+1, ub=randArg.ub, name="i"+str(random.randint(0,1000))),)
+                minCons.args += (intvar(lb=randArg.lb+1, ub=randArg.ub, name=("i"+str(random.randint(0,1000)))),)
             newcons += [cons]
     elif choice == "addZero2Sum":
         for cons in metaModel.modifModel.constraints:
             minCons = recursiflySearch(cons, "sum")
             if minCons is not None:
-                minCons.args += [intvar(lb=0, ub=0, name="i"+str(random.randint(0,1000)))]
+                minCons.args += [intvar(lb=0, ub=0, name=("i"+str(random.randint(0,1000))))]
             newcons += [cons]
     elif choice == "uselessAny":
-        cons = intvar(lb=0, ub=1, name="i"+str(random.randint(0,1000))) == 0
+        cons = intvar(lb=0, ub=1, name=("i"+str(random.randint(0,1000)))) == 0
         lst = [False, False, (cons)]
         random.shuffle(lst)
         newcons += [any(lst)]
         newcons += metaModel.modifModel.constraints
     elif choice == "uselessAll":
-        cons = intvar(lb=0, ub=1, name="i"+str(random.randint(0,1000))) == 0
+        cons = intvar(lb=0, ub=1, name=("i"+str(random.randint(0,1000)))) == 0
         lst = [True, (cons), True]
         random.shuffle(lst)
         newcons += [all(lst)]
