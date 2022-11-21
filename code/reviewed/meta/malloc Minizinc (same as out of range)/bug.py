@@ -1,0 +1,1 @@
+from cpmpy import *file = "almostMinimized"m = Model().from_file(file)m.solve(solver="minizinc:chuffed")

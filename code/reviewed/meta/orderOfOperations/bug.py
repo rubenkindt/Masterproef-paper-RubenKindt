@@ -1,1 +1,1 @@
-from cpmpy import *x = intvar(0, 3, shape=4, name="x")m=Model()m += (x[0]==0 & x[2]==1)nr = m.solve(solver="minizinc:gurobi", time_limit=5*60)print(x.value())
+from cpmpy import *x = intvar(0, 3, shape=4, name="x")m=Model()m += (x[0]==0 & x[2]==1)nr = m.solve(solver="gurobi", time_limit=5*60)print(x.value())

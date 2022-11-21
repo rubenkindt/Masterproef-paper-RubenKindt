@@ -1,1 +1,1 @@
-from cpmpy import *x = intvar(0, 1, shape=2, name="x")m=Model()m += Xor([False, Circuit(x[0])])m.solve(solver="minizinc:gurobi")
+from cpmpy import *x = intvar(0, 1, shape=2, name="x")m=Model()m += Xor([False, Circuit(x[0])])m.solve(solver="ortools")

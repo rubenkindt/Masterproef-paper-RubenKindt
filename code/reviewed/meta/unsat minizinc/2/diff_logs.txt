@@ -1,0 +1,5 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/sudoku_17_hints16650532565448623
+
+solver: gurobi
+modifications['addSmall2Min', 'cons1==cons2', 'sementicFusion!=', 'uselessAny']
+difference: original FEASIBLE VS modified UNSATISFIABLE

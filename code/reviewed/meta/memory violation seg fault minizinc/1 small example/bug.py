@@ -1,1 +1,1 @@
-from cpmpy import *file = "_Modif"m=Model().from_file(file)nr = m.solve(solver="minizinc:chuffed")
+from cpmpy import *file = "_Modif"file = "inputFile"m = Model().from_file(file)m.solve(solver="minizinc:chuffed")

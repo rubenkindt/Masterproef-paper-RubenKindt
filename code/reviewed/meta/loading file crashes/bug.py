@@ -1,1 +1,1 @@
-from cpmpy import *file = "almostMinimal"m = Model().from_file(file)print(m)
+from cpmpy import *i = boolvar()file = "almostMinimal"m = Model().from_file(file)m.solve()
