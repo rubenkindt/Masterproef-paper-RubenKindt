@@ -1,0 +1,5 @@
+seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/all_different_explain16650522521043324
+
+solver: minizinc:lcg
+modifications['AllEqual~(!=)', 'expandingAllDiff', 'sementicFusion!=', 'uselessAll']
+difference: original FEASIBLE VS modified UNSATISFIABLE

@@ -1,10 +1,17 @@
+from mus import *
 from cpmpy import *
 
 file = "_Modif"
+file = "almostedMinimized"
 solver = "gurobi"
 
 m = Model().from_file(file) # randomize constraints and it becomes sat
-sol = m.solve(solver=solver, time_limit = 60*5)#, solution_limit=100)
+# m = Model(m.constraints)
+# m = mus_naive(m.constraints, solver=solver)
+# m = Model(m)
+# m.to_file("2")
+
+sol = m.solve(solver=solver)
 print(sol)
 print(m.status())
 

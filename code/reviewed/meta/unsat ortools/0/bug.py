@@ -1,15 +1,21 @@
+from mus import *
 from cpmpy import *
 
 file = "_Modif"
 solver = "ortools"
 
 m = Model().from_file(file)
-sol = m.solve(solver=solver, time_limit = 60*5)#, solution_limit=100)
+# m = Model(m.constraints)
+# m = mus_naive(m.constraints, solver=solver)
+# m = Model(m)
+# m.to_file("2")
+
+sol = m.solve(solver=solver)
 print(sol)
 print(m.status())
 
 m2 = Model().from_file(file)
-soll = m2.solve(solver="minizinc:ortools")#, solution_limit=100)
+soll = m2.solve(solver="minizinc:ortools") # or gurobi
 print(soll)
 print(m2.status())
 
