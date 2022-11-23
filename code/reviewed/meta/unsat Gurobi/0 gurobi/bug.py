@@ -1,5 +1,6 @@
 from mus import *
 from cpmpy import *
+from cpmpy.transformations.get_variables import get_variables, get_variables_model
 
 file = "_Modif"
 file = "almostedMinimized"
@@ -11,14 +12,15 @@ m = Model().from_file(file) # randomize constraints and it becomes sat
 # m = Model(m)
 # m.to_file("2")
 
-sol = m.solve(solver=solver)
-print(sol)
+m.solve(solver=solver)
 print(m.status())
 
 m2 = Model().from_file(file)
-soll = m2.solve(solver="ortools")#, solution_limit=100)
-print(soll)
+m2.solve(solver="ortools")#, solution_limit=100)
 print(m2.status())
 
-f = str(m2.constraints)
-print(f)
+# print(m2)
+
+
+# for i in get_variables_model(m2):
+#     print(i + ".lb="+str(i.lb) +",ub="+str(i.ub)+"name="+str(i.name))

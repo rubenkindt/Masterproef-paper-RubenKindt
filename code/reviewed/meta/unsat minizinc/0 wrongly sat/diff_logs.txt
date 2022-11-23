@@ -1,5 +1,0 @@
-seed: /home/user/Desktop/Thesis/Masterproef-paper/code/examples/metamorphic/palindrome_days16650522537966564
-
-solver: ortools
-modifications['!=0']
-difference: original OPTIMAL VS modified UNSATISFIABLE

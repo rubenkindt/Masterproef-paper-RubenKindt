@@ -5,13 +5,13 @@ solver = "gurobi"
 fileM = "almostMinimized"
 
 m = Model().from_file(fileM)
-sol = m.solve(solver=solver)#, solution_limit=100)
-print(sol)
+
+# print(m2)
+m.solve(solver="minizinc:gurobi")
 print(m.status())
-
-m2 = Model().from_file(fileM)
-soll = m2.solve(solver="minizinc:gurobi")#, solution_limit=100)
-print(soll)
-print(m2.status())
-
-print(m2)
+m.solve(solver="gurobi")
+print(m.status())
+m.solve(solver="minizinc:ortools")
+print(m.status())
+m.solve(solver="ortools")
+print(m.status())
