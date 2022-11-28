@@ -1,9 +1,53 @@
 \chapter{Results}
-\label{cha:6}
+\label{cha:res}
+\label{res:Intro}
 \todo{intro ch 6}
 
-%serverspecs
+\section{Running the tests}
+\label{res:RunningTests}
+\label{res:Specs}
+Although the specifications are not crucial since we did not do any speed benchmarking, it does give you, the reader, an idea of the performance. All tests where executed on an Ubuntu 20.04.5 LTS with 8GB RAM, an Intel core i5-3380M capable of 2.90GHz and a V-NAND SSD of 500GB 860 EVO Model MZ-76E500 through a SATA 3 connection. With each technique taking around a day to three days to run all nine thousand seed files once. Note that processing a seed once can mean that variants of that seed were run up to 100 times depending on the technique.
+
 %time when faults are found?
+
+\subsection{Preventing the same bug from occurring frequently}
+%these tools often gave the same error again causing the new bug to be hidden, se choice to catch some of the more prevelent bugs, If some one wishes to rerun (parts) It is best to remove those exceptions in order to see the full output
+While the techniques where running noticed that once a bug was found by any of our techniques that same bug would occur frequently but in a different seed, causing our resulting logs to be cluttered with duplicates bugs. We where aware that this could occur and we originally wanted to use deduplication as described in subsection \ref{inputReduction:Deduplication} to get rid of the duplicates. But after seeing 10 000 logs of the same bug, we changed from a reactive approach to a preventative approach. Once we noted a bug we tried to prevent it, for crashes this meant adding a try catch for the specific error. While, for wrongly (un)satisfiable we looked at special occurrences of keywords in constraint we knew caused bugs to then not log them. For example a bug we will discuss soon had a specific string of characters " == 0 == 0" making any problem wrongly unsatisfy. Being able to check the string of characters with knowing that it resulted in wrongly unsatisfiable  solutions made it for able for us to filter that bug as well. Luckily, with these restrictions on the output logs we were able to filter out most duplicate bugs, this is not an ideal solution but seems to work for now. The ideal solution would be that the fuzzer has knowledge of the already found bugs and reject them, techniques like these do exist but would bring us to far from the scope of the dissertation. Although, less efficient the techniques could be used for detecting an error fixing them and then rerunning for the next bug instead of adding exceptions.
+
+\section{Results: found bugs}
+\label{results:bugs}
+In total we found 19 bugs some of which where easy fixes, some were a bit harder and required more time to solve. At the time of writing not al bugs are resolved (some are just reported days ago), but we look in anticipation how those will be solved. For now let's look shortly at some of the most interesting bugs we found.
+
+\subsection{Double Not}
+\label{result:bug:DoubleNot}
+The first bug we discovered was our "double not"-bug, a bug where we ask CPMpy to solve the constraints "X==3 and not(not(X==3))". Clearly this solution is trivial, set variable 'X' equal to 3 and the problem would be satisfied. However not all CPMpy solver did agreed with this, both OR-Tools and Gurobi said that this problem was unsatisfiable. 
+
+This was due to a process within CPMpy responsible for creating a flat normal form. Not all solver used by CPMpy allow an arbitrary nesting of constraints as described by the documentation of CPMpy\footnote{\url{https://cpmpy.readthedocs.io/en/latest/behind_the_scenes.html}}. It is for that reason that CPMpy flattens the constraints to what they call 'flat normal forms' as the similar definition of SAT but with a disclaimer that this definition does not formally exists for CP languages to their knowledge, a statement which we agree with. With this flattened form CPMpy can directly call the solvers or do some solver specific transformations on the flattened constraints to then send it to the respective solver \cite{CPMpyGithub}. 
+
+It was in this normalizing process that a comparison in a comparison was not handled (a 'not' gets translated to a comparison with zero "== 0"). Causing a disappearance of a single "not", which in turn resulted in "X==3 and not(X==3)" being send to OR-Tools and Gurobi. The other solvers, mainly MiniZinc's subsolvers, where not affected by this bug due to not using this normalizing process. Although, this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain under the radar. This bug was only caught using the modified STORM technique, due to its frequent use of adding "not"'s and "and"'s. But we believe it could have been caught in the metamorphic testing if we had though of adding a relevant metamorphic transformation or in the differential testing if one of the seeds had a double not in its constraints.
+
+\subsection{Negation of Global functions}
+\subsection{Circuit of one}
+\subsection{Power function of Gurobi}
+neg values = crash
+\subsection{Naming variables}
+\subsection{Unsatisfiable Gurobi}
+\subsection{Wrong bound value Error}
+
+
+\section{Classifications}
+\subsection{Model, Transformation or Solver}
+Tabel + bespreken
+\subsection{crash or wrongly (un)sat}
+Tabel + bespreken
+\subsection{which solver}
+Tabel + bespreken
+\subsection{which technique could find it}
+Tabel + bespreken
+
+\section{Reception to the bugs}
+they where happy :p
+The double Not bug \ref{res:bug:DoubleNot} was called a serious bug and a great find. %https://github.com/CPMpy/cpmpy/issues/142#issuecomment-1312530262
 
 \section{STORM}
 Techniques are best applied during development, since the modified storm of to often detects the already fond bugs
@@ -14,7 +58,7 @@ Techniques are best applied during development, since the modified storm of to o
 ~(~(True))
 ~(global function)
 \section{Differential testing}
-solverlookup()  was during development = manual testing
+solverlookup()  was during development = manual testing, 
 
 \section{Metamorphic testing}
 did not find ~(~()) simly because we dind't think to check it specificly, we did check ~=0
@@ -28,15 +72,15 @@ due to the way of importing the file a lot of edge problems become sat or unsat
 
 \section{woringly sat}
 meta unsat minizinc 0
-to shirk this we used the fact that ortools+gurobi (probably) gave the correct solution, this bieing unsat and taking the mus from that
+to shirk this we used the fact that ortools+gurobi (probably) gave the correct solution, this being unsat and taking the mus from that
 
 
 \subsection{finding mus}
-combination of theire tool, but when we got errors from the different way of loading, We used my tool en then theirs. general combinations were done got get a minimal
+combination of their tool, but when we got errors from the different way of loading, We used my tool en then theirs. general combinations were done got get a minimal. 
+my tool incapable of pure MUS
 
 
-\section{title}
-%these tools often gave the same error again causing the new bug to be hidden, se choice to catch some of the more prevelent bugs, If some one wishes to rerun (parts) It is best to remove those exceptions in order to see the full output
+
 
 
 \section{Conclusion}
