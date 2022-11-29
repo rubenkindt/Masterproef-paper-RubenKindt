@@ -7,8 +7,8 @@ print(m.status())
 print(m)
 correctSet = m.constraints[0].args[0]
 wrongSet = m.constraints[1].args[0].args[0].args[0]
-print(correctSet.name + " = " + str(correctSet.value()))
-print(wrongSet.name + " = " + str(wrongSet.value()))
+print(correctSet.name + " = " + str(correctSet.value()), id(correctSet))
+print(wrongSet.name + " = " + str(wrongSet.value()), id(wrongSet))
 
 
 m2 = Model()
@@ -20,5 +20,5 @@ print(m2.status())
 print(m2)
 correctSet = m2.constraints[0].args[0]
 wrongSet = m2.constraints[1].args[0].args[0].args[0]
-print(correctSet.name + " = " + str(correctSet.value()))
-print(wrongSet.name + " = " + str(wrongSet.value()))
+print(correctSet.name + " = " + str(correctSet.value()), id(correctSet))
+print(wrongSet.name + " = " + str(wrongSet.value()), id(wrongSet))

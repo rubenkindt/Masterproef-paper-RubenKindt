@@ -20,3 +20,8 @@ m.solve(solver="minizinc:ortools")
 print(m.status())
 m.solve(solver="ortools")
 print(m.status())
+
+
+from cpmpy.transformations.get_variables import get_variables, get_variables_model
+for i in get_variables_model(m):
+    print(i + ".lb="+str(i.lb) +",ub="+str(i.ub)+"name="+str(i.name)+" value "+str(i._value))

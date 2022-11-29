@@ -1,7 +1,14 @@
 from cpmpy import *
 
-file ="C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples/junk/mario1665053194007364"
+file = "minimized"
 m=Model().from_file(file)
+
+from cpmpy.transformations.flatten_model import flatten_constraint, flatten_model
+from cpmpy.transformations.get_variables import print_variables
+mf = flatten_model(m)
+print_variables(mf)
+print(mf)
+print(m)
 
 m.solve(solver='minizinc:gecode')
 m.solve(solver='minizinc:gist')
