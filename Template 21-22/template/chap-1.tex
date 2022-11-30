@@ -34,7 +34,7 @@ In this puzzle each character represents a single digit between zero and nine (b
 On top of showing the problem we will also use MiniZinc\footnote{\url{https://www.minizinc.org/}} as our constraint programming language to find the solution for this puzzle. By doing this we will show a possible representation of this problems using constraints so that a solver can find a solution.
 
 \label{lst:SendMoreMoney}
-\begin{lstlisting}[language=minizinc, caption={Solution to the puzzle "send more money" slightly modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
+\begin{lstlisting}[float=t,language=minizinc, caption={Solution to the puzzle "send more money" slightly modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
 	include "globals.mzn";
 	var 1..9: S; % Since 'S' is a starting character it is limited from 1 to 9.
 	var 0..9: E; % Other characters are limited from 0 to 9.
@@ -100,46 +100,58 @@ And the one with our most interest is the constraint programming and modeling la
 With NumPy comes with a lot of advantages: it is popular in data processing and the general array-based operations among machine learning and more. 
 Being able to use these in combination of CPs would allow for both fields to grow closer to each other. 
 
-To illustrate that both MiniZinc and CPMpy are not that far apart we included a CPMpy listing (listing \ref{lst:SendMoreMoneyCPMpy}) for the same problem as we have seen for MiniZinc.
+
+At the time of writing the CPMpy has support for multiple solvers like OR-tools, CP-SAT, Gurobi (for MIP problems), PySAT (which is a library that contains 13 different SAT solvers), PySSD which is a knowledge compiler and CPMpy has support for any CP-solver that support for the text-based MiniZinc language \cite{CPMpyDoc, CPMpyGithub} (resulting in at least 33 extra solvers). With potential future extensions to Microsoft's Z3 theorem prover and others as new solvers.
+We would have written an in-depth explanation on how CPMpy does its conversions from constraints to what is given to the solvers, but CPMpy being in development and with more changes potential coming this could become outdated quickly. We look forward to see CPMpy progress and the future paper(s) discussing it. What we can do is discuss it on a global level, where we see CPMpy existing out of four components. This being a model part (everything to do with creating a model of a problem), a transformation part (everything to do with changing constraints), solver specific part transformations (everything to do with restrictions the solver puts on CPMpy) and then the solver themselves (which solve the final model). With CPMpy having little to no control over the last one as can be seen in figure \ref{fig:4ComponentsOfCPMpy}.
+
+
+Finally, to illustrate that both MiniZinc and CPMpy are not that far apart we included a CPMpy listing (listing \ref{lst:SendMoreMoneyCPMpy}) for the same problem as we have seen for MiniZinc.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/4componentsOfCPMpy}
+	\caption{The four main components of CPMpy}
+	\label{fig:4ComponentsOfCPMpy}
+\end{figure}
 
 
 \label{lst:SendMoreMoneyCPMpy}
-\begin{lstlisting}[float=t, language=python, caption={Solution to the puzzle "send more money". Modified from the CPMpy repository \url{https://github.com/CPMpy/cpmpy/blob/master/examples/send_more_money.py}}]
-#!/usr/bin/python3
-"""
-Send more money in CPMpy
-  SEND
-+ MORE
-------
- MONEY
-"""
-from cpmpy import *
-import numpy as np
-
-# Construct the model.
-s,e,n,d,m,o,r,y = intvar(0,9, shape=8)
-
-model = Model() # with "+=" we add a constraint to the model
-model += sum([s,e,n,d] * np.array([1000, 100, 10, 1])) \
-       + sum([m,o,r,e] * np.array([1000, 100, 10, 1])) \
-      == sum([m,o,n,e,y] * np.array([10000, 1000, 100, 10, 1]))
-model += AllDifferent([s,e,n,d,m,o,r,y])
-model += s > 0 # in MiniZinc each variable was declared seperatly in CPMpy 
-model += m > 0 # we can do it in batch, resulting in these extra constraints 
-
-print(model)
-
-# Solve and print
-if model.solve():
-   print("  S,E,N,D =   ", [x.value() for x in [s,e,n,d]])
-   print("  M,O,R,E =   ", [x.value() for x in [m,o,r,e]])
-   print("M,O,N,E,Y =", [x.value() for x in [m,o,n,e,y]])
-else:
-   print("No solution found")
+\begin{lstlisting}[float=, language=python, caption={Solution to the puzzle "send more money". Modified from the example in the CPMpy repository \url{https://github.com/CPMpy/cpmpy/blob/master/examples/send_more_money.py}}]
+	#!/usr/bin/python3
+	"""
+	Send more money in CPMpy
+	  SEND
+	+ MORE
+	------
+	 MONEY
+	"""
+	from cpmpy import *
+	import numpy as np
+	
+	s,e,n,d,m,o,r,y = intvar(0,9, shape=8) # creating variables
+	
+	model = Model() # with "+=" we can add a constraint to the model
+	model += sum([s,e,n,d] * np.array([1000, 100, 10, 1])) \
+	       + sum([m,o,r,e] * np.array([1000, 100, 10, 1])) \
+	      == sum([m,o,n,e,y] * np.array([10000, 1000, 100, 10, 1]))
+	model += AllDifferent([s,e,n,d,m,o,r,y])
+	model += s > 0 # in MiniZinc each variable was declared seperatly in CPMpy 
+	model += m > 0 # we can do it in batch, resulting in these extra constraints 
+	
+	print(model)
+	
+	# Solve and pretty-print
+	if model.solve():
+	   print("  S,E,N,D =   ", [x.value() for x in [s,e,n,d]])
+	   print("  M,O,R,E =   ", [x.value() for x in [m,o,r,e]])
+	   print("M,O,N,E,Y =",    [x.value() for x in [m,o,n,e,y]])
+	else:
+	   print("No solution found")
 \end{lstlisting}
+\todo{explain the listing further?}
+%We have shortly seen how a CPMpy looks like in listing \ref{lst:SendMoreMoneyCPMpy}, 
+%where we create a model, add constraints to it and then to solve the model. Everything up to the solving part is controlled by CPMpy, once the "solve()" is called 
 
-At the time of writing the CPMpy has support for multiple solvers like OR-tools, CP-SAT, Gurobi (for MIP problems), PySAT (which is a library that contains 13 different SAT solvers), PySSD which is a knowledge compiler and CPMpy has support for any CP-solver that support for the text-based MiniZinc language \cite{CPMpyDoc, CPMpyGithub} (resulting in at least 33 extra solvers). With potential future extensions to Microsoft's Z3 theorem prover and others as new solvers.
-We would have written an in-depth explanation on how CPMpy does its conversions from constraints to what is given to the solvers, but CPMpy being in beta and with more changes potential coming this could become outdated quickly. We do look forward to the team working on CPMpy and their future paper(s) discussing it.
 
 % where errors could occure, whitch ones are in/out of scope
 

@@ -3,6 +3,12 @@ from cpmpy import *
 file ="3_coins1665053328231921"
 file= "minimized"
 m=Model().from_file(file)
+
+b = boolvar(shape=3)
+i = intvar(lb=0, ub=10)
+m = Model()
+m += sum([b[0], b[1], b[2]]) == i
+
 m.solve(solver="ortools")
 m.solve(solver="pysat:cadical")
 m.solve(solver="pysat:minisat-gh")

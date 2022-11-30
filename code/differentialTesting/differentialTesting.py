@@ -100,6 +100,10 @@ def __main__():
     parser.add_argument('--seed', type=int, nargs='?',
                         help='seed')
     args = parser.parse_args()
+    if args.startAt is None:
+        args.startAt = 0
+    if args.seed is None:
+        args.seed = 123
     if os.name == 'posix':
         seedPath = "/home/user/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting"
     else:

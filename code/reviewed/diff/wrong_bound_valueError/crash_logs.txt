@@ -1,0 +1,25 @@
+solveAll
+seed: C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/examples/forDiffTesting/3_coins1665053328231921
+solver: pysat:gluecard4
+error reason: Wrong bound: last_val
+error trace: Traceback (most recent call last):
+  File "C:/Users/ruben/Desktop/Thesis/Masterproef-paper/code/differentialTesting/differentialTesting.py", line 171, in differentialTest
+    sol = m.solveAll(solver=solver, time_limit=timeout, solution_limit=100)
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\cpmpy\model.py", line 162, in solveAll
+    s = SolverLookup.get(solver, self)
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\cpmpy\solvers\utils.py", line 102, in get
+    return cls(model, subsolver=subname)
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\cpmpy\solvers\pysat.py", line 117, in __init__
+    super().__init__(name="pysat:"+subsolver, cpm_model=cpm_model)
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\cpmpy\solvers\solver_interface.py", line 83, in __init__
+    self += cpm_model.constraints
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\cpmpy\solvers\pysat.py", line 226, in __add__
+    self._post_constraint(con)
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\cpmpy\solvers\pysat.py", line 262, in _post_constraint
+    clauses += CardEnc.equals(lits=lits, bound=bound, vpool=self.pysat_vpool).clauses
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\pysat\card.py", line 419, in equals
+    res1 = cls.atleast(lits, bound=bound, vpool=vpool, encoding=encoding)
+  File "C:\Users\ruben\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\site-packages\pysat\card.py", line 360, in atleast
+    raise ValueError('Wrong bound: {0}'.format(bound))
+ValueError: Wrong bound: last_val
+
