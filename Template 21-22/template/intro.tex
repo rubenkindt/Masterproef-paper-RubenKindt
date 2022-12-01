@@ -7,8 +7,6 @@ There are a lot of causes for bugs: software complexity, multiple people writing
 \end{quote}, as quoted from \cite{13manes2019survey}.
 With this technique we will try to detect bugs in the constraint programming and modeling library CPMpy \cite{17guns2019increasing} created by professor dr. Guns et al.
 
-\todo{modus operandi bij intro}
-
 \section{The usage of fuzzers in the software development cycle}
 \label{intro:SoftwareDevelopmentCycle}
 During the development phase of software, tests are performed to check if the written code matches the expected and wanted output. This can be done by the developers themselves or by quality assurance testers which do this full time and this on multiple different ways: code review, manual testing or automated testing. All these techniques could exist out of unit tests, checking for known bugs, regression testing, confirming that the use cases are working, code audits, dynamic testing, fuzzing and others. None of the techniques mentioned can prevent all possible bugs from occurring and using only a single technique would cost more to find the same level of bugs then using a combination of multiple techniques. Sometimes a code audit is better, for example in situations where you want to know something easy that is most likely plainly written in the code. Other cases dynamic testing may be better, image having a program which parses curricula vitae to check if candidates match the job position and you want to check if a fresh computer science graduate fit the position of software analyst. In this case it may be a lot easier to test some curricula vitae than to dive into the code. In situations where you want to test if bugs exist, you may not know where to start inside of the program under test (PUT), this is where fuzzing may be the correct tool to use. By submitting random inputs into the PUT and looking at the next actions the program takes (i.e., does it crash, give wrong results or other unwanted actions) the fuzzer can automatically detect bugs.
@@ -18,10 +16,21 @@ Fuzzing emerged in the academic literature at the start of the nineties, while t
 \section{Fuzzing and security}
 \label{intro:FussingSecurity}
 Fuzzing is a novel way for attempting to automate the finding of bugs and eventually some of these bugs will be security related. Depending on the application of the program and its environment it is either problem or not. But those security related bugs could be costly as discussed in the previous section, bugs become more costly the later you 
-catch them. With security bugs being seen as the pricier ones, i.e. you do not want your company to get hacked, sued or being featured in the news for being exploited on top of the normal cost of having to find and fix the bug. \todo{could not find source that says security bugs are more costly}
+catch them. With security bugs being seen as the pricier ones, i.e. you do not want your company to get hacked, sued or being featured in the news for being exploited on top of the normal cost of having to find and fix the bug. %\todo{could not find source that says security bugs are more costly}
 Ideally a company should not have to spend time, energy and money into finding and fixing bugs, but there will be miscommunications, mistakes and more that will result in bugs. Therefore, companies will need to invest in prevention and (early) detection. Which is shown in the adoption of fuzzers that has gained speed due to its proven effectiveness in finding security related bugs. For example, ShellShock, Heartbleed, Log4Shell, Foreshadow and KRACK could have been found using fuzz testing as shown in multiple sources \cite{HeartbleedViaFuzzing, 34ForeshadowViaFuzz, ShellShockViaFuzzing, Log4ShellViaFuzzing} and fuzzing is even recommended by the authors to prevent similar exploits \cite{35ForeshadowFuzzRecom, 33KrackViaFuzz}.
 
 While fuzzing is often used for finding bugs in general, there are even fuzzers that have a focus on catching security vulnerabilities specifically. Fuzzers like Yuwei Li et al. \cite{32V-Fuzz} do this with their Vulnerability-Oriented Evolutionary Fuzzing tool.
+
+\section{Goals}
+With this dissertation we aim to be able to compare multiple know techniques for automatically finding bugs in constraint programming languages. As this type of language differs from most used programming languages not all techniques may work equally well. On top of that some bugs could have a big impact and are not always clear that they occurred.
+The techniques we will use will be a modified fuzzer originally used on SMT problems, a second will be apply satisfiable preserving changes to known inputs and test that the original input matches the known input. Our last technique will be taking advantage to the fact that CPMpy has a big library of solvers, which we will use to check that all the solvers agree on the solutions.
+
+\section{Modus operandi}
+This dissertation will create three techniques to detect bugs automatically for the constraint programming language, CPMpy. Starting from multiple examples we will extract all solvable models to then run each model through a technique to see if we can create a bug either from the original model or by modifying it. Afterwards, we will validate the found bugs and evaluate and evaluated the found bugs for each technique. To finally compare the results and see which techniques are able to find bugs in constraint programming languages.
+
+\todo{optional, written out text what each chapter is about}
+
+
 
 %%% Local Variables: 
 %%% mode: latex

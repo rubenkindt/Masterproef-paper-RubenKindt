@@ -8,6 +8,26 @@ In this chapter we will discuss how we build our fuzzers, what issues we had to 
 % why did we (not) do code coverage ?
 % timeout on the minizinc, but not on the ortools -> manuel work
 % if stoppted before it wwas done due to timeout solvers didn't agree on the amount of solutions
+% meta testing requires work
+
+
+
+\section{STORM}
+Techniques are best applied during development, since the modified storm of to often detects the already fond bugs
+
+conclusion? 
+working with seeds does limit us
+
+%problems limited by global fucntions of used seeds (somewhat fine),
+%only 'and' and 'not' combinations Just like STORM
+
+
+\section{Metamorphic testing}
+did not find ~(~()) simply because we dind't think to check it specificly, we did check ~=0
+all checks ? + combo-able
+
+maybe for conclusion
+manual written (= work, although not much work), own choice on how complex you make the relations(simple ones work too), still need the creativity, all relations seem to be "why would this crash this is pointless to write" but do crash sometimes
 
 
 \section{Future work}
