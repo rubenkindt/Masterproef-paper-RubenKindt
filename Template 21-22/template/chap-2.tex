@@ -1,133 +1,182 @@
-\chapter{Fuzzing}
-\label{cha:2:fuzzing}
-\label{fuzzing:intro}
-The rise of fuzzing came with Miller giving his classroom assignment \cite{21FuzzingAssignment} in 1988 to his computer science students to test Unix utilities with randomly generated inputs with the goal to break the utilities. Two years later in December he wrote a paper \cite{4originalFuzzingUnixUtils} about the remarkable results that more than 24\% to 33\% of the programs tested crashed.
-In the last thirty years the technique of fuzzing has changed significantly and various innovations have come forward. In this chapter we will look at prevalent classifications made, what the fuzzer expects as input, what we can expect as output and we will look at the most popular fuzzers.
+\chapter{CP, SAT and SMT}
+\label{cha:CS}
+\label{CS:Intro}
+\label{CS:HolyGrail}
+\section{Holy grail of programming}
+\begin{quote}
+	"Constraint programming represents one of the closest approaches computer science has yet made to the Holy Grail of programming: the user states the problem, the computer solves it." 
+	\newline
+	-Eugene C. Freuder in "In Pursuit of the Holy Grail" \cite{11freuder1997pursuitHolyGrail}.
+\end{quote}
+As the quote and the paper \cite{11freuder1997pursuitHolyGrail} from Eugene C. Freuder says, he and others believe that in the ideal world the user conveys any problem to a computer or a program and that the program will solve it. Which matches a coarse summary of what a constraint programming language (CP) can do in an ideal world. But we do not live in that type of world and problems need to be converted or split up into a representation that the solver can understand. 
+This is where constraints come into the picture, constraints are mathematical, logical or relational connections put on or between variables to form a model that hopefully satisfy all constraints after solving. This is sometimes combined with a final objective function to be minimized or maximized, for example finding a model where a postman visits all cities on a route but with a minimal distance traveled. 
+With CP the focus lays more on the solving high level problems with specialties around scheduling and planning \cite{52bartak1999constraint}. CP's key feature being the global constraints, a set of "functions" that are aimed at a high level of solving. For example, the "alldifferent()" which makes sure that all variables within an array will be assigned a different value or "circuit()" that holds if the input forms a Hamiltonian circuit.
 
-\section{Classifications}
-\label{fuzzing:Classifications}
-The three most popular classifications are: how does the fuzzer create input, how well is the input structured and does the fuzzer have knowledge of the program under test (PUT) \cite{30FuzzingHackartandscience, 12Fuzzingasurvey, 13manes2019survey}.
+A second field of research that we will discuss is the boolean satisfiability problem better known as SAT, where the focus lays on the boolean variant of constraints within the family of constraint solvers. This field of research has produced quite a lot of progress due to its age, resulting in efficient solving \cite{56bardin2019bringing}.
 
-\subsection{Generation and mutation}
-\label{fuzzing:generationMutation}
-A fuzzer can construct inputs for a PUT in two ways, it can generate input itself or it can modify parts from an existing input, called seeds. While Generation is more common when it comes to smaller inputs, the opposite is true for larger inputs where modification has the upper hand. This is caused by the fact that generating semi-valid input becomes a lot harder the longer the input becomes. For example, generating the word "Fuzzing" by uniformly random sample of ASCII symbols, has a chance of one in $5*10^{14}$ of happening, making this technique infeasible when we want to generate bigger semi-valid inputs. With mutation we can start with larger and already valid input and then make modifications to create semi-valid inputs. With this last technique the diversity of the seeding inputs does become quite important. Ideally, we would have an unlimited diverse set of inputs, but that may not always be available. A workaround to this issue could be the paper by Alexandre Rebert et al. \cite{14rebert2014seedselecting} they propose that seed selection algorithms can improve results and compare random seed selection to the minimal subset of seeds with the highest code coverage among other algorithms. 
+Our last field, is the satisfiability modulo theory (SMT) which builds further on SAT. This by including lists, arrays, strings, real numbers, integers and other more complex data structures and types. With SMT the focus lays more on static checking and program verification \cite{56bardin2019bringing, 54moura2008z3}.
 
-\subsection{Input structure}
-\label{fuzzing:InputStructure}
-%lexical, sementical, constraint or random
-While we have discussed the bigger scope on how inputs are created, let us go into more detail; as we have seen before, fuzzing started with Miller's classroom assignment. This random generation of inputs falls under 'dumb' fuzzing due to only seeing the input as one long list of independent symbols with no knowledge of any input structure. This technique can be applied similarly to mutational fuzzing as well, compared to only adding symbols with generational fuzzing here we also remove or change randomly selected symbols. 
-We can create three types of inputs: non-valid, semi-valid and valid inputs. With non-valid inputs we will almost be exclusively testing the lexical and syntactic stage of the PUT, which often comes down to just the parser. Either the input crashes the parser or it will be detected and the PUT will stop running. With semi-valid inputs we hope to be as close as possible to valid inputs in order to explore beyond the parser and to catch bugs deeper in the PUT. And finally, with valid input we are testing if the PUT behaves as expected and does not crash, although we cannot know which type a given input is before giving it to the PUT.
-A smart fuzzer referrers to the fuzzing techniques which have knowledge about the structure inputs can or should have. This increases the chance of inputs passing the parser and being able to test the deeper parts of the PUT, this at the cost of needing an increased complex fuzzer. We can build a 'smart' fuzzer by adding knowledge about keywords (making it a lexical fuzzer) or by adding knowledge about syntax (for a syntactical fuzzer. The latter one can for example match all parentheses), while the former would be able to create correct keywords such as "continue" for example. Directed fuzz testing, where we guide the fuzzer on a specific code location via an explicit path, does fit in this category of a 'smart' fuzzer as well but it is not possible in a black box environment, more on that in the next section.
 
-\subsection{Black, gray and white box fuzzing}
-\label{fuzzing:BlackGrayWhiteFuzzing}
-On top of adding knowledge of the inputs' structure to the fuzzer, we can also add knowledge of the program under tests' structure to the fuzzer. Which brings us to black, gray and white box fuzzing. With black box fuzzing the fuzzer does not have any knowledge about the inner working of the PUT and we treat the PUT as a literal black box. We provide input and we look at what the PUT provides as output. With this minimal information the fuzzer then tries to improve its input creation. 
-Compared to black box fuzzing, gray box fuzzing usually comes with tools that give indirect information to the fuzzer. Tools like code coverage, timings, classes of errors as measurements are all used as feedback, but more measurements are possible. 
-Lastly, as you may have predicted, white box testing is the term used when the fuzzer has as much information available as possible. It will have access to the source code and can adjust their inputs to fuzz specific parts of the code. Directed fuzzing also falls under this term, here we guide the fuzzer to interesting locations for testing of specific parts of the PUT. White box fuzzing does have a higher computation cost due to having to reverse engineer the path to specific edge cases, meaning that it has a higher chance of finding more bugs per input but creating those inputs takes more time compared to black box fuzzing. 
+\section{Constraint programming}
+\label{CS:CP}
+As mentioned before CP's are well versatile in the solving of constraints and especially when it comes to planning and scheduling. This by their efficient constraint propagation, backtracking and the linking of related constraints \cite{66WikiCP}. Originally CP's can be linked back to constraint logic programming (CLP) where programming languages (mostly logic programming languages) where combined with constraints and ways to solve them. A notable version is that of Joxan Jaffart and Jean-Louis Lassez \cite{65jaffar1987constraint, 66WikiCP} with their extension in Prolog and thereby the creation the category.
 
-The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail could become controversial, all we can say is that it is no longer a black-and-white situation and that the lines have become fuzzy.
+To further introduces you to constraint programming we will show a popular puzzle in the CP field "send more money". which is a logic puzzle made by Henry Dudeney and published in Strand Magazine's July 1924 edition \cite{sendMoreMoney}.
+In this puzzle each character represents a single digit between zero and nine (both included), meaning that the 'e' from "send" should be the same digit as the 'e' from "more" and the 'e' from "money". The other rules go as follows: all different characters should have a different digit, any of the starting letter of each word cannot be zero and after replacing all characters with their corresponding digits the sum should be correct. 
+\begin{center}
+	\[$$
+	\; \; S E N D\\
+	+ M O R E\\
+	-----------------\\
+	M O N E Y
+	$$\] The "send more money" puzzle.
+\end{center}
+On top of showing the problem we will also use MiniZinc\footnote{\url{https://www.minizinc.org/}} as our constraint programming language to find the solution for this puzzle. By doing this we will show a possible representation of this problems using constraints so that a solver can find a solution.
 
-\section{Classifying popular fuzzers}
-\label{fuzzing:OtherFuzzers}
-Now that we know how we can classify fuzzers, let us look at some existing fuzzers to see how they work. For starters Miller's original work, which we discussed earlier, was a random generation based black box fuzzing. It started off as an assignment for his students to test the reliability of Unix utility programs by trying to break them using a fuzz generator, which was able to generate printable ASCII, non-printable ASCII, with or without null terminating characters of a random length. That resulted in a successful paper two years later \cite{4originalFuzzingUnixUtils}. His later work in 1995 on even more UNIX utilities, X-Windows servers \cite{26miller1995fuzzrevisited} in 1995, Windows NT 4.0 and Windows 2000 \cite{24MillerWindows} in 2000, MacOS \cite{25MillerOnMacOS} in 2006 and his recent revisit in 2020 on fuzzing \cite{3miller2020relevanceOfClasicalFuzzTesting} all fall in the same category of random generation based black box fuzzing. His papers showed that a significant portion of programs are able to be crashed with random inputs. Of the programs tested 15\% to 43\% of the Unix utilities crashed, 6\% of the open-source GNU utilities crashed, 26\% of X-Window applications crashed, 45\% of Windows NT 4.0 and Windows 2000 programs crashed and 16\% MacOS programs crashed.
+\label{lst:SendMoreMoney}
+\begin{lstlisting}[float=t,language=minizinc, caption={Solution to the puzzle "send more money" slightly modified from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}}]
+	include "globals.mzn";
+	var 1..9: S; % Since 'S' is a starting character it is limited from 1 to 9.
+	var 0..9: E; % Other characters are limited from 0 to 9.
+	var 0..9: N;
+	var 0..9: D;
+	var 1..9: M;
+	var 0..9: O;
+	var 0..9: R;
+	var 0..9: Y;
+	
+	constraint % The sum must hold.
+	              1000 * S + 100 * E + 10 * N + D
+	            + 1000 * M + 100 * O + 10 * R + E
+	= 10000 * M + 1000 * O + 100 * N + 10 * E + Y;
+	
+	constraint alldifferent([S,E,N,D,M,O,R,Y]);
+	
+	solve satisfy;
+	output % Pretty-printing the solution.
+	[" \(S)\(E)\(N)\(D)\n",
+	"+ \(M)\(O)\(R)\(E)\n",
+	"= \(M)\(O)\(N)\(E)\(Y)\n"];
+\end{lstlisting}
+\label{sendMoreMoneyExplanation}
+On line 1 you can see the importing of the global constraints, which CPs are known for. Line 2 until 9 we can see the declarations of all possible characters to the possible digits, starting letters such as 'S' and 'M' are limited by their representation from 1 to 9 instead of using a constraint. The constraint on line 11 runs through until line 14, where it is closed by the semicolon. This constraint specifies the matching of the sum. At line 16 we use one of the imported functions namely "alldifferent()" which will satisfy if no duplicate values occur in the array. To then start solving for satisfiability at line 18, this in comparison of solving for minimization or maximization an objectify function, which does not apply here. Finally, after a solver has found a solution we print the result using a pretty-print from line 19 to 22.
+We will not be spoiling the solution and will leave it up to you to find the solution but remember that you can check your answer with the program above.
 
-A couple of years later, KLEE \cite{8KLEE} was developed by Cadar et al. KLEE is a generation based white box fuzzing tool build with the idea that bugs could be on any code line and that testing should cover as code much as possible. A code coverage tool is used to test which lines of code are executed and this combined with the feedback KLEE received from the symbolic processor and the interpreter it can generate improved inputs. KLEE does this by symbolically executing the program executions, branching on all paths and searching for any dangerous operations. When it finds an error, it will convert the symbolic representation to a concrete representation based on the constraints it needed to get to the specific location. To then use this concrete representation to test the original program.
-With KLEE's stride to obtain a high code coverage it should be noted that covering a line of code does not mean that line of code has been found to contain no bugs, but not going over lines of code definitely means that the lines remain untested. Therefore, code coverage is sometimes used as a relative metric, checking if a specific test raises the code coverage, means that a test uses a new part of the code base that has not been tested yet. This combined with the fact that getting a high code coverage is a demanding task and does not easily gets to 100\% turns code coverage into a well-rounded measurement.
+The "alldifferent()" and the sum constraint also show us the power of CPs, with a single statement multiple relations are expressed \cite{53marriott1998programming}. Instead of needing to specify all possible relations of the last three characters of each word (\mbox{D + E = Y}, \mbox{Y - D = E} and \mbox{Y - E = D}) a single expression suffices. When knowing two values we can infer the third, imagine the work needed for the "alldifferent()" constraint. The developer would have to go over all possible combinations, this in combination of specific smart back-end solvers for this constraint makes MiniZinc and other CP-solvers so powerful. 
+
+\subsection{origin}
+Within constraint programming we can distinguish two branches \cite{52bartak1999constraint}: one being constraint satisfaction. Which puts the focus on finding a model which satisfies all constraints. which can be done with generating values within the domain of the variables and testing them, also called generate and test but obviously this is not the fastest way. 
+
+On the other hand, we have constraint optimization, which covers an even harder problem. Instead of having to check if all constraints satisfy, here we want to know what model will give us the highest or lowest value. The function to optimize is often called the objective function and occurs more often than not in real life problems \cite{52bartak1999constraint}. 
+Unfortunately depending on the problem, we regularly hit limitations due to NP-hardness. This has challenged the field and multiple different search strategies to gain a higher efficiency have been thought off. Popular approaches to finding solutions in both branches are the use of constraint propagation, backtracking, symmetry breaking, dynamic programming, techniques from the CP solvers like lazy clause generation and even heuristics as: local search, Tabu search, simulated annealing and more. 
+
+\subsection{MiniZinc}
+A keen observer has will have noticed that we used "after \underline{a} solver has found satisfiability" in the explanation of "send more money" in section \ref{sendMoreMoneyExplanation}. 
+This is because MiniZinc is not a solver, it came to be from the lack of standard modeling language surrounding CP's. Before MiniZinc, when you wanted to use another solver, you had to rewrite your problem again in that solver's specific language. This is what Nicholas Nethercote et al. wanted to solve, they came up with MiniZinc, which is a modeling language for CPs that is not connected to a single specific solver \cite{57nethercote2007minizinc}. It originated from a modeling language focused on constraints, called Zinc \cite{68incbanda2006modelling} and as you can tell by its name MiniZinc, it is a subset of Zinc \cite{57nethercote2007minizinc}.
+In the words of Peter J. Stucke, a member of the MiniZinc team: 
+
+\begin{quote}
+	"MiniZinc is high level enough to express most combinatorial optimization problems easily and in a largely solver-
+	independent way; (...) However, MiniZinc is low level enough that it can be mapped easily onto many solvers." 
+	\newline
+	-Peter J. Stuckey et al. in "The MiniZinc Challenge 2008-2013" \cite{58stuckey2014minizinc}.
+\end{quote} which shows the team's vision of MiniZinc.
+
+MiniZinc transforms its inputs to FlatZinc by combining the model, data and solver specific features. Which then can be solved by a specific solver. The list of CP solvers that support MiniZinc, at the time of writing 17 solvers have FlatZinc interfaces.
+
+\subsubsection{MiniZinc Challenge}
+On top of maintaining and improving MiniZinc the MiniZinc team also organizes a yearly challenge to compare and test what improvements have been made in the constraint solving world. Which they are able to do by having the benefit of a standardized constraint programming language to benchmark with. 
+In this yearly challenge each solver gets fifteen minutes to solve a hundred selected problem instances. But due the difficulty of having to find quite a number of good representative problem instances each year, the organizers of the challenge ask the participants to submit preferably two problem models and multiple related instances. From the received list the jury then tries to make a fair selection to cover the use of global constraints, real-world representative problems, to find a good balance between satisfying versus optimization problems and the different types of technologies (SAT and MIP) instead of only selecting CP focused problems \cite{58stuckey2014minizinc}.
+
+It is due to this MiniZinc challenge that a better connection has formed between CP solvers and SAT solvers. By attracting SAT solvers to the challenge, tools such as fzn2smt \cite{72bofill2010system} and BEE \cite{69BEEmetodi2012compiling} arose. These tools are able to translate FlatZinc to SAT-LIB and conjunctive normal form (CNF) respectively. 
+With BEE producing CNF, Amit Metodi and Michael Codish where then able to let a SAT solver solve the problem. Although the latter is limited to finite domain constraint problems, it allows utilization of large and swift SAT-solvers on top of bringing the field of research closer to each other.
+
+On top of being a great way to benchmark comparative solvers the MiniZinc challenge, it also results in more solver implementing the FlatZinc as an input and due to the competitive nature of academics brings the motivation to stride forwards according to the author of "Philosophy of the MiniZinc challenge", Julien Fischer \cite{59stuckey2010philosophy}.
+
+\subsection{CPMpy}
+\label{CP:CPMpy}
+MiniZinc is not de only one with the idea to create a modeling language for CPs, other examples are Essence with the focus on combinatorial problems for people with a background in discrete mathematics \cite{70frisch2008essence}.
+And the one with our most interest is the constraint programming and modeling language for Python (CPMpy). Based around the popular packet NumPy, CPMpy allows for a lower learning curve of constraint programming languages by creating a constraint programming and modeling language in a familiar language \cite{17guns2019increasing}. 
+With NumPy comes with a lot of advantages: it is popular in data processing and the general array-based operations among machine learning and more. 
+Being able to use these in combination of CPs would allow for both fields to grow closer to each other. 
+
+
+At the time of writing the CPMpy has support for multiple solvers like OR-tools, CP-SAT, Gurobi (for MIP problems), PySAT (which is a library that contains 13 different SAT solvers), PySSD which is a knowledge compiler and CPMpy has support for any CP-solver that support for the text-based MiniZinc language \cite{CPMpyDoc, CPMpyGithub} (resulting in at least 33 extra solvers). With potential future extensions to Microsoft's Z3 theorem prover and others as new solvers.
+We would have written an in-depth explanation on how CPMpy does its conversions from constraints to what is given to the solvers, but CPMpy being in development and with more changes potential coming this could become outdated quickly. We look forward to see CPMpy progress and the future paper(s) discussing it. What we can do is discuss it on a global level, where we see CPMpy existing out of four components. This being a model part (everything to do with creating a model of a problem), a transformation part (everything to do with changing constraints), solver specific part transformations (everything to do with restrictions the solver puts on CPMpy) and then the solver themselves (which solve the final model). With CPMpy having little to no control over the last one as can be seen in figure \ref{fig:4ComponentsOfCPMpy}.
+
+
+Finally, to illustrate that both MiniZinc and CPMpy are not that far apart we included a CPMpy listing (listing \ref{lst:SendMoreMoneyCPMpy}) for the same problem as we have seen for MiniZinc.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{images/AFLBunny}
-	\caption{A young American Fuzzy Lop Rabbit, image taken from animalcorner.org \cite{AFLBunny}.}
-	\label{fig:AFLbunny}
+	\includegraphics[width=1.0\textwidth]{images/4componentsOfCPMpy}
+	\caption{The four main components of CPMpy}
+	\label{fig:4ComponentsOfCPMpy}
 \end{figure}
 
-As for the more popular fuzzers, American fuzzy lop\footnote{\url{https://github.com/google/AFL}} (AFL), which named after an American rabbit breed (see figure \ref{fig:AFLbunny}) and is a C and C++ focused mutation based gray box fuzzer released by Google. But due inactivity on Google's part the fork AFL++\footnote{\url{https://github.com/AFLplusplus/AFLplusplus}} has become more popular than the original and is maintained actively by the community \cite{27AFL++}. Not only is it actively maintained, it is also actively used by researchers and the industry. Besides sparking the existence of AFL++, AFL has also triggered a python\footnote{\url{https://github.com/jwilk/python-afl}} focused version, a Ruby\footnote{\url{https://github.com/richo/afl-ruby}} focused one, a Go\footnote{\url{https://github.com/aflgo/aflgo}} focused version and is shown by Robert Heaton \cite{AFLWrapper} to not be difficult to write a wrapper for it.
 
-A potential reason to the inactivity of Google on the AFL project could be the development of both Clusterfuzz\footnote{\url{https://google.github.io/clusterfuzz/}} and OSS-fuzz\footnote{\url{https://google.github.io/oss-fuzz/}}, a scalable fuzzing infrastructure and a combination of multiple fuzzers respectively. With the former one being used in OSS-fuzz as a back end to create a distributed execution environment. This with quite a bit of success,
-\begin{quote} \todo{currently at 44 700 issues, but the GitHub isn't updated yet}
-	"As of May 2022, ClusterFuzz has found 29,000 bugs in Google (e.g. Chrome) and 36,000+ bugs in over 550 open source projects" and \\
+\label{lst:SendMoreMoneyCPMpy}
+\begin{lstlisting}[float=, language=python, caption={Solution to the puzzle "send more money". Modified from the example in the CPMpy repository \url{https://github.com/CPMpy/cpmpy/blob/master/examples/send_more_money.py}}]
+	#!/usr/bin/python3
+	"""
+	Send more money in CPMpy
+	  SEND
+	+ MORE
+	------
+	 MONEY
+	"""
+	from cpmpy import *
+	import numpy as np
 	
-	"As of July 2022, OSS-Fuzz has found over 40,500 bugs in 650 open source projects." and \\ 
+	s,e,n,d,m,o,r,y = intvar(0,9, shape=8) # creating variables
 	
-\end{quote} according to both the CusterFuzz and the OSS-Fuzz repository respectfully \cite{31OSS-FuzzBugs}. 
-
-Google is not the only one to come forward with a fuzzer. Even Microsoft has jumped on the bandwagon of fuzzing with its OneFuzz\footnote{\url{https://github.com/microsoft/onefuzz}}, a self-hosted Fuzzing-As-A-Service platform which is intended to be integrated with the CI/CD pipeline. Although looking at the given stars on the Github repository, it looks like Google's tools are more popular than Microsoft's ones. The last prominent fuzzer we will look at is the LibFuzzer\footnote{\url{https://llvm.org/docs/LibFuzzer.html}} made by LLVM, a generation based gray box fuzzer which is a part of the bigger LLVM project\footnote{\url{https://github.com/llvm/llvm-project/}} with the focus on the C ecosystem. Being in the same ecosystem as AFL, LibFuzzer can be used together with AFL and even share the same seed inputs.
-
-\subsection{Testing CP and SMT with Fuzzers}
-\label{fuzzing:testingWithFuzzers}
-Until now we discussed fuzzers more generally, we would like to deliberate specific fuzzers build for testing constraint programming languages (CP) and satisfiability modulo theory (SMT) solvers.
-\begin{figure}
-	\centering
-	\includegraphics[width=1.0\textwidth]{images/STORM}
-	\caption{Overview of the three STORM phases as presented by Muhammad Numair Mansur et al. in "Detecting Critical Bugs in SMT Solvers Using Blackbox Mutational Fuzzing" \cite{1mansur2020detecting}.}
-	\label{fig:STORM}
-\end{figure}
-One of those fuzzers is STORM which is a mutation based black box fuzzer created by Muhammad Numair Mansur et al. \cite{1mansur2020detecting} to find critical bugs (i.e., wrongly sat or wrongly unsat) in SMT solvers. In their paper \cite{1mansur2020detecting} they explain the inner working thoroughly, but briefly summarized STORM creates an initial pool of smaller formulas from existing formulas found in seeds, uses another solver to create models of those smaller formulas. To then construct more complex formulas with the knowledge of their ground truth, with this STORM can test the SMT solver as represented in figure \ref{fig:STORM}. This novel way of fuzzing SMT solvers with inputs that are satisfiable by construction and has been cited significantly, considering that it is a recent paper.
-
-\label{fuzzing:SemanticFusion}
-Another technique for fuzzing SMT solvers is the one proposed by Dominik Winterer et al. with their fuzzer YinYang \cite{43YinYang}, which uses "Semantic Fusion" to test the solvers.
-\begin{quote}
-	\label{quote:Fuzzing:YinYang}
-	"Our key idea is to fuse two existing equisatisfiable (i.e., both satisfiable or unsatisfiable) formulas into a new formula that combines the structures of its ancestors in a novel manner and preserves the satisfiability by construction. This fused formula is then used for validating SMT solvers."
-	\newline
-	-Dominik Winterer et al. in "Validating SMT Solvers via Semantic Fusion" \cite{43YinYang}.
-\end{quote}
-Dominik Winterer et al. take a free variable from each of the equisatisfiable formulas to be able to create a new variable using a reversible fusion function. For example, a formula \mbox{$\phi_1$ $\equiv$ X > 10} and \mbox{$\phi_2$ $\equiv$ Y < 9} with the fusion function for \mbox{Z = X + Y} would become \mbox{$\phi_3$ $\equiv$ (Z - Y) > 10 $\land$ (Z - X) < 9}, linking both satisfiable formulas together. For unsatisfiable formulas an extra conjunction is needed with the definition of the new variable, because a substitution could result in the loss of the unsatisfiability of the formula as mentioned in the paper \cite{43YinYang}. The results of the paper where also significant with 45 bugs in state-of-the-art SMT solvers in Z3\footnote{\url{https://github.com/Z3Prover/z3}} and CVC4\footnote{\url{https://github.com/CVC4/CVC4-archived}}. Dominik Winterer et al. also give multiple fusion functions such as multiplication and string concatenations which can be applied to integers and real numbers and strings respectively. Extending this technique to other data types or more fusion functions would not be difficult.
+	model = Model() # with "+=" we can add a constraint to the model
+	model += sum([s,e,n,d] * np.array([1000, 100, 10, 1])) \
+	       + sum([m,o,r,e] * np.array([1000, 100, 10, 1])) \
+	      == sum([m,o,n,e,y] * np.array([10000, 1000, 100, 10, 1]))
+	model += AllDifferent([s,e,n,d,m,o,r,y])
+	model += s > 0 # in MiniZinc each variable was declared seperatly in CPMpy 
+	model += m > 0 # we can do it in batch, resulting in these extra constraints 
+	
+	print(model)
+	
+	# Solve and pretty-print
+	if model.solve():
+	   print("  S,E,N,D =   ", [x.value() for x in [s,e,n,d]])
+	   print("  M,O,R,E =   ", [x.value() for x in [m,o,r,e]])
+	   print("M,O,N,E,Y =",    [x.value() for x in [m,o,n,e,y]])
+	else:
+	   print("No solution found")
+\end{lstlisting}
+\todo{explain the listing further?}
+%We have shortly seen how a CPMpy looks like in listing \ref{lst:SendMoreMoneyCPMpy}, 
+%where we create a model, add constraints to it and then to solve the model. Everything up to the solving part is controlled by CPMpy, once the "solve()" is called 
 
 
-A last fuzzer we will discuss is Falcon, a fuzzer that extends the search space to also test the configuration of the SMT solvers. This fuzzer made by Peisen Yao et al. \cite{42FalconFuzzingConfigurationSettingsAndNormal} found quite the success by being the first to linking the configuration options to the operations and to then use this information to fuzz better.
-When using STORM as the underlying fuzzer with the knowledge of the configuration space the authors managed to increase the code coverage by 17.2 to 18.8\%. When knowing that SMT solver such as Z3 and CVC4 contain more than 700 000 and 100 000 lines of code respectively means that any percentage is a significant number of extra lines covered.
+% where errors could occure, whitch ones are in/out of scope
 
-\section{Types of bugs}
-\label{fuzzing:TypesOfBugs}
-Not only can we classify fuzzers, but we can also classify the types of bugs found by the fuzzers, as done in a recent paper \cite{1mansur2020detecting} by Muhammad Numair Mansur et al. being crashes, wrongly satisfied, wrongly unsatisfied or a hanging inputs. With some of these bugs being less acceptable than others. For example, as Muhammad Numair Mansur et al. describes, a crash is preferred for a constraint programming language (CP) over a wrongly unsatisfied model, since there is no way for the user to know that the solver failed in that last case (except for differentiation testing, more on that later). Meaning that the user will treat the result (wrongly) as correct, comparing this to a crash where it is clear that something went wrong is more transparent for the user. With hanging inputs, the user cannot draw incorrect conclusions and with wrongly satisfied models the user could check the model's instances and confirm the result before using it further. This is due to the fact that problems are frequently NP-hard meaning they are easy to confirm but hard to solve. 
-For practical reasons we will be defining models that take more then 15 minutes to a timeout category and wrong amount of solutions to the critical bugs together with the wrongly satisfiable and wrongly unsatisfiable solution. We are aware that the types of bugs can be classified in even more detail, for example crashes into buffer overflows, invalid memory addressing and so on, but we choose to stay with a more general overview for now. An interesting classification to be added is the knowledge whether or not the bug is in the parser part of the PUT or not. The put could already fail on inputs during the interpretation of the inputs and as discussed, we would also like to detect bugs deeper in the PUT. As the authors of "Semantic Fuzzing with Zest" \cite{22SemanticFuzzing} would classify, is the bug in the syntactical or in the semantical part of the program?
-%can use to \ref{intro:FussingSecurity}, but fitting it in this txt seems forced
+\section{SAT}
+\label{CS:SAT}
+Now that we discussed CPs, let's step back to boolean satisfiability problems (SAT) and as the name already spoiled it, here we are focused on checking the satisfiability of boolean formulas. SAT has been successful in the hardware design and verification. With al lot of research in improving SAT-solvers, they have become significant efficient on large problems \cite{56bardin2019bringing}.
+With the efficiency improvements coming from the DPLL algorithm to conflict-driven clause learning (CDCL) move combined with the addition of non-chronological back jumps. But better propagation, lazy clause generation (LCG), data structures and the introduction of heuristics assisted significantly to the process. Heuristics often include clause deletion to decrease the number of unused clauses, variable state independent decaying sum (VSIDS) where we add a decaying weight (the sum) to select which literal we prioritize, random restarts where we try to avoid large search trees by restarting with the learned clauses, among other heuristics \cite{61MCSMarcDenecker, 60katebi2011empirical, 67stuckey2010lazyClauseGeneration}.
+%more techniques: branching, unit propagation, backtracking, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts
 
-\section{Other forms of testing}
-\subsection{Differential testing}
-\label{fuzzing:DifferentialTesting}
-As mentioned above a lot of fuzzers use crashes to detect that the PUT has failed to provide a correct output or when possible, use differential testing. This latter one uses a single or multiple analogue programs to test if the PUT gave the same output as the analogue programs. As Christian Klinger et al. did in their paper \cite{48klinger2019differentially} by applying "bugs-as-deviant-behavior" they try to find precision and soundness mistakes with input creation via seed files to compare the output to similar programs. 
-Unfortunately, neither crash based nor differential testing is ideal: crash based fuzzing will not trigger on wrong outputs and differential testing requires that one or multiple analogue programs exits preferably with a different implementation to reduce overlapping bugs. The latter technique may therefore not always be possible due to the existence of those analogue programs.
-
-\subsection{Metamorphic testing}
-\label{fuzzing:MetamorphicTesting}
-In situations where the existence of analogue programs would be a limited factor metamorphic testing could be a solution. A nicely worded definition would be 
-
-\begin{quote}
-	\label{quote:MetaMorphic}
-	"Metamorphic testing (...) involves generating new test cases from existing ones, where the expected result of a new test case can be generated from the result of an existing test via a metamorphic relation. By comparing the results of the
-	original test with the new one we can identify cases where the metamorphic relations are broken (...)".
-	\newline
-	-\"{O}zg\"{u}r Akg\"{u}n et al. in "Metamorphic Testing of Constraint Solvers" \cite{50akgun2018metamorphic}.
-\end{quote}
-
-\noindent This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the number of models reduces (or remains equal). Or that the number of models remain the same when giving an equivalent formula or adding a tautology compared to the original. \todo{proofread this sence} This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available metamorphic transformation.
-
-\section{The oracle problem}
-\label{fuzzing:OracleProblem}
-The oracle problem describes the issue of telling if a PUTs output was, given the input, correct or not. As expressed in "The Oracle Problem in Software Testing: A Survey": 
-\begin{quote}
-	"Given an input for a system, the challenge of distinguishing the corresponding desired, correct behavior from potentially incorrect behavior is called the test oracle problem."
-	\newline
-	-Earl T. Barr et al. in "The Oracle Problem in Software Testing: A Survey" \cite{10barr2014oracleProblem}.
-\end{quote}
-In their paper they discuss four categories: specified test oracles, derived test oracles, implicit test oracles and the absence of test oracles. The biggest category would be the specified test oracles which contains all the possible encoding of specifications like modeling languages UML, Event-B and more. Their derived test oracles classification contains all forms of knowledge obtained from documentation on how the program should work or by knowledge of previous versions of the program. The last two oracles' categories come down to the use of knowing that crashes are always unwanted and the human oracle such as crowdsourcing respectively.
-
-\subsection{Handling the oracle problem}
-\label{fuzzing:handelingOracelproblem}
-Although the approach of by Bugariu and M\"uller in "Automatically testing string solvers" \cite{9bugariu2020automaticallyTestingStringSolvers} falls in the first category being, a black box fuzzer, their approach is innovative. While most fuzzers either use crashes or differential testing (more on that later) to find bugs, they know the (un)satisfiability of their formulas by the way of they are constructed. For satisfiable formulas they generate trivial formulas and then by satisfiability preserving transformations increase the complexity and for unsatisfiable formulas they use \mbox{$\neg$ A $\land$ A'}, with A' being an equivalent formula but different formula for A, to create the trivial unsatisfiable formulas. To increase the complexity of those trivial formulas, they again depend on satisfiability preserving transformation. This technique of creating formulas satisfiable by construction has also been applied to SMT solvers by Muhammad Numair Mansur et al. called STORM \cite{1mansur2020detecting} which uses mutational input creation compared to the previous generation based techniques. In the paper the authors dissect all SMT assertions into their sub-formulas and create an initial pool. In this pool the sub-formulas are checked if they satisfy or not and with this knowledge new formulas are created for the population pool with ground truth, from this pool new theories are created and tested. This makes that STORM does not need an oracle to test the entire theory, but only the smaller sub-formulas.
+\todo{example?}
 
 
-%somewhere a ref to later chapter input simplification (minimisation differantioation)
-\section{Opinions against Fuzzing}
-\label{fuzzing:OpinionsAgainstFuzzing}
-We have talked about the successes of fuzzing, but there are also voices against fuzzing. As William M. McKeeman \cite{39differentialTesting} writes some developers do not like the automatic way of adding more bugs to their backlog and see it as unreasonable. "Why would a person do this (obscure actions)?" and that fuzzing seems to generate an infinite number of bugs are also pet peeves of developers according to McKeeman.
-Although we have a bias due to writing this dissertation about fuzzing, we think that those perspectives should be acknowledged in this paper. But we should also mention that this is not a single view shared by all developers from the papers \cite{43YinYang, 42FalconFuzzingConfigurationSettingsAndNormal, 47zhang2019finding} and others we see a positive response to newly found bugs by the respective developers. Some have even started implementing fuzzers \cite{44Stringfuzz} in their toolchain to detect bugs.
+\section{SMT}
+\label{CS:SMT}
+An extension of SAT is satisfiability modulo theories (SMT), which extends the only boolean focus of SAT with quantifiers, integers, lists, arrays and much more. With the advantage that most efficient algorithms from SAT transfers over. The focus with this technology lays in multiple fields but it is quite popular in program verification and testing. As can be seen with Microsoft's Z3\footnote{\url{https://github.com/Z3Prover/z3}}, which is focused on static software checking \cite{54moura2008z3}. Z3 is one of the most popular SMT theorem provers at the moment, with a considerable number of varying supported theories. It has support for the standard SMT-LIB input, the simplify input (from an older theorem prover) \cite{73detlefs2005simplify}, and a low-level native input for textual input-based directly. Z3 also has APIs for the following programming languages: C/C++, .NET, OCaml, Python, Java, Haskell and more \cite{64WikiSMT}.
+
+The second most popular SMT-theorem prover is from the cooperating validity checkers (CVC) line-up. The latest in the CVC-lineup is CVC5\footnote{\url{https://github.com/cvc5/cvc5}}, which is the fifth in line of the CVC-family, the previous being: SVC (not always counted), CVC, 
+CVC Lite\footnote{\url{https://cs.nyu.edu/acsys/cvcl/}}, 
+CVC3\footnote{\url{https://cs.nyu.edu/acsys/cvc3/}}\cite{71barrett2007cvc3} and 
+CVC4\footnote{\url{https://cvc4.github.io/}}.
+As like CVC4, CVC5 supports the standard SMT-LIB input format among other formats directly and has APIs for C++, Python, Java and probably more by the time you read this \cite{62barrettcvc5, 63barbosa2022cvc5}.
 
 \section{Conclusion}
-\label{fuzzing:conclusion}
-In this chapter we have seen an overview of what fuzzers are, which are used in the industry and how they work. We have seen techniques and fuzzer specified for SMT solver but also for constraint solvers. To finally end with some problems around getting the difference between correct and incorrect behavior and a small paragraph on the perspective of the developers on fuzzing.
+\label{CS:conclusion}
+In this chapter we discussed some of the most popular parts of constraint solving. We explain the boolean constraints within SAT to be able to better explain the broader non-boolean constraints within SMT and constraint programming. On top of that have also seen multiple tools used in the industry and academia to prove and/or solve constraint problems.
 
 %%% Local Variables: 
 %%% mode: latex
