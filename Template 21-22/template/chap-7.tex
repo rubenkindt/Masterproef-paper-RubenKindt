@@ -1,49 +1,50 @@
 \chapter{Results}
 \label{cha:res}
 \label{res:Intro}
-In this chapter we will seen the results of all three of our techniques, we will explained how we prevented frequently occurring bugs, discuss a diverse subset of the found bugs with more detail. To end the chapter with a classification of all bugs and the reception of the bugs.
+In this chapter we will see the results of all three of our techniques, we will explain how we prevented frequently occurring bugs, discuss a diverse subset of the found bugs with more detail. To end the chapter with a classification of all bugs and the reception of the bugs.
 
 \section{Running the tests}
 \label{res:RunningTests}
 \label{res:Specs}
-Although the specifications are not crucial since we did not do any speed benchmarking, it does give you, the reader, an idea of the performance. All tests where executed on an Ubuntu 20.04.5 LTS with 8GB RAM, an Intel core i5-3380M capable of 2.90GHz and a V-NAND SSD of 500GB 860 EVO Model MZ-76E500 through a SATA 3 connection. With each technique taking around a day to three days to run all nine thousand seed files once. Note that processing a seed once can mean that variants of that seed were run up to 100 times depending on the technique.
+Although the specifications are not crucial since we did not do any speed benchmarking, it does give you, the reader, an idea of the performance. All tests were executed on an Ubuntu 20.04.5 LTS with 8GB RAM, an Intel core i5-3380M capable of 2.90GHz and a V-NAND SSD of 500GB 860 EVO Model MZ-76E500 through a SATA 3 connection. With each technique taking around a day to three days to run all nine thousand seed files once. Note that processing a seed once can mean that variants of that seed were run up to 100 times depending on the technique.
 
 %time when faults are found?
 
 \subsection{Preventing the same bug from occurring frequently}
 %these tools often gave the same error again causing the new bug to be hidden, se choice to catch some of the more prevelent bugs, If some one wishes to rerun (parts) It is best to remove those exceptions in order to see the full output
-While the techniques where running noticed that once a bug was found by any of our techniques that same bug would occur frequently but in a different seed, causing our resulting logs to be cluttered with duplicates bugs. We where aware that this could occur and we originally wanted to use deduplication as described in subsection \ref{inputReduction:Deduplication} to get rid of the duplicates. But after seeing 10 000 logs of the same bug, we changed from a reactive approach to a preventative approach. Once we noted a bug we tried to prevent it, for crashes this meant adding a try catch for the specific error. While, for wrongly (un)satisfiable we looked at special occurrences of keywords in constraint we knew caused bugs to then not log them. For example a bug we will discuss soon had a specific string of characters " == 0 == 0" making any problem wrongly unsatisfy. Being able to check the string of characters with knowing that it resulted in wrongly unsatisfiable  solutions made it for able for us to filter that bug as well. Luckily, with these restrictions on the output logs we were able to filter out most duplicate bugs, this is not an ideal solution but seems to work for now. The ideal solution would be that the fuzzer has knowledge of the already found bugs and reject them, techniques like these do exist but would bring us to far from the scope of the dissertation. Although, less efficient the techniques could be used for detecting an error fixing them and then rerunning for the next bug instead of adding exceptions.
+While the techniques were running, we noticed that once a bug was found by any of our techniques that same bug would occur frequently but in a different seed, causing our resulting logs to be cluttered with duplicates bugs. We were aware that this could occur and we originally wanted to use deduplication as described in subsection \ref{inputReduction:Deduplication} to get rid of the duplicates. But after seeing 10 000 logs of the same bug, we changed from a reactive approach to a preventative approach. Once we noted, a bug we tried to prevent it. For crashes this meant adding a try catch for the specific error, while for wrongly (un)satisfiable we looked at special occurrences of keywords in constraint we knew caused bugs to then not log them. For example, a bug we will discuss soon had a specific string of characters, " == 0 == 0", makes any problem wrongly unsatisfy. Being able to check the string of characters with knowing that it resulted in wrongly unsatisfiable  solutions made it for able for us to filter that bug as well. Luckily, with these restrictions on the output logs we were able to filter out most duplicate bugs, this is not an ideal solution but seems to work for now. The ideal solution would be that the fuzzer has knowledge of the already found bugs and reject them, techniques like these do exist but would bring us to far from the scope of the dissertation. Although, less efficient the techniques could be used for detecting an error fixing them and then rerunning for the next bug instead of adding exceptions.
 
 \section{Results: found bugs}
 \label{res:bugs}
-In total we found 20 bugs, three of which were already submitted as an issue. Of those bugs some of them where easy fixes, some were a bit harder and required more time to solve. At the time of writing not al bugs are resolved (some are just reported days ago), but we look in anticipation how those will be solved. For now let us look at some of the most interesting bugs we found. In order to do this we will work with the four components we defined earlier in subsection \ref{CP:CPMpy}, this being: the model, the transformations, the solver specific transformations and the solvers themselves as seen in figure \ref{fig:4ComponentsOfCPMpy}.
+In total we found 20 bugs, three of which were already submitted as an issue. Of those bugs some of them were easy fixes, some were a bit harder and required more time to solve. At the time of writing not al bugs are resolved (some are just reported days ago), but we look in anticipation how those will be solved. For now, let us look at some of the most interesting bugs we found. In order to do this, we will work with the four components we defined earlier in subsection \ref{CP:CPMpy}, this being: the model, the transformations, the solver specific transformations and the solvers themselves as seen in figure \ref{fig:4ComponentsOfCPMpy}.
 
-\todo{check order of tech STROM, Meta then diff}
+
 \subsection{Double Not}
 \label{res:bug:DoubleNot}
 The first bug we discovered was our "double not"-bug, a bug where we ask CPMpy to solve the constraints "X==3 and not(not(X==3))". Clearly this solution is trivial, set variable 'X' equal to 3 and the problem would be satisfied. However not all CPMpy solver did agreed with this, both OR-Tools and Gurobi said that this problem was unsatisfiable. 
 
 This was due to a process within CPMpy responsible for creating a flat normal form. Not all solver used by CPMpy allow an arbitrary nesting of constraints as described by the documentation of CPMpy\footnote{\url{https://cpmpy.readthedocs.io/en/latest/behind_the_scenes.html}}. It is for that reason that CPMpy flattens the constraints to what they call 'flat normal forms' as the similar definition of SAT but with a disclaimer that this definition does not formally exists for CP languages to their knowledge, a statement which we agree with. With this flattened form CPMpy can directly call the solvers or do some solver specific transformations on the flattened constraints to then send it to the respective solver \cite{CPMpyGithub}. 
 
-It was in this normalizing process that a comparison in a comparison was not handled (a 'not' gets translated to a comparison with zero "== 0"). Causing a disappearance of a single "not", which in turn resulted in "X==3 and not(X==3)" being send to OR-Tools and Gurobi. The other solvers, mainly MiniZinc's subsolvers, where not affected by this bug due to not using this normalizing process. Although, this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain under the radar. This bug was only caught using the modified STORM technique, due to its frequent use of adding "not"'s and "and"'s. But we believe it could have been caught in the differential testing if one of the seeds had a double not in its constraints or in the metamorphic testing if we had though of adding a relevant metamorphic transformation. The bug can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/142}{142}.
+It was in this normalizing process that a comparison in a comparison was not handled (a 'not' gets translated to a comparison with zero "== 0"). Causing a disappearance of a single "not", which in turn resulted in "X==3 and not(X==3)" being send to OR-Tools and Gurobi. The other solvers, mainly MiniZinc's subsolvers, were not affected by this bug due to not using this normalizing process. Although, this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain under the radar. This bug was only caught using the modified STORM technique, due to its frequent use of adding not's and and's. But we believe it could have been caught in the metamorphic testing if we had thought of adding a relevant metamorphic transformation or in the differential testing if one of the seeds had a double not in its constraints. The bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/142}{142}.
 
 \subsection{Negation of Global functions}
 \label{res:bug:NegatedGlobal}
-A second bug related to the use of "not"'s were the crashes of the negated global functions. For example, "not(AllDifferent(argList))" would crash with a maximal recursion depth as the normalizing of a negated global function would be handled with adding a "== 0" to it, instead of decomposing the global function and negating that. The action of adding a "== 0" did not change the constraint and on the next normalizing of the left part of the comparison "global function == 0", the same would happen. The solution was as mentioned to decomposing the global function, which was suggested in the comments together with a commented out not-implemented warning. The entire function was labeled as work in progress, but the CPMpy-team expected it to work for this use case as they used it in their reification process. With a small but important caveat that this bug took a shortcut in the code, therefore exposing the bug. 
+A second bug related to the use of not's were the crashes of the negated global functions. For example, "not(AllDifferent(argList))" would crash with a maximal recursion depth as the normalizing of a negated global function would be handled with adding a "== 0" to it, instead of decomposing the global function and negating that. The action of adding a "== 0" did not change the constraint and on the next normalizing of the left part of the comparison "global function == 0", the same would happen. The solution was as mentioned to decomposing the global function, which was suggested in the comments together with a commented out not-implemented warning. The entire function was labeled as work in progress, but the CPMpy-team expected it to work for this use case as they used it in their reification process. With a small but important caveat that this bug took a shortcut in the code, therefore exposing the bug. 
 
-It was again due to the normalizing not being used for MiniZinc's subsolvers that the bug only occurred when using OR-Tools and Gurobi as solvers. This bug was quickly found by our modified STORM since it uses a significant number of "not"'s. It did not get found by our differential tests simply because no examples negated their global functions as such a negation is rarely useful. However, due to adding "!= 0" after constraints the metamorphic tests did find it as the bug as well. This bug can be found in the GitHub repository issue number  \href{https://github.com/CPMpy/cpmpy/issues/143}{143}.
+It was again due to the normalizing not being used for MiniZinc's subsolvers that the bug only occurred when using OR-Tools and Gurobi as solvers. This bug was quickly found by the modified STORM since it uses a significant number of not's. Due to the metamorphic relation of adding "!= 0" after some constraints the metamorphic tests did find it as the bug. But, it did not get found by our differential tests simply because no examples negated their global functions as such a negation is rarely useful. This bug report can be found in the GitHub repository issue number  \href{https://github.com/CPMpy/cpmpy/issues/143}{143}.
 
 \subsection{Power function of Gurobi}
 \label{res:bug:Power}
 Now that we have seen two bugs in the normalization part of CPMpy, which both fit in the transformations component of CPMpy. It is time to look at some solver specific transformations and some bugs we found there. A first one was a bug where the solver Gurobi would crash if we gave a base variable in the power function which had a negative lower bound. A lower bound meaning that the variable was not permitted lower that that bound. All other solver would be able to solve "pow(X, 2) == 9" with the variable 'X' defined with a lower bound of -5 and a higher bound of 5. But Gurobi does not allow this and throws an error.
 
-This bug was found with our modified STORM implementation because there was a seed file which contained this power function with a negative lower bound in the base. However, the solver used to solve this problem was not Gurobi meaning that the bug was not discovered when written. The problem can be found at the CPMpy repository's csplib examples\footnote{\url{https://github.com/CPMpy/cpmpy/blob/b60310d7962bc7631bcf0b9024140e47c1fb302e/examples/csplib/prob005_auto_correlation.py}} and was written by Ignace Bleukx. We do not think that our modified STORM would have found it if it was not in the seed file to begin with, since our modified STORM does not create new variables nor modifies any lower bounds of variables. Since the problem was already in the seed file our differential testing did report it, but not by our metamorphic tester. We believe if we had written a metamorphic relation for the power function or one where we changed some bounds of variables that we could have found this bug with this technique. This bug can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/149}{149}.
+This bug was found with the modified STORM implementation because there was a seed file which contained this power function with a negative lower bound in the base. However, the solver used to solve this problem was not Gurobi meaning that the bug was not discovered when written. The problem can be found at the CPMpy repository's csplib examples\footnote{\url{https://github.com/CPMpy/cpmpy/blob/b60310d7962bc7631bcf0b9024140e47c1fb302e/examples/csplib/prob005_auto_correlation.py}} and was written by Ignace Bleukx. We do not think that our modified STORM would have found it if it was not in the seed file to begin with, since the modified STORM does not create new variables nor modifies any lower bounds of variables. However, the bug was not found the metamorphic tests. But we do believe that if we had written a metamorphic relation for the power function or one where we changed some bounds of variables that we could have found this bug with this technique. And since the problem was already in the seed file our differential testing did find and report it.
+This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/149}{149}.
 
 \subsection{Wrong bound value Error}
 \label{res:bug:WrongBounds}
-A second bug we found in the solver specific transformations was a missing check on the variable type, this time not in Gurobi but in the PySAT implementation. When asking for a check if a sum of booleans matches a specific variable and that variable happens to be an integer instead of a boolean naturally the SAT solver, which only support boolean satisfiability problems, will complain. In this specific case it was a follow-up function still within CPMpy that crashed with wrong bounds since it expected a bound of only two possibilities. On all other places we could find a not implemented with explanation would be thrown, but on this spot it was missed. After reporting it the bug was quickly fixed.
+A second bug we found in the solver specific transformations was a missing check on the variable type, this time not in Gurobi but in the PySAT implementation. When asking for a check if a sum of booleans matches a specific variable and that variable happens to be an integer instead of a boolean naturally the SAT solver, which only support boolean satisfiability problems, will complain. In this specific case it was a follow-up function still within CPMpy that crashed with wrong bounds since it expected a bound of only two possibilities. On all other places we could find a not implemented with explanation would be thrown, but on this spot, it was missed. After reporting it the bug was quickly fixed.
 
-Although, our modified STORM was run with PySAT's subsolvers it did not find this bug simply due to a check of (un)satisfiablility at the start of the program. This check would crash PySAT's subsolvers since almost all seeds where written with a CP solver in mind. Some problems would pass since CPMpy tries its best to transform CP constraints to SAT constraints, but this was a minority. The bug did get discovered with the differential tester where each crash did get logged on top of the differences. And again with the metamorphic tests we needed to know the (un)satisfiablility of the model before the changes, when it would crash we would try another solver. Since those crashes were not logged we did not find it with this technique. The bug can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/150}{150}.
+Although, the modified STORM was run with PySAT's subsolvers it did not find this bug simply due to a check of (un)satisfiability at the start of the program. This check would crash PySAT's subsolvers since almost all seeds were written with a CP solver in mind. Some problems would pass since CPMpy tries its best to transform CP constraints to SAT constraints, but this was a minority. The same happened with the metamorphic tests where we needed to know the (un)satisfiability of the model before the changes, where it would crash on the original model. Since those crashes were not logged, we did not find it with this technique. The bug did get discovered with the differential tester where each crash did get logged on top of all differences. The bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/150}{150}.
 
 %\subsection{Circuit of one} % remove this bug from the txt ?
 %\label{res:bug:Circuit}
@@ -51,33 +52,33 @@ Although, our modified STORM was run with PySAT's subsolvers it did not find thi
 %
 %\todo{which fuzzers found it?}
 %
-%This bug can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/157}{157}.
+%This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/157}{157}.
 
 \subsection{Naming variables}
 \label{res:bug:Naming+andImport}
 Now that we have seen bugs occur in both the Transformation and the solver specific transformations let us look at a bug we have found in the model component of CPMpy. 
 
-CPMpy has multiple features like importing, exporting models, adding names variables (not to be confused with the local variables as seen on line 12 in listing \ref{lst:SendMoreMoneyCPMpy}) and others. The adding of the name is to make sure that after an export and import or the given variable names are still remembered among others reasons like to be able to give the solver the variable names. When the programmer does not give a name to a variable as we can see on line 12 in listing \ref{lst:SendMoreMoneyCPMpy} with the missing "name='somename'" in the "intvar" function. Then CPMpy adds a name to the variable without telling the programmer starting with "BV" for boolean variables and "IV" with integer variables and appends an incrementing number to not have similar names. Since reusing variable names is dangerous When the solvers use this name to differentiate variables from each other.
+CPMpy has multiple features like importing, exporting models, adding names variables (not to be confused with the local variables as seen on line 12 in listing \ref{lst:SendMoreMoneyCPMpy}) and others. The adding of the name is to make sure that after an export and import or the given variable names are still remembered among other reasons like to be able to give the solver the variable names. When the programmer does not give a name to a variable as we can see on line 12 in listing \ref{lst:SendMoreMoneyCPMpy} with the missing "name='somename'" in the "intvar" function. Then CPMpy adds a name to the variable without telling the programmer starting with "BV" for boolean variables and "IV" with integer variables and appends an incrementing number to not have similar names. Since reusing variable names is dangerous When the solvers use this name to differentiate variables from each other.
 \todo{is dit slecht uitgelegd?}
 
-This brings us to the bug, it occurs when importing a model where automatic naming was done that the counter was still at zero. Meaning that when a new variable was created with automatic naming it would have an overlapping variable name with a variable that was imported. When a solver was then called it would treat both variables as the same resulting in potential wrongly unsatisfiable solutions. The use case is a bit farther from the normal use case a programmer would go thorough. Nevertheless, this was not considered a misuse of CPMpy according to the developers and at the time of writing a pull request got proposed in which the import function got extended to check the highest occurrence of the boolean and integer counter. This highest occurrence will be used for the counters.
+This brings us to the bug; it occurs when importing a model where automatic naming was done that the counter was still at zero. Meaning that when a new variable was created with automatic naming it would have an overlapping variable name with a variable that was imported. When a solver was then called it would treat both variables as the same resulting in potential wrongly unsatisfiable solutions. The use case is a bit farther from the normal use case a programmer would go thorough. Nevertheless, this was not considered a misuse of CPMpy according to the developers and at the time of writing a pull request got proposed in which the import function got extended to check the highest occurrence of the boolean and integer counter. This highest occurrence will be used for the counters.
 
-A similar and almost related bug is naming the variables starting with strange symbols like '+', '\%' or others. Most solver would solve happily work with these names and solve lake nothing happens, but all MiniZinc's subsolvers crashed with a syntax error when handling the input. Due to transformation of our model to the text-base FlatZinc for the subsolver, it can no longer differentiate between the variable name and the code. It therefore crashes when seeking anything that could be interpreted differently then a variable name. MiniZinc does state that identifiers  are not allowed to contain special characters, which CPMpy did allow. A solution is still being discussed at the time of writing.
+A similar and almost related bug is naming the variables starting with strange symbols like '+', '\%' or others. Most solver would solve happily work with these names and solve lake nothing happens, but all MiniZinc's subsolvers crashed with a syntax error when handling the input. Due to transformation of our model to the text-based FlatZinc for the subsolver, it can no longer differentiate between the variable name and the code. It therefore crashes when seeking anything that could be interpreted differently than a variable name. MiniZinc does state that identifiers  are not allowed to contain special characters, which CPMpy did allow. A solution is still being discussed at the time of writing.
 
 
-Both of these bugs where not caught by our modified STORM nor the differential testing, since they do not create new variables. But were caught by our metamorphic testing, the first one because we imported a seed file where automatic naming was done which we did too inside our tester, causing the bug. the second one is a bit more embarrassing to write about since we create a bug in the metamorphic tester witch resulted in (unintentionally) creation of variables starting with a '+'. We sill label is as caught by this tester because it did find it, although accidentally. The bugs can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/158}{158} and \href{https://github.com/CPMpy/cpmpy/issues/162}{162} respectively.
+Both of these bugs were not caught by our modified STORM nor the differential testing, since they do not create new variables. But were caught by the metamorphic tests, the first bug because we imported a seed file where automatic naming was done which we did too inside our tester, causing the bug. the second one is a bit more embarrassing to write about, since we created a bug in the metamorphic tester which resulted in (unintentionally) creation of variables starting with a '+'. Our own bug caused us to find a bug in CPMpy. We still label it a caught bug because the automatic bug catcher did find it, although only by our fault. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/158}{158} and \href{https://github.com/CPMpy/cpmpy/issues/162}{162} respectively.
 
 
 \subsection{MiniZinc returning zero}
 \label{res:bug:MinizincZero}
-Our last bug we will discuss in detail was a bug we found with a solver themselves, namely with some Minizinc subsolver. While solving certain problems with MiniZinc's subsolvers Gecode or others it would sometimes crash with the error that it stopped without output. After reporting it turned out to be a known bug in the MiniZinc Python repository in Windows and was fixable with setting some path variables correctly. Given that this problem is an installation problem, all techniques were able to find the bug. This bug can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/156}{156}.
+Our last bug we will discuss in detail was a bug we found with a solver themselves, namely with some MiniZinc subsolver. While solving certain problems with MiniZinc's subsolvers Gecode or others it would sometimes crash with the error that it stopped without output. After reporting it turned out to be a known bug in the MiniZinc Python repository in Windows and was fixable with setting some path variables correctly. Given that this problem is an installation problem, all techniques were able to find the bug. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/156}{156}.
 
 %\subsection{Unsatisfiable Gurobi} % boring bug
 %\label{res:bug:UnsatGurobu}
 %Our last bug we will discuss is a bug that was found by all three techniques
 %
 %
-%This bug can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/168}{168}.
+%This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/168}{168}.
 
 
 %\subsection{Solver lookup bug} % boring bug
@@ -86,69 +87,69 @@ Our last bug we will discuss in detail was a bug we found with a solver themselv
 
 
 \section{Classifications}
-Now that we have seen some of the bugs in large let us give an over view of all found bugs by classifying them based on place, type of the bugs, which solver caused the bugs and which technique found the bugs. The bug number refers to the issue number on GitHub and is a hyperlink to that bug on CPMpy's GitHub, after that a short description of the bug and then the table specific classification.
+Now that we have seen some of the bugs in large let us give an overview of all found bugs by classifying them based on place, type of the bugs, which solver caused the bugs and which technique found the bugs. The bug number refers to the issue number on GitHub and is a hyperlink to that bug on CPMpy's GitHub, after that a short description of the bug and then the table specific classification.
 
 %\subsection{Place of the bug}
 As can be seen in table \ref{tab:bug:placeComponent} the spread of which component caused the fault is well spread out withing CPMpy. 
 With 5 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver specific transformations and one a solver were found. The one and only solver related bug we found was the one we discussed in subsection \ref{res:bug:MinizincZero}, which was already known by MiniZinc. We would have hoped to find more bugs in the solvers themselves and it was our aim with this dissertation. But either these techniques are not sufficient or most bugs are already found before release or already reported and solved.
-If we look at the reported issues withing the GitHub repository of Google's OR-Tools we find no significant bugs towards the (un)satisfiablility or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even have used the techniques used in this dissertation. This last one is fairly likely as Google created their own fuzzers which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would lose face value if their solver would be proven to not produce the correct result.
+If we look at the reported issues withing the GitHub repository of Google's OR-Tools, we find no significant bugs towards the (un)satisfiability or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even have used the techniques used in this dissertation. This last one is likely as Google created their own fuzzers which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would lose face value if their solver would be proven to not produce the correct result.
 
 \begin{table}[]
 	\centering
 	\begin{tabular}{lll}
 		BugNr & Bug description                                         & Place of the bug \\ \toprule
-		\href{https://github.com/CPMpy/cpmpy/issues/142}{142}   & double not gives unsat                                  & Transformation   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/143}{143}   & negating global functions crashes                       & Transformation   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/145}{145}   & solvers lookup crashes                                  & Model            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/149}{149}   & power function with negative lower bound crashes        & Solver specific tr           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/150}{150}   & wrong bound gives causes a crash                        & Solver specific tr         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/152}{152}   & boolean variable does not support implies               & Model            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/153}{153}   & Gurobi does not run and gave the wrong nr of sol       & Solver specific tr           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/154}{154}   & JSON Decoder error                                      & Solver specific tr           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/155}{155}   & list has no shape                                       & Solver specific tr           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/156}{156}   & MiniZinc returns zero causes a crash                    & Solver            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/157}{157}   & circuit of one element crashes                          & Transformation   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/158}{158}   & identical variable name can cause wrongly unsat         & Model            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/159}{159}   & unhandled Gurobi exit status 9                          & Solver specific tr           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/161}{161}   & two separate references for the same variable           & Model            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/162}{162}   & CPMpy is looser with variable names than MiniZinc       & Solver specific tr           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/163}{163}   & cyclic expression tee got generated                     & Model            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/164}{164}   & malloc() failure due to unset bounds                    & Transformation   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/165}{165}   & memory violation segmentation fault                     & Transformation   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/168}{168}   & unsatisfiable Gurobi                                    & Transformation   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/170}{170}   & unsatisfiable due to flattening                         & Transformation   \\ \bottomrule        
+		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & Transformation     \\
+		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & Transformation     \\
+		\href{https://github.com/CPMpy/cpmpy/issues/145}{145} & solvers lookup crashes                            & Model              \\
+		\href{https://github.com/CPMpy/cpmpy/issues/149}{149} & power function with negative lower bound crashes  & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/150}{150} & wrong bound causes a crash                  & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/152}{152} & boolean variable does not support implies         & Model              \\
+		\href{https://github.com/CPMpy/cpmpy/issues/153}{153} & Gurobi does not run and gave the wrong nr of sol  & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/154}{154} & JSON Decoder error                                & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/155}{155} & list has no shape                                 & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/156}{156} & MiniZinc returns zero causes a crash              & Solver             \\
+		\href{https://github.com/CPMpy/cpmpy/issues/157}{157} & circuit of one element crashes                    & Transformation     \\
+		\href{https://github.com/CPMpy/cpmpy/issues/158}{158} & identical variable name can cause wrongly unsat   & Model              \\
+		\href{https://github.com/CPMpy/cpmpy/issues/159}{159} & unhandled Gurobi exit status 9                    & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/161}{161} & two separate references for the same variable     & Model              \\
+		\href{https://github.com/CPMpy/cpmpy/issues/162}{162} & CPMpy is looser with variable names than MiniZinc & Solver specific tr \\
+		\href{https://github.com/CPMpy/cpmpy/issues/163}{163} & cyclic expression tee got generated               & Model              \\
+		\href{https://github.com/CPMpy/cpmpy/issues/164}{164} & malloc() failure due to unset bounds              & Transformation     \\
+		\href{https://github.com/CPMpy/cpmpy/issues/165}{165} & memory violation segmentation fault               & Transformation     \\
+		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & unsatisfiable Gurobi                              & Transformation     \\
+		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & unsatisfiable due to flattening                   & Transformation     \\ \bottomrule        
 	\end{tabular}
 	\caption{Table discussing in which CPMpy component the bug was found. With 5 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver specific transformations and one a solver were found.}
 	\label{tab:bug:placeComponent}
 \end{table}
 
 %\subsection{What did the bug cause}
-Like the authors of STORM, we focused with our techniques on the critical faults, this being the wrongly satisfiable, the wrongly unsatisfiable or the wrong number of solutions. Since these critical bugs are harder to detect for the final user than a crash, timeout or other bug. Out of the 20 bugs found 6 of them fall in our category of critical while the other 14 where all crashes as can be seen in table \ref{tab:bug:fault}. Most of those 6 critical bugs where situations where the solver wrongly outputted that a solution was unsatisfiable and there was only one bug where we could find a wrongly satisfiable solution.
+Like the authors of STORM, we focused with our techniques on the critical faults, this being the wrongly satisfiable, the wrongly unsatisfiable or the wrong number of solutions. Since these critical bugs are harder to detect for the final user than a crash, timeout or other bug. Out of the 20 bugs found 6 of them fall in our category of critical while the other 14 where all crashes as can be seen in table \ref{tab:bug:fault}. Most of those 6 critical bugs were situations where the solver wrongly outputted that a solution was unsatisfiable and there was only one bug where we could find a wrongly satisfiable solution.
 
 \begin{table}[]
 	\centering
 	\begin{tabular}{lll}
 		BugNr & Bug description                                           & Type of fault   \\ \toprule
-		\href{https://github.com/CPMpy/cpmpy/issues/142}{142}   & double not gives unsat                                    & wrongly unsat   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/143}{143}   & negating global functions crashes                         & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/145}{145}   & solvers lookup crashes                                    & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/149}{149}   & power function with negative lower bound crashes          & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/150}{150}   & wrong bound gives causes a crash                          & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/152}{152}   & boolean variable does not support implies                 & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/153}{153}   & Gurobi does not run and gave the wrong Nr of sol         & wrong Nr of sol \\
-		\href{https://github.com/CPMpy/cpmpy/issues/154}{154}   & JSON Decoder error                                        & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/155}{155}   & list has no shape                                         & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/156}{156}   & MiniZinc returns zero causes a crash                      & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/157}{157}   & circuit of one element crashes                            & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/158}{158}   & identical variable name can cause wrongly unsat           & wrongly unsat   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/159}{159}   & unhandled Gurobi exit status 9                            & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/161}{161}   & two separate references for the same variable             & wrongly unsat   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/162}{162}   & CPMpy is looser with variable names than MiniZinc         & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/163}{163}   & cyclic expression tee got generated                       & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/164}{164}   & malloc() failure due to unset bounds                      & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/165}{165}   & memory violation segmentation fault                       & crash           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/168}{168}   & wrongly unsatisfiable Gurobi                              & wrongly unsat   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/170}{170}   & wrongly (un)satisfiable due to flattening                 & wrongly (un)sat \\ \bottomrule
+		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & wrongly unsat   \\
+		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/145}{145} & solvers lookup crashes                            & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/149}{149} & power function with negative lower bound crashes  & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/150}{150} & wrong bound causes a crash                  & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/152}{152} & boolean variable does not support implies         & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/153}{153} & Gurobi does not run and gave the wrong Nr of sol  & wrong Nr of sol \\
+		\href{https://github.com/CPMpy/cpmpy/issues/154}{154} & JSON Decoder error                                & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/155}{155} & list has no shape                                 & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/156}{156} & MiniZinc returns zero causes a crash              & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/157}{157} & circuit of one element crashes                    & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/158}{158} & identical variable name can cause wrongly unsat   & wrongly unsat   \\
+		\href{https://github.com/CPMpy/cpmpy/issues/159}{159} & unhandled Gurobi exit status 9                    & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/161}{161} & two separate references for the same variable     & wrongly unsat   \\
+		\href{https://github.com/CPMpy/cpmpy/issues/162}{162} & CPMpy is looser with variable names than MiniZinc & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/163}{163} & cyclic expression tee got generated               & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/164}{164} & malloc() failure due to unset bounds              & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/165}{165} & memory violation segmentation fault               & crash           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & wrongly unsatisfiable Gurobi                      & wrongly unsat   \\
+		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & wrongly (un)satisfiable due to flattening         & wrongly (un)sat \\ \bottomrule
 	\end{tabular}
 	\caption{Table discussing what type of fault was caused by which the bugs.}
 	\label{tab:bug:fault}
@@ -161,60 +162,60 @@ When looking at table \ref{tab:bug:Solver} we can see which bug was caused by wh
 	\centering
 	\begin{tabular}{lll}
 		BugNr & Bug description                                           & Which solver caused it?\\ \toprule
-		\href{https://github.com/CPMpy/cpmpy/issues/142}{142}   & double not gives unsat                                    & OR-Tools and Gurobi                            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/143}{143}   & negating global functions crashes                         & OR-Tools and Gurobi                            \\
-		\href{https://github.com/CPMpy/cpmpy/issues/145}{145}   & solvers lookup crashes                                    & solver independent                             \\
-		\href{https://github.com/CPMpy/cpmpy/issues/149}{149}   & power function with negative lower bound crashes          & Gurobi                                         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/150}{150}   & wrong bound gives causes a crash                          & all pysat subsolvers                           \\
-		\href{https://github.com/CPMpy/cpmpy/issues/152}{152}   & boolean variable does not support implies                 & solver independent                             \\
-		\href{https://github.com/CPMpy/cpmpy/issues/153}{153}   & Gurobi does not run and gave the wrong nr of sol         & Gurobi                                         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/154}{154}   & JSON Decoder error                                        & MiniZinc's subsolver osicbc                    \\
-		\href{https://github.com/CPMpy/cpmpy/issues/155}{155}   & list has no shape                                         & Gurobi                                         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/156}{156}   & MiniZinc returns zero causes a crash                      & multiple MiniZinc subsolvers                   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/157}{157}   & circuit of one element crashes                            & solver independent                             \\
-		\href{https://github.com/CPMpy/cpmpy/issues/158}{158}   & identical variable name can cause wrongly unsat           & solver independent                             \\
-		\href{https://github.com/CPMpy/cpmpy/issues/159}{159}   & unhandled Gurobi exit status 9                            & Gurobi                                         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/161}{161}   & two separate references for the same variable             & solver independent                             \\
-		\href{https://github.com/CPMpy/cpmpy/issues/162}{162}   & CPMpy is looser with variable names than MiniZinc         & all MiniZinc subsolvers                        \\
-		\href{https://github.com/CPMpy/cpmpy/issues/163}{163}   & cyclic expression tee got generated                       & solver independent                             \\
-		\href{https://github.com/CPMpy/cpmpy/issues/164}{164}   & malloc() failure due to unset bounds                      & multiple MiniZinc subsolvers                   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/165}{165}   & memory violation segmentation fault                       & multiple MiniZinc subsolvers                   \\
-		\href{https://github.com/CPMpy/cpmpy/issues/168}{168}   & wrongly unsatisfiable Gurobi                              & Gurobi                                         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/170}{170}   & wrongly (un)satisfiable due to flattening                 & OR-Tools and Gurobi                            \\ \bottomrule
+		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & OR-Tools and Gurobi          \\
+		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & OR-Tools and Gurobi          \\
+		\href{https://github.com/CPMpy/cpmpy/issues/145}{145} & solvers lookup crashes                            & solver independent           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/149}{149} & power function with negative lower bound crashes  & Gurobi                       \\
+		\href{https://github.com/CPMpy/cpmpy/issues/150}{150} & wrong bound causes a crash                  & all PySAT subsolvers         \\
+		\href{https://github.com/CPMpy/cpmpy/issues/152}{152} & boolean variable does not support implies         & solver independent           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/153}{153} & Gurobi does not run and gave the wrong nr of sol  & Gurobi                       \\
+		\href{https://github.com/CPMpy/cpmpy/issues/154}{154} & JSON Decoder error                                & MiniZinc's subsolver osicbc  \\
+		\href{https://github.com/CPMpy/cpmpy/issues/155}{155} & list has no shape                                 & Gurobi                       \\
+		\href{https://github.com/CPMpy/cpmpy/issues/156}{156} & MiniZinc returns zero causes a crash              & multiple MiniZinc subsolvers \\
+		\href{https://github.com/CPMpy/cpmpy/issues/157}{157} & circuit of one element crashes                    & solver independent           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/158}{158} & identical variable name can cause wrongly unsat   & solver independent           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/159}{159} & unhandled Gurobi exit status 9                    & Gurobi                       \\
+		\href{https://github.com/CPMpy/cpmpy/issues/161}{161} & two separate references for the same variable     & solver independent           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/162}{162} & CPMpy is looser with variable names than MiniZinc & all MiniZinc subsolvers      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/163}{163} & cyclic expression tee got generated               & solver independent           \\
+		\href{https://github.com/CPMpy/cpmpy/issues/164}{164} & malloc() failure due to unset bounds              & multiple MiniZinc subsolvers \\
+		\href{https://github.com/CPMpy/cpmpy/issues/165}{165} & memory violation segmentation fault               & multiple MiniZinc subsolvers \\
+		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & wrongly unsatisfiable Gurobi                      & Gurobi                       \\
+		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & wrongly (un)satisfiable due to flattening         & OR-Tools and Gurobi          \\ \bottomrule
 	\end{tabular}
 	\caption{Table discussing which bug was caused by which solver or if it was a solver independent bug.}
 	\label{tab:bug:Solver}
 \end{table}
 
 %\subsection{Which technique found the bug}
-Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. Our modified STORM found 10 bugs, differential testing found 11 and metamorphic testing found the most bugs at 14. This shows that none of the techniques are perfect on there own, but that metamorphic testing could come close if more work was put in creating metamorphic relations. Although, this does require creativity and manual labor instead of the other automated techniques.
+Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. The modified STORM found 10 bugs, metamorphic testing found the most bugs at 14 and differential testing found 11 out of the 20. This shows that none of the techniques are perfect on their own, but that metamorphic testing could come close if more work was put in creating metamorphic relations. Although, this does require creativity and manual labor instead of the other automated techniques.
 
 \begin{table}[]
 	\centering
 	\begin{tabular}{lllll}
-		BugNr & Bug description                                           & \multicolumn{3}{l}{Found by which technique} \\ \toprule
-		\href{https://github.com/CPMpy/cpmpy/issues/142}{142}   & double not gives unsat                                    & storm          &              &              \\
-		\href{https://github.com/CPMpy/cpmpy/issues/143}{143}   & negating global functions crashes                         & storm          &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/145}{145}   & solvers lookup crashes                                    &                & diff         &              \\
-		\href{https://github.com/CPMpy/cpmpy/issues/149}{149}   & power function with negative lower bound crashes          & storm          & diff         &              \\
-		\href{https://github.com/CPMpy/cpmpy/issues/150}{150}   & wrong bound gives causes a crash                          &                & diff         &              \\
-		\href{https://github.com/CPMpy/cpmpy/issues/152}{152}   & boolean variable does not support implies                 &                & diff         & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/153}{153}   & Gurobi does not run and gave the wrong nr of sol         &                & diff         &              \\
-		\href{https://github.com/CPMpy/cpmpy/issues/154}{154}   & JSON Decoder error                                        & storm          & diff         & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/155}{155}   & list has no shape                                         & storm          & diff         & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/156}{156}   & MiniZinc returns zero causes a crash                      & storm          & diff         & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/157}{157}   & circuit of one element crashes                            &                &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/158}{158}   & identical variable name can cause wrongly unsat           &                &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/159}{159}   & unhandled Gurobi exit status 9                            & storm          & diff         &              \\
-		\href{https://github.com/CPMpy/cpmpy/issues/161}{161}   & two separate references for the same variable             & storm          &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/162}{162}   & CPMpy is looser with variable names than MiniZinc         &                &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/163}{163}   & cyclic expression tee got generated                       &                &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/164}{164}   & malloc() failure due to unset bounds                      &                &              & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/165}{165}   & memory violation segmentation fault                       &                & diff         & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/168}{168}   & wrongly unsatisfiable Gurobi                              & storm          & diff         & meta         \\
-		\href{https://github.com/CPMpy/cpmpy/issues/170}{170}   & wrongly (un)satisfiable due to flattening                 & storm          &              & meta         \\ \bottomrule
+		BugNr & Bug description                                           & \multicolumn{3}{c}{\centering  Bug found by} \\ \toprule
+		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & storm &       &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & storm & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/145}{145} & solvers lookup crashes                            &       &       & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/149}{149} & power function with negative lower bound crashes  & storm &       & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/150}{150} & wrong bound causes a crash                  &       &       & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/152}{152} & boolean variable does not support implies         &       & meta  & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/153}{153} & Gurobi does not run and gave the wrong nr of sol  &       &       & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/154}{154} & JSON Decoder error                                & storm & meta  & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/155}{155} & list has no shape                                 & storm & meta  & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/156}{156} & MiniZinc returns zero causes a crash              & storm & meta  & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/157}{157} & circuit of one element crashes                    &       & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/158}{158} & identical variable name can cause wrongly unsat   &       & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/159}{159} & unhandled Gurobi exit status 9                    & storm &       & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/161}{161} & two separate references for the same variable     & storm & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/162}{162} & CPMpy is looser with variable names than MiniZinc &       & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/163}{163} & cyclic expression tee got generated               &       & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/164}{164} & malloc() failure due to unset bounds              &       & meta  &      \\
+		\href{https://github.com/CPMpy/cpmpy/issues/165}{165} & memory violation segmentation fault               &       & meta  & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & wrongly unsatisfiable Gurobi                      & storm & meta  & diff \\
+		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & wrongly (un)satisfiable due to flattening         & storm & meta  &      \\ \bottomrule
 	\end{tabular}
-	\caption{Table discussing which technique found the bug. Our modified STORM found 10 bugs, differential testing found 11 and 14 were found by the metamorphic testing.}
+	\caption{Table discussing which technique found the bug. The modified STORM found 10 bugs, metamorphic testing found the most bugs at 14 and differential testing found 11 out of the 20}
 	\label{tab:bug:Technique}
 \end{table}
 
@@ -223,7 +224,7 @@ Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. O
 As mentioned in section \ref{fuzzing:OpinionsAgainstFuzzing} there are multiple views on automated bug catching. We could have thrown all our found bugs on the issue page of GitHub without further context. Which would have meant more work for the CPMpy-team and then we could perhaps have seen some negative opinions on fuzzing. 
 Although, we submitted 20 bugs withing a time span of 2 weeks with some deobfuscating and some explanation of what happened to get the bug, we saw a grateful welcome. Similar to what was described in the second part of section \ref{fuzzing:OpinionsAgainstFuzzing}. 
 For example, the "double not"-bug\footnote{\url{https://github.com/CPMpy/cpmpy/issues/142}} was called a serious bug and a great find and 
-the "negation of global functions"-bug\footnote{\url{https://github.com/CPMpy/cpmpy/issues/143}} was described as an unexpected bug and an other great find.
+the "negation of global functions"-bug\footnote{\url{https://github.com/CPMpy/cpmpy/issues/143}} was described as an unexpected bug and another great find.
 \todo{find out if this is useful addition of the thesis?}
 
 %\section{unsat}
@@ -232,7 +233,7 @@ the "negation of global functions"-bug\footnote{\url{https://github.com/CPMpy/cp
 
 \section{Conclusion}
 \label{res:conclusion}
-In this chapter we have seen that the techniques frequently output already found bugs, since none of the techniques have knowledge of already found bugs. But after filtering previously found bugs the techniques perform well and found 20 bugs in CPMpy. We have seen some bugs in detail with most of them already fixed, due to an easy fixable. We have seen that most bugs were related to the CPMpy code and only one responsible by an external solver. We suspect this lack of external solver bugs to be caused by well designed and tested solvers. We have shown that we found crashes up to critical bugs like wrongly (un)satisfiable solutions to wrong number of solutions with over a variety of solvers. Of all the techniques used metamorphic testing came just above the other two with 14 found bugs while the modified STORM found 10 and the differential testing found 11 bugs out of 20. And finally we noted the grateful welcome of bugs by the CPMpy-team.
+In this chapter we have seen that the techniques frequently output already found bugs, since none of the techniques have knowledge of already found bugs. But after filtering previously found bugs the techniques perform well and found 20 bugs in CPMpy. We have seen some bugs in detail with most of them already fixed, due to an easy fixable. We have seen that most bugs were related to the CPMpy code and only one responsible by an external solver. We suspect this lack of external solver bugs to be caused by well designed and tested solvers. We have shown that we found crashes up to critical bugs like wrongly (un)satisfiable solutions to wrong number of solutions with over a variety of solvers. Of all the techniques used metamorphic testing came just above the other two with 14 found bugs while the modified STORM found 10 and the differential testing found 11 bugs out of 20. And finally, we noted the grateful welcome of bugs by the CPMpy-team.
 
 %%% Local Variables: 
 %%% mode: latex

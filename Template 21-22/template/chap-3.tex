@@ -36,22 +36,29 @@ With KLEE's stride to obtain a high code coverage it should be noted that coveri
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\textwidth]{images/AFLBunny}
-	\caption{A young American Fuzzy Lop Rabbit, image taken from animalcorner.org \cite{AFLBunny}.}
+    \begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/AFLBunny.png}
+		%\caption{first figure}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/AFLBunny++.png}
+		%\caption{second figure}
+	\end{minipage}
+	\caption{On the left a young American Fuzzy Lop Rabbit used as the name for AFL and AFL++ and on the right AFL++'s logo. Images taken from \href{https://animalcorner.org/wp-content/uploads/2020/11/American-Fuzzy-Lop-Rabbit.png}{animalcorner.org} and AFL++'s \href{https://github.com/AFLplusplus/Website/blob/master/static/aflpp_bg.png}{website} respectively \cite{AFLBunny, AFLPlusPlusBunny}.}
 	\label{fig:AFLbunny}
 \end{figure}
 
 As for the more popular fuzzers, American fuzzy lop\footnote{\url{https://github.com/google/AFL}} (AFL), which named after an American rabbit breed (see figure \ref{fig:AFLbunny}) and is a C and C++ focused mutation based gray box fuzzer released by Google. But due inactivity on Google's part the fork AFL++\footnote{\url{https://github.com/AFLplusplus/AFLplusplus}} has become more popular than the original and is maintained actively by the community \cite{27AFL++}. Not only is it actively maintained, it is also actively used by researchers and the industry. Besides sparking the existence of AFL++, AFL has also triggered a python\footnote{\url{https://github.com/jwilk/python-afl}} focused version, a Ruby\footnote{\url{https://github.com/richo/afl-ruby}} focused one, a Go\footnote{\url{https://github.com/aflgo/aflgo}} focused version and is shown by Robert Heaton \cite{AFLWrapper} to not be difficult to write a wrapper for it.
 
 A potential reason to the inactivity of Google on the AFL project could be the development of both Clusterfuzz\footnote{\url{https://google.github.io/clusterfuzz/}} and OSS-fuzz\footnote{\url{https://google.github.io/oss-fuzz/}}, a scalable fuzzing infrastructure and a combination of multiple fuzzers respectively. With the former one being used in OSS-fuzz as a back end to create a distributed execution environment. This with quite a bit of success,
-\begin{quote} \todo{currently at 44 700 issues, but the GitHub isn't updated yet}
-	"As of May 2022, ClusterFuzz has found 29,000 bugs in Google (e.g. Chrome) and 36,000+ bugs in over 550 open source projects" and \\
-	
-	"As of July 2022, OSS-Fuzz has found over 40,500 bugs in 650 open source projects." and \\ 
-	
-\end{quote} according to both the CusterFuzz and the OSS-Fuzz repository respectfully \cite{31OSS-FuzzBugs}. 
+\begin{quote} %note{currently at 44 700 issues, but the GitHub isn't updated yet}
+	"As of May 2022, ClusterFuzz has found 29,000 bugs in Google (e.g. Chrome) and 36,000+ bugs in over 550 open source projects" and \newline
+	"As of July 2022, OSS-Fuzz has found over 40,500 bugs in 650 open source projects."	
+\end{quote} according to both the CusterFuzz and the OSS-Fuzz repository respectively \cite{31OSS-FuzzBugs}. 
 
-Google is not the only one to come forward with a fuzzer. Even Microsoft has jumped on the bandwagon of fuzzing with its OneFuzz\footnote{\url{https://github.com/microsoft/onefuzz}}, a self-hosted Fuzzing-As-A-Service platform which is intended to be integrated with the CI/CD pipeline. Although looking at the given stars on the Github repository, it looks like Google's tools are more popular than Microsoft's ones. The last prominent fuzzer we will look at is the LibFuzzer\footnote{\url{https://llvm.org/docs/LibFuzzer.html}} made by LLVM, a generation based gray box fuzzer which is a part of the bigger LLVM project\footnote{\url{https://github.com/llvm/llvm-project/}} with the focus on the C ecosystem. Being in the same ecosystem as AFL, LibFuzzer can be used together with AFL and even share the same seed inputs.
+Google is not the only one to come forward with a fuzzer. Even Microsoft has jumped on the bandwagon of fuzzing with its OneFuzz\footnote{\url{https://github.com/microsoft/onefuzz}}, a self-hosted Fuzzing-As-A-Service platform which is intended to be integrated with the CI/CD pipeline. Although looking at the given stars on the GitHub repository, it looks like Google's tools are more popular than Microsoft's ones. The last prominent fuzzer we will look at is the LibFuzzer\footnote{\url{https://llvm.org/docs/LibFuzzer.html}} made by LLVM, a generation based gray box fuzzer which is a part of the bigger LLVM project\footnote{\url{https://github.com/llvm/llvm-project/}} with the focus on the C ecosystem. Being in the same ecosystem as AFL, LibFuzzer can be used together with AFL and even share the same seed inputs.
 
 \subsection{Testing CP and SMT with Fuzzers}
 \label{fuzzing:testingWithFuzzers}
@@ -87,12 +94,12 @@ For practical reasons we will be defining models that take more then 15 minutes 
 \section{Other forms of testing}
 \subsection{Differential testing}
 \label{fuzzing:DifferentialTesting}
-As mentioned above a lot of fuzzers use crashes to detect that the PUT has failed to provide a correct output or when possible, use differential testing. This latter one uses a single or multiple analogue programs to test if the PUT gave the same output as the analogue programs. As Christian Klinger et al. did in their paper \cite{48klinger2019differentially} by applying "bugs-as-deviant-behavior" they try to find precision and soundness mistakes with input creation via seed files to compare the output to similar programs. 
-Unfortunately, neither crash based nor differential testing is ideal: crash based fuzzing will not trigger on wrong outputs and differential testing requires that one or multiple analogue programs exits preferably with a different implementation to reduce overlapping bugs. The latter technique may therefore not always be possible due to the existence of those analogue programs.
+As mentioned above a lot of fuzzers use crashes to detect that the PUT has failed to provide a correct output or when possible, use differential testing. This latter one uses a single or multiple analog programs to test if the PUT gave the same output as the analog programs. As Christian Klinger et al. did in their paper \cite{48klinger2019differentially} by applying "bugs-as-deviant-behavior" they try to find precision and soundness mistakes with input creation via seed files to compare the output to similar programs. 
+Unfortunately, neither crash based nor differential testing is ideal: crash based fuzzing will not trigger on wrong outputs and differential testing requires that one or multiple analog programs exits preferably with a different implementation to reduce overlapping bugs. The latter technique may therefore not always be possible due to the existence of those analog programs.
 
 \subsection{Metamorphic testing}
 \label{fuzzing:MetamorphicTesting}
-In situations where the existence of analogue programs would be a limited factor metamorphic testing could be a solution. A nicely worded definition would be 
+In situations where the existence of analog programs would be a limited factor metamorphic testing could be a solution. A nicely worded definition would be 
 
 \begin{quote}
 	\label{quote:MetaMorphic}
@@ -102,7 +109,7 @@ In situations where the existence of analogue programs would be a limited factor
 	-\"{O}zg\"{u}r Akg\"{u}n et al. in "Metamorphic Testing of Constraint Solvers" \cite{50akgun2018metamorphic}.
 \end{quote}
 
-\noindent This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors use add an extra restriction to a variable in a formula to test if the number of models reduces (or remains equal). Or that the number of models remain the same when giving an equivalent formula or adding a tautology compared to the original. \todo{proofread this sence} This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success \cite{50akgun2018metamorphic} by Akg{\"u}n, {\"O}zg{\"u}r et al. In which they say that this technique fits well with testing constraint solving, due to the ease of available metamorphic transformation.
+\noindent This technique uses knowledge of the domain to tell if subsequent solutions may be wrong. For example, in "TestMC: Testing Model Counters using Differential and Metamorphic Testing" \cite{49usman2020testmc} the authors add an extra restriction to a variable in a formula to test if the number of models reduces (or remains equal). Or when given an equivalent formula that the number of models remain the same compared to the original. This technique no longer depends on a secondary oracle but does depend on multiple executions and could miss a bug that occurs in multiple situations. This technique has been applied in combination with differential testing to test constraint solvers with success by Akg{\"u}n, {\"O}zg{\"u}r et al. \cite{50akgun2018metamorphic}. In which they say that this technique fits well for testing constraint solving, due to the availability of metamorphic transformations.
 
 \section{The oracle problem}
 \label{fuzzing:OracleProblem}

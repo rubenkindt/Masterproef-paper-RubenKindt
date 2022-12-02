@@ -1,47 +1,47 @@
 \chapter{Research questions}
 \label{cha:RQ}
 \label{RQ:intro}
-In this chapter we will discuss what we are going to investigate with this dissertation.
-\todo{RQ:intro}
+In this chapter we will discuss the problem we are facing today and where our focus will be when answering the research questions in this dissertation. \todo{I'm not happy with this chapter, should this even be a chapter?}
 
-\section{Problem statement}\label{RQ:ProblemStatment}
+\section{Problem statement}
+\label{RQ:ProblemStatment}
 As described in at the introduction of chapter \ref{intro:intro}, bugs are practically unavoidable and always unwanted, especially when a user trusts a program to give a correct answer and it does not. With solvers surrounding constraint programming languages being executed more and more we would like to strongly avoid any bugs in the real world from arising. To this end it would be interesting to find bugs during development without much overhead, a modern approach would be the use of fuzzers. which we will try out on a constraint programming language.
 
-\section{Research questions}\label{RQ:RQ's}
-As the title of the dissertation already may have spoiled it, we are trying out multiple fuzzing techniques out on CPMpy, with the goal of finding which technique works well for this specific language. This in order to give a push to identify ways of automatically discovering (and maybe solving) new bugs in constrain programming languages. We put forward three regions of research questions we would like to focus on/help answer.
+\todo{Layout RQ's}
+\section{Research questions}
+\label{RQ:RQ's}
+As the title of the dissertation already may have spoiled it, we are trying out multiple fuzzing techniques out on CPMpy, with the goal of finding which technique works well for this specific type of programming language. This in order to give a push to identify ways of automatically discovering (and maybe solving) new bugs in constrain programming languages. We put forward two regions of research questions we will to focus on.
 
-\todo{reduce nb of RQ}
+%\todo{reduce nb of RQ}
 \subsection{Main focus: fuzzing technique-focused}
-The first and our main focus will be comparing different fuzzing techniques: we are going to modify a successful SMT fuzzer STORM to the CPMpy language, try differential testing between the multiple solvers and out last technique is the use of metamorphic testing. Resulting in the following questions: 
-\\
-Research question 1: What fuzzing technique will find the most bugs?\\ \todo{check how others layouted there RQ's}
-Research question 2: What fuzzing technique will find the most critical bugs?\\
-Research question 3: What type of bugs will be found using which fuzzing technique?\\
+The first and our main focus will be comparing different fuzzing techniques: we are going to modify a successful SMT fuzzer STORM to the CPMpy language, try differential testing between the multiple solvers and out last technique is the use of metamorphic testing. Resulting in the following questions: \newline
+Research question 1: What fuzzing technique will find the most bugs? \newline 
+Research question 2: What fuzzing technique will find the most critical bugs? \newline
+Research question 3: What type of bugs will be found by each fuzzing technique? \newline
 %\subsubsection{subfocuses}
-Research question 4: Which metamorphic transformation find the most (critical) bugs?\\
+%Research question 4: Which metamorphic transformation find the most (critical) bugs? \newline
 %focused on: \\
 %bool, int, list, array
-\subsection{Solver-focused}
-A second focus we have goes more towards the different solvers and the differences between them resulting in.
-\\
-Research question 5: Which solver has the most (critical) bugs?\\
+
+%\subsection{Solver-focused}
+%A second focus we have goes more towards the different solvers and the differences between them resulting in. \newline
+%Research question 5: Which solver has the most (critical) bugs? \newline
+
 \subsection{Classification-focused}
-To then end with focus three based around the classification of found bugs, giving us the following research questions. 
-\\
-Research question 6: How many (critical) bugs can we find?\\
-Research question 7: What are the causes of the bugs?\\
-Research question 8: What are the type of bugs found?\\
+Our next and last focus will be on the classification of found bugs, giving us the following research questions. \newline
+%To then end with focus three based around the classification of found bugs, giving us the following research questions. \newline
+Research question 4: How many (critical) bugs can we find? \newline
+Research question 5: What are the causes of the bugs? \newline
+%Research question 8: What are the type of bugs found? \newline
 
-\section{Not focused: efficiency and other} 
-A keen reader may wonder why we do not focus on efficiency, since this would result in more bugs being caught in a smaller time-frame. While perfectly valid to investigate we believe that this field already has significant research and literature. 
-% ons afleiden + CPMPpy is al in Python
+\section{Not focused: efficiency and others}
+A keen reader may wonder why we do not focus on efficiency, this would result in more bugs being caught in a smaller timeframe. While perfectly valid to investigate we believe that discovering which techniques works best for CP' has a higher value than on top of the techniques investigated being able to run automatically. The efficiency in CP has already significant research and literature on how to optimize the solvers, which take the most amount execution time compared to the testers.
 
-%challenges tegengekomen en oplossingen
-%pySSD + PYsat: graph maker minder relevant omdat we CP fouten willen vinden 
+% all written in Python
 
 \section{Conclusion}
 \label{RQ:conclusion}
-\todo{conclusion}
+In this short chapter we have seen the problem which to address and the research questions this dissertation will answer in order to do so.
 
 %%% Local Variables: 
 %%% mode: latex

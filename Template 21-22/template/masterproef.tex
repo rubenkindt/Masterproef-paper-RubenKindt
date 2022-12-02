@@ -1,12 +1,16 @@
 %written in USA's English
 \documentclass[master=cws,masteroption=se,english]{kulemt}
 \setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
-  %inputenc=utf8,
-  title={The best master's thesis ever},
+  inputenc=utf8,
+  title={The best master's thesis ever}, 
   author={ing. Ruben Kindt},
   promotor={Prof.\, dr.\ Tias Guns},
   assessor={ },
-  assistant={Ir. Ignace Bleukx}}
+  assistant={Ir. Ignace Bleukx}
+}
+%Which techniques are able to automatically find bugs in constraint programming languages?
+%How can bugs be detected in constraint programming languages?
+
 % Verwijder de "%" op de volgende lijn als je de kaft wil afdrukken
 %\setup{coverpageonly}
 % Verwijder de "%" op de volgende lijn als je enkel de eerste pagina's wil
@@ -140,6 +144,7 @@
   Thanks all \todo{replace template by real one}
 \end{preface}
 
+\todo{remove todo list}
 \listoftodos
 \tableofcontents*
 \setcounter{tocdepth}{5} % this works wow! Now I have a clean TOC but still the pdf outline in depth
@@ -174,19 +179,7 @@
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
-
-%    delta-debugging & "" \\
-%    catigorize  & "" \\
-%    grammer based fuzzing & "" \\
-%    blackbox fuzzing & "" \\
-%    gray box fuzzing & "" \\
-%    white box fuzzing & "" \\
-%    hierarchical delta-debugging & "" \\
-%    1-minimal & "" \\
-%    grammar based fuzzing & "" \\
-%    SAT by construction & "" \\
-%    UNSAT by construction & "" \\
-
+  	
 %Alphabetic pls
 	CI/CD & Continuous Integration and Continuous Deployment, a pipeline for newly written code to repeatably be build, test, release, deploy and more. \\
     CP & Constrain Programming language sometimes also referred to as CPL \\
@@ -194,13 +187,13 @@
     CNF & Conjunctive Normal Form, which is a boolean formula written using conjunctions of distinctions. \\
     CSP & Constraint Satisfaction Problem is a problem with constraints and variable with a specific domain e.g., boolean, finite and others.\\
     CPMpy & Constraint Programming and Modeling language for Python.\\
-    CVC & Cooperating Validity Checker \\
-    PUT & Program Under Test, the piece of code, application of program we are testing on for potential bugs. \\
+    CVC & Cooperating Validity Checker a popular SMT-theorem prover \\
+    PUT & Program Under Test, the piece of code, application of program that is tested on for potential bugs. \\
     LLVM & Although it looks like an abbreviation, it is not. LLVM is the name of a project focused on compiler and toolchain technologies. \\
-    MIP & Mixed Integer Programming \\
-    MUS & Minimal Unsatisfiable Subset =/=  \\
-    SMT & Satisfiability Modulo Theory\\
-    SUT & Software under Test \\
+    MIP & Mixed Integer Programming, theory where decision variables are allowed to be integers \\
+    MUS & Minimal Unsatisfiable Subset, the smallest subset possible that is not satisfiable \\
+    SMT & Satisfiability Modulo Theory \\
+    SUT & Software under Test, analogue to PUT \\
   \end{tabularx}
 \end{flushleft}
 
@@ -208,7 +201,10 @@
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
-  	$\neg$ & negation \\
+ 	$\sim$ & negation used by CPMpy\\
+ 	$\&$ & and used by CPMpy\\
+ 	$\vert$ & or used by CPMpy\\
+  	$\neg$ & logical negation \\
   	$\land$ & logical and \\
   	$\lor$  & logical or \\
   \end{tabularx}
@@ -227,10 +223,6 @@
 \include{chap-8} % conclustion
 %\include{chap-x} % futher work ?
 
-% ... en zo verder tot
-%\include{chap-n}
-%\include{conclusion}
-
 % Indien er bijlagen zijn:
 %\appendixpage*          % indien gewenst
 %\appendix
@@ -241,6 +233,7 @@
 % Je kan de  standaard "abbrv" bibliografiestijl vervangen door een andere.
 %\bibliographystyle{abbrv}
 %\bibliography{references}
+\nocite{MasterproefRubenKindt}
 \printbibliography
 \end{document}
 

@@ -148,7 +148,6 @@ Finally, to illustrate that both MiniZinc and CPMpy are not that far apart we in
 	else:
 	   print("No solution found")
 \end{lstlisting}
-\todo{explain the listing further?}
 %We have shortly seen how a CPMpy looks like in listing \ref{lst:SendMoreMoneyCPMpy}, 
 %where we create a model, add constraints to it and then to solve the model. Everything up to the solving part is controlled by CPMpy, once the "solve()" is called 
 
@@ -161,7 +160,7 @@ Now that we discussed CPs, let's step back to boolean satisfiability problems (S
 With the efficiency improvements coming from the DPLL algorithm to conflict-driven clause learning (CDCL) move combined with the addition of non-chronological back jumps. But better propagation, lazy clause generation (LCG), data structures and the introduction of heuristics assisted significantly to the process. Heuristics often include clause deletion to decrease the number of unused clauses, variable state independent decaying sum (VSIDS) where we add a decaying weight (the sum) to select which literal we prioritize, random restarts where we try to avoid large search trees by restarting with the learned clauses, among other heuristics \cite{61MCSMarcDenecker, 60katebi2011empirical, 67stuckey2010lazyClauseGeneration}.
 %more techniques: branching, unit propagation, backtracking, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts
 
-\todo{example?}
+%\todo{example?}
 
 
 \section{SMT}

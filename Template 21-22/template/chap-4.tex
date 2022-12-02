@@ -38,7 +38,7 @@ An example of delta-debugging to minimize input can be found in figure \ref{fig:
 \begin{figure}
 	\centering
 	\includegraphics[width=1.0\textwidth]{images/ddminExampleFromPaper5}
-	\caption{A minimizing delta-debugging example as shown in "Simplifying and isolating failure-inducing input" by Andreas Zeller and Ralf Hildebrandt \cite{5zeller2002simplifyingIsolatingFailure-inducing} with an input that is deobfuscated with the ddmin() algorithm \ref{fig:ddmin}.}
+	\caption{A minimizing delta-debugging example as shown in "Simplifying and isolating failure-inducing input" by Andreas Zeller and Ralf Hildebrandt \cite{5zeller2002simplifyingIsolatingFailure-inducing} with an input that is deobfuscated with the ddmin() algorithm from figure \ref{fig:ddmin}.}
 	\label{fig:ddminExample}
 \end{figure}
 
@@ -58,7 +58,7 @@ Figure \ref{fig:simplificationIsolation} shows the difference between simplifyin
 \label{inputReduction:MUS/MSS}
 For readers that are familiar with the SMT of constraint solving-world will have noticed that this techniques feels similar to a way of finding the minimal unsatisfiable subset (MUS), which it is in the case of a solver wrongly stating that an input is unsatisfiable. 
 With MUS you try to find the smallest subset of formulas or constraints that will result in an unsatisfiable solution while with 
-MSS you would be trying to find the biggest subset of formulas or constraints that would result in a satisfiable solution. Both are an iterative process and can be applied in the simplification or the isolation process. But solving which combination of formulas results in the smallest of biggest subset is a computationally intensive progress. Fortunately, a lot of though has already been put in it to improve it, for example Mark H. Liffiton et al. have proposed multiple "Algorithms for Computing minimal unsatisfiable subsets of Constraints" \cite{51liffiton2008algorithms}. In which they discuss their novel sound and complete algorithms for finding all minimal unsatisfiable subsets. Again, we should note that a minimal input is not needed as we aim to reduces de input to help de developer find the error faster, a difference between a smaller and the absolute minimum will cause for a big computational difference in practice.
+MSS you would be trying to find the biggest subset of formulas or constraints that would result in a satisfiable solution. Both are an iterative process and can be applied in the simplification or the isolation process. But solving which combination of formulas results in the smallest of biggest subset is a computationally intensive progress. Fortunately, a lot of thought has already been put in it to improve it, for example Mark H. Liffiton et al. have proposed multiple "Algorithms for Computing minimal unsatisfiable subsets of Constraints" \cite{51liffiton2008algorithms}. In which they discuss their novel sound and complete algorithms for finding all minimal unsatisfiable subsets. Again, we should note that a minimal input is not needed as we aim to reduces de input to help de developer find the error faster, a difference between a smaller and the absolute minimum will cause for a big computational difference in practice.
 
 \subsection{Alternative approach}
 \label{inputReduction:alt2deobfuscating}
