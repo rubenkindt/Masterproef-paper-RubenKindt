@@ -25,21 +25,71 @@ The first bug we discovered was our "double not"-bug, a bug where we ask CPMpy t
 
 This was due to a process within CPMpy responsible for creating a flat normal form. Not all solver used by CPMpy allow an arbitrary nesting of constraints as described by the documentation of CPMpy\footnote{\url{https://cpmpy.readthedocs.io/en/latest/behind_the_scenes.html}}. It is for that reason that CPMpy flattens the constraints to what they call 'flat normal forms' as the similar definition of SAT. But, with a disclaimer that this definition does not formally exists for CP languages to their knowledge, a statement which we agree with. With this flattened form CPMpy can directly call the solvers or do some solver specific transformations on the flattened constraints to then send it to the respective solver \cite{CPMpyGithub}. 
 
-Those not's get translated to two comparison with a zero "== 0", but in the normalizing process that a comparison withing a comparison was not handled correctly. Causing a disappearance of a single "not", which in turn resulted the original constraint converted to "X==3 and not(X==3)". When this gets sent to OR-Tools or Gurobi they correctly say that the problem is unsatisfiable. The other solvers, mainly MiniZinc's subsolvers, were not affected by this bug due to not using this normalizing process. Although, this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain hidden. This bug was only caught using the modified STORM technique, due to its frequent use of adding not's and and's. But we believe it could have been caught in the metamorphic testing if we had thought of adding a relevant metamorphic transformation or in the differential testing if a  seed had a double "not" in its constraints. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/142}{142}.
+Those not's get translated to two comparison with a zero "== 0", but in the normalizing process that a comparison withing a comparison was not handled correctly. Causing a disappearance of a single "not", which in turn resulted the original constraint converted to "X==3 and not(X==3)". When this gets sent to OR-Tools or Gurobi they correctly say that the problem is unsatisfiable. The other solvers, mainly MiniZinc's subsolvers, were not affected by this bug due to not using this normalizing process. Although, this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain hidden. This bug was only caught using the modified STORM technique, due to its frequent use of adding not's and and's. But we believe it could have been caught in the metamorphic testing if we had thought of adding a relevant metamorphic transformation or in the differential testing if a seed had a double "not" in its constraints. 
 
+A showcase of this double not bug can be seen in listing \ref{lst:Bug:DoubleNot}, where we create a variable 'X' on line 3 with a lower bound (lb) of zero and an upper bound of 9 (ub). Then add, with "+=", the constraint "X == 3" to a created model on line 5 and the same constraint with a double negation on the next line. Remember that CPMpy uses '$\sim$' as a negation. We then see the different solvers solve the same model with a different exit status, unsatisfiable for OR-Tools and Gurobi and feasible for a MiniZinc subsolver. Feasible is a differentiation made by CPMpy within satisfiable with the other option being optimal both explain themselves. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/142}{142}. \todo{these lines are still to proofread} 
+
+\label{lst:Bug:DoubleNot}
+\begin{lstlisting}[float=, language=python, caption={The "double not"-bug.}]
+	from cpmpy import *
+	
+	X = intvar(lb=0, ub=9)
+	m = Model()
+	m += X == 3
+	m += ~(~(X == 3)) # double negation 
+	
+	m.solve(solver="gurobi")
+	print(m.status().exitstatus.name) # UNSATISFIABLE
+	
+	m.solve(solver="ortools")
+	print(m.status().exitstatus.name) # UNSATISFIABLE
+	
+	m.solve(solver="minizinc:chuffed")
+	print(m.status().exitstatus.name) # FEASIBLE	
+\end{lstlisting}
 
 \subsection{Negation of Global functions}
 \label{res:bug:NegatedGlobal}
 A second bug related to the use of not's were the crashes of the negated global functions. Where negations of global functions like "not(AllDifferent(argList))" would crash with a maximal recursion depth. As the normalizing of a negated global function would be handled with adding a "== 0" to it, instead of decomposing the global function and negating that. The action of adding a "== 0" did not change the constraint and on the next normalizing of the left part of the comparison "global function == 0", the same would happen. The solution was, as mentioned to decompose the global function, which was suggested in the comments together with a commented out throw of an not-implemented error. The entire function was labeled as work in progress, but the CPMpy-team expected it to work for this use case as they used it in their reification process. The reason it worked in this process was due to a shortcut not being taken, which the negation of global functions did do, therefore exposing the bug only in the latter case.
 
-It was again due to the normalizing not being used for MiniZinc's subsolvers that the bug only occurred when using OR-Tools and Gurobi as solvers. And this bug was quickly found by the modified STORM since it uses a significant number of not's. Due to the metamorphic relation of adding "!= 0" after some constraints the metamorphic tests did find it as well. However, it did not get found by our differential tests simply because no examples negated their global functions, as such a negation is rarely useful. This bug report can be found in the GitHub repository issue number  \href{https://github.com/CPMpy/cpmpy/issues/143}{143}.
+It was again due to the normalizing not being used for MiniZinc's subsolvers that the bug only occurred when using OR-Tools and Gurobi as solvers. And this bug was quickly found by the modified STORM since it uses a significant number of not's. Due to the metamorphic relation of adding "!= 0" after some constraints the metamorphic tests did find it as well. However, it did not get found by our differential tests simply because no examples negated their global functions, as such a negation is rarely useful. 
+
+
+A showcase of this bug can be seen in listing \ref{lst:Bug:NotGlobal}, where we create a variable "pos" with a shape of 3 meaning that "pos" will be an array of length 3. After creating an empty model we add the negation of a global function "AllDifferent" to a created model on line 4. With this we ask to find not all different values of the array "pos", which will be satisfies as long as one of the elements withing the array has the same value as one of the other elements in the array. For example array "[1 2 2]" would satisfy. Subsequently, we ask a MiniZinc subsolver to solve the problem which returns feasible on respectively line 7 and 8. But when asking the same for solver Gurobi it will crash analog with the next line if the previous one would be commented out. This bug report can be found in the GitHub repository issue number  \href{https://github.com/CPMpy/cpmpy/issues/143}{143}. \todo{proofread these lines}
+
+\label{lst:Bug:NotGlobal}
+\begin{lstlisting}[float=, language=python, caption={The "negation of global functions"-bug.}]
+	from cpmpy import *
+
+	pos = intvar(lb=0, ub=5, shape=3)
+	m = Model()
+	m += ~AllDifferent(pos)
+	
+	m.solve("minizinc:chuffed")
+	print(m.status().exitstatus.name) # FEASIBLE
+
+	m.solve("gurobi") # crash
+	m.solve("ortools") # would crash as well
+\end{lstlisting}
 
 \subsection{Power function of Gurobi}
 \label{res:bug:Power}
-Now that we have seen two bugs in the normalization part of CPMpy, which both fit in the transformation component of CPMpy. It is time to look at the solver specific transformations and some bugs we found there. A first one was a bug where the solver Gurobi would crash if we gave a base variable in the power function which had a negative lower bound. A lower bound meaning that the variable was not permitted lower that that bound. All other solver would be able to solve "pow(X, 2) == 9" with the variable 'X' defined with a lower bound of -5 and a higher bound of 5. But Gurobi did (and still does) not allow this throwing an error as a result.
+Now that we have seen two bugs in the normalization part of CPMpy, which both fit in the transformation component of CPMpy. It is time to look at the solver specific transformations and some bugs we found there. A first one was a bug where the solver Gurobi would crash if we gave a base variable in the power function which had a negative lower bound. A lower bound meaning that the variable was not permitted lower that that bound. All other solver would be able to solve "pow(X, 2) == 9" with the variable 'X' defined with a lower bound of -5 and a higher bound of 5. But Gurobi did (and still does) not allow this throwing an error as a result as can be seen in listing \ref{lst:Bug:PowGurobi}.
 
-This bug was found with the modified STORM implementation because there was a seed file which contained this power function with a negative lower bound in the base. However, the solver used to solve this problem was not Gurobi meaning that the bug was not discovered when written. The original example can be found at the CPMpy repository's csplib examples\footnote{\url{https://github.com/CPMpy/cpmpy/blob/b60310d7962bc7631bcf0b9024140e47c1fb302e/examples/csplib/prob005_auto_correlation.py}}. We do not think that our modified STORM would have found it, if it was not in the seed file to begin with. This because the modified STORM does not create new variables nor modifies any bounds of variables. The bug was also not found using the metamorphic tests, but we do believe that if we had written a metamorphic relation for the power function or one where we changed some bounds of variables that we could have found this bug. And since the problem was already in the seed file to begin with the differential testing did find the bug and logged it.
-This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/149}{149}.
+This bug was found with the modified STORM implementation because there was a seed file which contained this power function with a negative lower bound in the base. However, the solver used to solve this problem was not Gurobi meaning that the bug was not discovered when written. The original example can be found at the CPMpy repository's csplib examples\footnote{\url{https://github.com/CPMpy/cpmpy/blob/b60310d7962bc7631bcf0b9024140e47c1fb302e/examples/csplib/prob005_auto_correlation.py}}. We do not think that our modified STORM would have found it, if it was not in the seed file to begin with. This because the modified STORM does not create new variables nor modifies any bounds of variables. The bug was also not found using the metamorphic tests, but we do believe that if we had written a metamorphic relation for the power function or one where we changed some bounds of variables that we could have found this bug. And since the problem was already in the seed file to begin with the differential testing did find the bug and logged it. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/149}{149}.
+
+\label{lst:Bug:PowGurobi}
+\begin{lstlisting}[float=, language=python, caption={The "power function of Gurobi"-bug.}]
+	from cpmpy import *
+
+	m = Model()
+	X = intvar(lb=-5, ub=5)
+	m += pow(X, 2) == 9
+
+	m.solve(solver="gurobi") # GurobiError
+\end{lstlisting}
+
+
 
 \subsection{Wrong bound value Error}
 \label{res:bug:WrongBounds}
@@ -66,6 +116,22 @@ This brings us to the bug; it occurs when importing a model with automatic namin
 
 A similar and almost related bug is in the naming of variables, when creating them starting with strange symbols like '+', '\%' or others some solvers would crash. Most solvers would happily solve with these names, but all MiniZinc's subsolvers crashed with a syntax error when handling the input. This due to transformation of our model to the text-based FlatZinc for the subsolver, it can no longer differentiate between the variable name and the code. It therefore crashed when seeing anything that could be interpreted differently than a variable name. MiniZinc does state that identifiers are not allowed to contain special characters, which other solvers and CPMpy do allow. A solution is still being discussed at the time of writing.
 
+
+In listing \ref{lst:Bug:+} the bug is showcased. With a variable 'i' being declared on line 3 with a lower and higher bound respectively 0 and 5. To then define a name manually and name it "+", this in contrast with the previous listings where we let CPMpy automatically name the variables. It is this naming of variables that will crash with a syntax error on line 10 while it solver the constraint fine on line 7. \todo{proofread this lines}
+
+\label{lst:Bug:+}
+\begin{lstlisting}[float=, language=python, caption={A bug showcasing that the naming of CPMpy is looser then MiniZinc.}]
+	from cpmpy import *
+	
+	i = intvar(lb=0, ub=5, name="+")
+	m = Model()
+	m += i > 0
+	
+	m.solve(solver="ortools")
+	print(m.sstatus().exitstatus.name) # OPTIMAL
+	
+	m.solve(solver="minizinc:chuffed") # crash by syntax error
+\end{lstlisting}
 
 Both of these bugs were not caught by our modified STORM nor the differential testing, since they do not create new variables. But did get caught by the metamorphic tests, the first bug was caught because we imported a seed file where automatic naming was done after which we created a variable too with this process, resulting in the the bug. the second one is a bit more embarrassing to write down, as we created a bug in the metamorphic tester which resulted in the (unintentionally) creation of variables starting with a '+'. Our own bug caused us to find a bug in CPMpy. We still label it a caught bug because the automatic bug catcher did find it, although only by a fault we made. This bug reports can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/158}{158} and \href{https://github.com/CPMpy/cpmpy/issues/162}{162} respectively.
 
