@@ -297,7 +297,8 @@
                          {y of Engineering}%
   \fi}
 \def\kulemt@kulfac@logo#1{%
-  \edef\@tempa{[#1]{logokul\ifnum\kulemt@facnum=\@ne eng\fi}}%
+  %\edef\@tempa{[#1]{logokul\ifnum\kulemt@facnum=\@ne eng\fi}}%
+  \edef\@tempa{[scale=0.373]{logokul\ifnum\kulemt@facnum=\@ne eng2\fi}}%
   \expandafter\includegraphics\@tempa}
 \def\kulemt@fac@logo#1{}
 \def\kulemt@fac@copyright{%

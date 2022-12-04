@@ -1,5 +1,5 @@
 %written in USA's English
-\documentclass[master=cws,masteroption=se,english]{kulemt}
+\documentclass[master=cws,masteroption=se,english]{kulemt} % oneside
 \setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
   inputenc=utf8,
   title={The best master's thesis ever}, 
@@ -22,9 +22,11 @@
 
 % Hier kun je dan nog andere pakketten laden of eigen definities voorzien
 \usepackage{todonotes}
-\usepackage{pifont} % used for checkmarks
-\usepackage{listings}
+\usepackage{pifont}   % used for checkmarks
+\usepackage{listings} % used for code listings
 \usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
+\usepackage[tableposition=top]{caption} % caption above table
+%\usepackage{float}
 
 %thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
 %----------------------------------------------%
@@ -136,8 +138,6 @@
 % {\usepackage{lipsum}\setlipsumdefault{11-13}}%
 % {\newcommand{\lipsum}[1][11-13]{\par Hier komt wat tekst: lipsum ##1.\par}}
 %%%%%%%
-
-%\includeonly{chap-n}
 \begin{document}
 
 \begin{preface}

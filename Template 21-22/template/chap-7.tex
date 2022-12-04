@@ -91,14 +91,13 @@ Given that this problem is an installation problem, all techniques were able to 
 \section{Classifications}
 Now that we have seen in depth explanations of some bugs let us give an overview of all found bugs by classifying them based on place, type of the bugs, which solver caused the bugs and which technique found the bugs. The bug number refers to the issue number on GitHub and is a hyperlink to that bug, the second column is a short description of the bug and then the table specific classification follows.
 
-%\subsection{Place of the bug}
-As can be seen in table \ref{tab:bug:placeComponent} the cause of which component failed is well spread out withing CPMpy. 
-With 5 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver specific transformations and one a solver related bug. The one and only solver related bug we found was the one we discussed in subsection \ref{res:bug:MinizincZero}, which was already known by MiniZinc. We would have hoped to find more bugs in the solvers themselves and it was our aim with this dissertation. But either these techniques are not sufficient or most bugs are already found before release or are already reported and solved.
-If we look at the reported issues withing the GitHub repository of Google's OR-Tools, we find no significant bugs towards the (un)satisfiability or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even have used the techniques used in this dissertation. This last one is likely as Google created multiple own fuzzers, which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would probably lose reputation if their solver would be proven to not produce the correct result.
-
+% added above the text that refference it, to prevent tables being back to back
 \begin{table}[]
 	\centering
+	\caption{Table discussing in which CPMpy component the bug was found. With 5 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver specific transformations and one a solver were found.}
+	\label{tab:bug:placeComponent}
 	\begin{tabular}{lll}
+		\hline
 		BugNr & Bug description                                         & Place of the bug \\ \toprule
 		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & Transformations     \\
 		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & Transformations     \\
@@ -121,16 +120,22 @@ If we look at the reported issues withing the GitHub repository of Google's OR-T
 		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & unsatisfiable Gurobi                              & Transformations     \\
 		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & unsatisfiable due to flattening                   & Transformations     \\ \bottomrule        
 	\end{tabular}
-	\caption{Table discussing in which CPMpy component the bug was found. With 5 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver specific transformations and one a solver were found.}
-	\label{tab:bug:placeComponent}
 \end{table}
+
+%\subsection{Place of the bug}
+As can be seen in table \ref{tab:bug:placeComponent} the cause of which component failed is well spread out withing CPMpy. 
+With 5 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver specific transformations and one a solver related bug. The one and only solver related bug we found was the one we discussed in subsection \ref{res:bug:MinizincZero}, which was already known by MiniZinc. We would have hoped to find more bugs in the solvers themselves and it was our aim with this dissertation. But either these techniques are not sufficient or most bugs are already found before release or are already reported and solved.
+If we look at the reported issues withing the GitHub repository of Google's OR-Tools, we find no significant bugs towards the (un)satisfiability or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even have used the techniques used in this dissertation. This last one is likely as Google created multiple own fuzzers, which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would probably lose reputation if their solver would be proven to not produce the correct result.
 
 %\subsection{What did the bug cause}
 Like the authors of STORM, we focused with our techniques on the critical faults, this being the wrongly satisfiable, the wrongly unsatisfiable and the wrong number of solutions. Since these critical bugs are harder to detect for the final user than a crash, timeout or other bug. Out of the 20 bugs found 6 of them fall in our category of critical while the other 14 where all crashes as can be seen in table \ref{tab:bug:fault}. Most of those 6 critical bugs were situations where the solver wrongly outputted that a solution was unsatisfiable and there was only one bug where we could find both a wrongly satisfiable and wrongly unsatisfiable solution.
 
 \begin{table}[]
+	\caption{Table discussing what type of fault was caused by which the bugs.}
+	\label{tab:bug:fault}
 	\centering
 	\begin{tabular}{lll}
+		\hline
 		BugNr & Bug description                                           & Type of fault   \\ \toprule
 		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & wrongly unsat   \\
 		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & crash           \\
@@ -153,8 +158,6 @@ Like the authors of STORM, we focused with our techniques on the critical faults
 		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & wrongly unsatisfiable Gurobi                      & wrongly unsat   \\
 		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & wrongly (un)satisfiable due to flattening         & wrongly (un)sat \\ \bottomrule
 	\end{tabular}
-	\caption{Table discussing what type of fault was caused by which the bugs.}
-	\label{tab:bug:fault}
 \end{table}
 
 %\subsection{Which solver was responcible for the bug}
@@ -162,7 +165,10 @@ When looking at table \ref{tab:bug:Solver} we can see which bug was caused by wh
 
 \begin{table}[]
 	\centering
+	\caption{Table discussing which bug was caused by which solver or if it was a solver independent bug.}
+	\label{tab:bug:Solver}
 	\begin{tabular}{lll}
+		\hline
 		BugNr & Bug description                                           & Which solver caused it?\\ \toprule
 		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & OR-Tools and Gurobi          \\
 		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & OR-Tools and Gurobi          \\
@@ -185,8 +191,6 @@ When looking at table \ref{tab:bug:Solver} we can see which bug was caused by wh
 		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & wrongly unsatisfiable Gurobi                      & Gurobi                       \\
 		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & wrongly (un)satisfiable due to flattening         & OR-Tools and Gurobi          \\ \bottomrule
 	\end{tabular}
-	\caption{Table discussing which bug was caused by which solver or if it was a solver independent bug.}
-	\label{tab:bug:Solver}
 \end{table}
 
 %\subsection{Which technique found the bug}
@@ -194,7 +198,10 @@ Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. T
 
 \begin{table}[]
 	\centering
+	\caption{Table discussing which technique found the bug. The modified STORM found 10 bugs, metamorphic testing found the most bugs at 14 and differential testing found 11 out of the 20.}
+	\label{tab:bug:Technique}
 	\begin{tabular}{lllll}
+		\hline
 		BugNr & Bug description                                           & \multicolumn{3}{c}{\centering  Bug found by} \\ \toprule
 		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double not gives unsat                            & storm &       &      \\
 		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global functions crashes                 & storm & meta  &      \\
@@ -217,8 +224,6 @@ Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. T
 		\href{https://github.com/CPMpy/cpmpy/issues/168}{168} & wrongly unsatisfiable Gurobi                      & storm & meta  & diff \\
 		\href{https://github.com/CPMpy/cpmpy/issues/170}{170} & wrongly (un)satisfiable due to flattening         & storm & meta  &      \\ \bottomrule
 	\end{tabular}
-	\caption{Table discussing which technique found the bug. The modified STORM found 10 bugs, metamorphic testing found the most bugs at 14 and differential testing found 11 out of the 20}
-	\label{tab:bug:Technique}
 \end{table}
 
 
