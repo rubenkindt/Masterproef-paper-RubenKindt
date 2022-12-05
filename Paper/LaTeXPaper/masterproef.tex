@@ -1,5 +1,5 @@
 %written in USA's English
-\documentclass[master=cws,masteroption=se,english]{kulemt} % oneside
+\documentclass[master=cws,masteroption=se,english, oneside]{kulemt} % oneside
 \setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
   inputenc=utf8,
   title={The best master's thesis ever}, 
@@ -143,7 +143,14 @@
 \begin{document}
 \todo{Thesis Title, does not have to be a '?'}
 \begin{preface}
-  Thanks all \todo{replace template by real one}
+  \todo{turn this in to sentence}
+  professor Guns for the guidance % zou ik durven om die onder Ignace te zetten?
+  Ignace Bleukx for answering the many questions, the intensive thesis meetings, proofreading and the cleverness for coming up with CTORM
+  Jo Devriendt for finding bugs within our bug finder
+  the many other CPMpy bug solvers
+  friends for proofreading 
+  and family for the support during my studies 
+  
 \end{preface}
 
 \todo{remove todo list}
@@ -162,7 +169,7 @@
 	\todo{samenvatting}
 
 State of the art 
-'in deze dissertatie stellen wij een vergelijkende studie voor om auto bugs te vinden in cpl met als voorbeeld taal de CPMpy written by Tia's Guns at al.
+'in deze masterproef stellen wij een vergelijkende studie voor om auto bugs te vinden in cpl met als voorbeeld taal de CPMpy written by Tia's Guns at al.
 Voordelen automatisch bugs (Tijdwinst, Safer programma)
 
 
@@ -224,7 +231,7 @@ Voordelen automatisch bugs (Tijdwinst, Safer programma)
 \include{chap-2} % CP, SAT and SMT 
 \include{chap-3} % Fuzzing
 \include{chap-4} % Detecting crucial parts in inputs
-\include{chap-5} % Research questions
+%\include{chap-5} % Research questions
 \include{chap-6} % Implementation
 \include{chap-7} % results
 \include{chap-8} % conclustion

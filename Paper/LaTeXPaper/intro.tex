@@ -22,18 +22,55 @@ Ideally a company should not have to spend time, energy and money into finding a
 While fuzzing is often used for finding bugs in general, there are even fuzzers that have a focus on catching security vulnerabilities specifically. Fuzzers like Yuwei Li et al. \cite{32V-Fuzz} do this with their Vulnerability-Oriented Evolutionary Fuzzing tool.
 
 \section{Goals}
-With this dissertation we aim to be able to compare multiple know techniques for automatically finding bugs in constraint programming languages. As this type of language differs from most used programming languages not all techniques may work equally well. On top of that some bugs could have a big impact and are not always clear that they occurred.
+\label{intro:Goals}
+With this thesis we aim to be able to compare multiple know techniques for automatically finding bugs in constraint programming languages. As this type of language differs from most used programming languages not all techniques may work equally well. On top of that some bugs could have a big impact and are not always clear that they occurred.
 The techniques we will use will be a modified fuzzer originally used on SMT problems, a second will be apply satisfiable preserving changes to known inputs and test that the original input matches the known input. Our last technique will be taking advantage to the fact that CPMpy has a big library of solvers, which we will use to check that all the solvers agree on the solutions.
 
-\todo{add RQ's}
-\todo{change Modifies STORM to CPTORM + Bleukx found the name}
+\section{Research questions}
+\label{intro:RQ:RQ's}
+As the title of the thesis already may have spoiled it, we are trying out multiple fuzzing techniques out on CPMpy, with the goal of finding which technique works well for this specific type of programming language. This in order to give a push to identify ways of automatically discovering (and maybe solving) new bugs in constrain programming languages. We put forward two regions of research questions we will to focus on.
+
+\subsection{Problem statement}
+\label{intro:ProblemStatment}
+As described in at the introduction of  this chapter \ref{intro:intro}, bugs are practically unavoidable and always unwanted, especially when a user trusts a program to give a correct answer and it does not. With solvers surrounding constraint programming languages being executed more and more we would like to strongly avoid any bugs in the real world from arising. To this end it would be interesting to find bugs during development without much overhead, a modern approach would be the use of fuzzers. which we will try out on a constraint programming language.
+
+\subsection{Main focus: fuzzing technique-focused}
+\label{intro:RQ:MainFocus}
+The first and our main focus will be comparing different fuzzing techniques: we are going to modify a successful SMT fuzzer STORM to the CPMpy language, which we will name CTORM for CPMpy STORM. Try differential testing between the multiple solvers and out last technique is the use of metamorphic testing. Resulting in the following questions: \newline
+Research question 1: What fuzzing technique will find the most bugs? \newline 
+Research question 2: What fuzzing technique will find the most critical bugs? \newline
+Research question 3: What type of bugs will be found by each fuzzing technique? \newline
+%\subsubsection{subfocuses}
+%Research question 4: Which metamorphic transformation find the most (critical) bugs? \newline
+%focused on: \\
+%bool, int, list, array
+
+%\subsection{Solver-focused}
+%A second focus we have goes more towards the different solvers and the differences between them resulting in. \newline
+%Research question 5: Which solver has the most (critical) bugs? \newline
+
+\subsection{Classification-focused}
+\label{intro:RQ:ClassificationFocused}
+Our next and last focus will be on the classification of found bugs, giving us the following research questions. \newline
+%To then end with focus three based around the classification of found bugs, giving us the following research questions. \newline
+Research question 4: How many (critical) bugs can we find? \newline
+Research question 5: What are the causes of the bugs? \newline
+%Research question 8: What are the type of bugs found? \newline
+
+\subsection{Not focused: efficiency and others}
+\label{intro:RQ:NotFocused}
+A keen reader may wonder why we do not focus on efficiency, this would result in more bugs being caught in a smaller timeframe. While perfectly valid to investigate we believe that discovering which techniques works best for CP' has a higher value than on top of the techniques investigated being able to run automatically. The efficiency in CP has already significant research and literature on how to optimize the solvers, which take the most amount execution time compared to the testers.
+
+% all written in Python
+
 
 \section{Modus operandi}
-This dissertation will create three techniques to detect bugs automatically for the constraint programming language, CPMpy. Starting from multiple examples we will extract all solvable models to then run each model through a technique to see if we can create a bug either from the original model or by modifying it. Afterwards, we will validate the found bugs and evaluate and evaluated the found bugs for each technique. To finally compare the results and see which techniques are able to find bugs in constraint programming languages.
+This thesis will create three techniques to detect bugs automatically for the constraint programming language, CPMpy. Starting from multiple examples we will extract all solvable models to then run each model through a technique to see if we can create a bug either from the original model or by modifying it. Afterwards, we will validate the found bugs and evaluate and evaluated the found bugs for each technique. To finally compare the results and see which techniques are able to find bugs in constraint programming languages.
 
-\todo{optional, written out text what each chapter is about}
+\todo{optional section, written out text what each chapter is about}
 
 
+%\section{Conclusion} intro chapter doesn't need a conclusion.
 
 %%% Local Variables: 
 %%% mode: latex
