@@ -1,46 +1,90 @@
-\chapter{Research questions}
-\label{cha:RQ}
-\label{RQ:intro}
-In this chapter we will discuss the problem we are facing today and where our focus will be when answering the research questions in this dissertation. \todo{Add this chapter to Goals of introductuion}
+\chapter{Implementation}
+\label{cha:impl}
+\label{impl:Intro}
+In this chapter we will discuss how we build our fuzzers, what issues we had to circumvent and how we did that. With first starting off how we got our seeds to fuzz upon. Then, we will discuss how we implemented the three techniques to finally end with how we deobfuscated found bugs.
 
-\section{Problem statement}
-\label{RQ:ProblemStatment}
-As described in at the introduction of chapter \ref{intro:intro}, bugs are practically unavoidable and always unwanted, especially when a user trusts a program to give a correct answer and it does not. With solvers surrounding constraint programming languages being executed more and more we would like to strongly avoid any bugs in the real world from arising. To this end it would be interesting to find bugs during development without much overhead, a modern approach would be the use of fuzzers. which we will try out on a constraint programming language.
+\section{Software versions used}
+Throughout this paper we used CPMpy\footnote{\url{https://github.com/CPMpy/cpmpy}} version V0.9.9 (commit \href{https://github.com/CPMpy/cpmpy/commit/e79b3afedc934a9437c2ddb3a9f54d7e2d7bd3ee}{e79b3af}) unless specified otherwise. This version was chosen simply because it was the latest release version at the time of testing the first technique. All techniques were developed in Python 3.8, the MiniZinc solvers came with MiniZinc Python\footnote{\url{https://github.com/MiniZinc/minizinc-python}} release version 0.7.0 (commit \href{https://github.com/MiniZinc/minizinc-python/commit/a195cf63fcfbc98665d70ab64efb5424db25bd7e}{a195cf6}). For the proprietary solver Gurobi\footnote{\url{https://www.gurobi.com/}} we used its Python version 9.5.2 with an academic license. 
+%problems Gurobi outputting Not_run this was a trial problem, with the academic version does not occure
+Originally, we did try to utilize the trial version to ease possible reproducibility, but the restrictions on the complexity of the problems became a hindrance to fast which resulted us moving to the academic license. For the other version of the solver, we used the once included in the already mentioned packages, except for MiniZinc's transformations to Google's OR-Tools\footnote{\url{https://github.com/google/or-tools}}. This last one we had to install manually using release version 9.3.10497 (commit \href{https://github.com/google/or-tools/commit/49b6301e1e1e231d654d79b6032e79809868a70e}{49b6301}).
 
-\section{Research questions}
-\label{RQ:RQ's}
-As the title of the dissertation already may have spoiled it, we are trying out multiple fuzzing techniques out on CPMpy, with the goal of finding which technique works well for this specific type of programming language. This in order to give a push to identify ways of automatically discovering (and maybe solving) new bugs in constrain programming languages. We put forward two regions of research questions we will to focus on.
 
-%\todo{reduce nb of RQ}
-\subsection{Main focus: fuzzing technique-focused}
-The first and our main focus will be comparing different fuzzing techniques: we are going to modify a successful SMT fuzzer STORM to the CPMpy language, try differential testing between the multiple solvers and out last technique is the use of metamorphic testing. Resulting in the following questions: \newline
-Research question 1: What fuzzing technique will find the most bugs? \newline 
-Research question 2: What fuzzing technique will find the most critical bugs? \newline
-Research question 3: What type of bugs will be found by each fuzzing technique? \newline
-%\subsubsection{subfocuses}
-%Research question 4: Which metamorphic transformation find the most (critical) bugs? \newline
-%focused on: \\
-%bool, int, list, array
+\section{Obtaining seeds}
+\label{impl:obtainingSeeds}
+As discussed in a previous section (section \ref{fuzzing:generationMutation}) generating new inputs is significantly harder than mutation, but with the latter one we require a diverse set of seed files. Fortunately, the CPMpy team made a lot of documentation and examples on how to model problems in their language. Ranging from easy examples to teach the language to advanced examples in order to showcase certain features. 
+At the moment of writing most examples are found in the main branch and some extras can be found the "csplib" branch\footnote{\url{https://github.com/CPMpy/cpmpy/tree/csplib}} waiting to be merged with the main branch. We downloaded a copy of that branch on Tuesday 27th of September to be used as future seed files. 
 
-%\subsection{Solver-focused}
-%A second focus we have goes more towards the different solvers and the differences between them resulting in. \newline
-%Research question 5: Which solver has the most (critical) bugs? \newline
+A second source of seeds files came from Hakan Kjellerstrand a retired software developer and independent researcher from Sweden which was found while reading \cite{18bleukx2022model} and got recommended by Ignace Bleukx. He has a big repository\footnote{\url{https://github.com/hakank/hakank/tree/master/cpmpy}} full of problem models which he solves in multiple ways, including CPMpy. We obtained a copy of all his CPMpy examples on Tuesday 27th of September to top off our collection of future seed files.
 
-\subsection{Classification-focused}
-Our next and last focus will be on the classification of found bugs, giving us the following research questions. \newline
-%To then end with focus three based around the classification of found bugs, giving us the following research questions. \newline
-Research question 4: How many (critical) bugs can we find? \newline
-Research question 5: What are the causes of the bugs? \newline
-%Research question 8: What are the type of bugs found? \newline
 
-\section{Not focused: efficiency and others}
-A keen reader may wonder why we do not focus on efficiency, this would result in more bugs being caught in a smaller timeframe. While perfectly valid to investigate we believe that discovering which techniques works best for CP' has a higher value than on top of the techniques investigated being able to run automatically. The efficiency in CP has already significant research and literature on how to optimize the solvers, which take the most amount execution time compared to the testers.
+After that we ran all examples to test that the base examples do not crash on their own and noticed that most examples run in less than a minute. The handful of examples that did run extremely long we did leave out or simplified it to gain a speed up while solving of them. A last change we did to the future seed files is extracting the constraints from each example, we did this for a couple of reasons some files had a loop around the solve instruction combined with small changes or had multiple problems in one file. In order to extract these constraints, we temporary modified CPMpy to extract the created model, constraints included, each time solve was called. This resulted in over nine thousand problem models which we will use as our seed files.
 
-% all written in Python
+
+%We extracted our seeds twice, a first time where we extract our model without any flattening of the constraints and a second time where we did flatten the constraints. While building up a model of the problem CPMpy allows for arbitrary complex compositions of constraints resulting in a nested tree of constraints. But not all solvers allow this nested tree as described by the documentations of CPMpy. It is for that reason that CPMpy flattens the constraints to what they call 'normal forms' as the similar definition of SAT but with a disclaimer that this does not exits to their knowledge with which we agree with. With this flattened form CPMpy can directly call the solvers or do some changes for the solver interface on the flattened constraints to then send it to the solver. The reason we extracted our seeds with and without a flattening process is that \todo{aanvullen na vraag} a flattened version and the reason we did is without will become clear in the next section.
+
+\section{Modifying STORM into CTORM}
+\label{impl:modifyingSTROM}
+Our first technique of finding bugs is heavily based on STORM which we shortly discussed before in section \ref{fuzzing:testingWithFuzzers}, which we altered to be able to find bugs in constraint programming languages and specifically CPMpy. We started with downloading STORM from the repository\footnote{\url{https://github.com/Practical-Formal-Methods/storm}} on Tuesday 27th September.
+%https://github.com/Practical-Formal-Methods/storm/commit/55d091624523a0544112ffc339fe81103b3daa2b
+The original plan was to convert our seeds to FlatZinc using the MiniZinc API provided by CPMpy to then convert that to SMT-LIB \cite{72bofill2010system} using Miquel Bofill et al.'s fzn2smt-tool to then be able to use STORM as it was built originally. Unfortunate and a bit predictable, this way of working did not work out. On top of fzn2smt being more than a decade old, the multiple transformation layers that could introduces conversion bugs and the unclear way back from SMT-LIB prevented this path from being investigated by us.
+
+Therefore, we decided to refactoring STORM to fit CPMpy and name the technique CTORM for CPMpy-STORM moving forward. To change STORM into CTORM, we need to rewrite the detection, labeling and construction of (sub)constraints. This refactoring did come with some downsides, some features of STORM no longer work such as incremental solving or the input obfuscation that was build-in. A bigger downside came with the refactoring of the negation function of STORM, as CPMpy is still in active development is not always available and that was felt while trying to negate global functions. I.e., when trying to invert (sub)constraints which include "alldifferent([var1, var2, var3])" using CPMpy, it crashed. This is of course a bug (more specifically not yet implemented) in CPMpy but vital to the fuzzer. So here we had the choice of adding the missing negation of global functions to CPMpy or to limit our fuzzer to not use the missing features. We choose to limit the fuzzer, since we are trying to detect bugs in CPMpy with different tools and extending the language ourselves goes out of cope of this thesis. 
+
+%remove?
+%The resulting limitation on our fuzzer only influences the speed of generating new constraints and it can theoretically now get stuck but this has not happened yet, so we believe it to be a acceptable limitation.
+
+
+We gave only non-flattened inputs to this solver, since both STORM and CTORM used a recursive process to get all subformulas because we wanted to change as little as possible to the inner workings of CTORM compared to STORM. Therefore, we hijacked the flatten process of CPMpy to also return all subformulas before returning the flattened constraints. This gave access to the more convoluted subformulas to use in the next steps of CTORM before they are flattened. This flattening process was done before any modifications where made, so in the eyes of the fuzzer it got flattened seeds but with the knowledge of some more complex constraints just like STORM and CTORM does. For each input CTORM combines adds 100 new constraints built from the existing constraints. This is repeated a hundred times to create a hundred models to then check if the result match with the original output in CPMpy.
+%\todo{optional image of this CTORM processes?}
+
+%DUMB ideas:
+%Translating seeds from solver X to solver Y 
+%option 1 hardcode default solver of CPMpy to Y, less good modifying the language is something we want to avoid. May also not work when solver is hard coded in the seed.
+%Option 2 interpret the seed and make changes so that the solver Y is run. Bit trickier as you cannot see the difference between model.solve() and solver.solve() because model and solver are variables.
+%
+%nested functions with global function inside are giving problems
+
+
+\section{Metamorphic testing}
+\label{impl:Meta}
+While CTORM was quite autonomous, metamorphic testing did take one step back to manual work. As this technique requires some metamorphic transformations, these transformations take a (or multiple) constraint(s) of our seed problems and changing them repeatably while keeping the (un)satisfiability the same. To then test if the original seed problem gives the same result as our modified problem. Matching with what we discussed in subsection \ref{fuzzing:MetamorphicTesting}. 
+
+With papers such as \cite{50akgun2018metamorphic, 49usman2020testmc, 43YinYang} and others giving us inspiration, we came up with but not limited to the following 30 metamorphic relations: replacing global functions like "alldifferent([var1, var2, var3])" to var1!=var2 and var1!=var3 and var2!=var3. Adding futile variables to global functions such as: "allequal([var1, var2])" either by copying variable or inserting new variable which did not limit (or restrict) the existing solution-space. We did this too for other more basic operations such as: "and", "or", "xor", "->" (implication), all forms of comparisons, min, max and others. We also included metamorphic relations proposed by \cite{43YinYang}, those being: semantic fusion for addition, subtraction, multiplication, and, or, xor and the comparisons. All analog to the example given in subsection \ref{fuzzing:SemanticFusion}. We also linked multiple (sub)constraints of the problem to each other and replaced comparisons by other comparisons. And finally, we also added new constraints which were independent of the original problem only to get in the way of the seed problem or be used in other metamorphic relations.
+
+All these metamorphic relations individually were quite simple and should be handled easily by the flattening process or other processes, but by combining multiple relations at random we were able to create more complex constraints that were not always handled easily. Finally, we should note that while finishing this thesis Jo Devriendt found a bug within the metamorphic tester that made cyclic expressions possible which will crash CPMpy, more information can be found in the CPMpy bug report number \href{https://github.com/CPMpy/cpmpy/issues/163}{163}.
+
+\section{Differential testing}
+\label{impl:diff}
+With differential testing we stepped a bit further way from the fuzzing world since we did not edit the input files.
+With this last technique we put the (sub)solver against each other, if solver A said that the problem is unsatisfiable and all other solvers said that the same problem was satisfiable we could say that we did find a bug and that the bug was most likely to be in solver A. This differs from the previous techniques where we knew the correct solution in advance.
+
+%This test could easily be integrated in one (or both) previous fuzzers 
+% since this can be integrated as an extra check in the fuzzers. 
+
+The way this tester was written is quite simple we tested a given input on multiple solvers and searched if there was any difference in outputs or on the number of solutions provided.
+%ony 2 solvers
+However, after finishing, we discovered that only two solver, namely "ortools" and "gurobi"-solvers, are able to search all solutions for problem models that contain global function. Small note: we did limit up to 100 solutions, otherwise finding solutions would take an unreasonable amount of time. More solvers are available to find all solutions for SAT problems but that is not the main objective of this thesis. This limitation to only two solvers results in only able to compare two different implementations and has a risk of overlapping bugs. Preferably, we would have three or more solvers to be able to compare between them and also able to automatically show us which of the solver is likely to be wrong. In the future more solvers will be available with the capability of finding all solution withing CPMpy, but right now these tests are performed with two solvers. 
+
+While searching for all possible solutions for a given problem over multiple solvers gave us more data to compare in between solvers the restrictions mentioned limit the testing of finding all solutions. However, when we look at only searching for one solution for a given example, we have more than enough solvers to compare between. Most of the times 14 solvers were compared and we never gotten lower than 6 solvers, this variation is due to the features used in the given problem the amount of solvers changed. If a problem happened to not use any global functions the SAT-solvers may be able to solve them allowing us to compare between up to 36 solvers. Given that we only search after a single solution we are limited in what we can compare. For example, if solver A says that it found a satisfiable problem with the solution having values A and solver B says the same but with values B (with A $\neq$ B) the only thing we can compare is that both solvers output the same "satisfiable". Since both solution A and B can be different solutions to the problem.
+
+
+\section{Detecting the cause of the bug}
+\label{impl:DetectingCause}
+As describes in chapter \ref{inputReduction:intro} finding a bug is one part of the problem and submitting a complex bug would cause a lot of work for the development team. To avoid this situation, we used a Minimal Unsatisfiable Subset finder created by the CPMpy-team. The first version we used can be found in the advance folder\footnote{\url{https://github.com/CPMpy/cpmpy/blob/master/examples/advanced/musx.py}} of the examples of CPMpy version 0.9.9. It was limited to finding MUS with the OR-Tools solver only. which caused us to write our own programs to deobfuscate the inputs based on the CPMpy's MUS-finder. We tried both a program to simplify inputs as described in subsection \ref{inputReduction:Simplifying} and a program to isolate inputs as detailed in subsection \ref{inputReduction:Isolation}. But ended up only using the simplification technique due to not wanting to report a crucial part of the bug in one issue and reporting the difference between two inputs in the next issue. The time penalty was not noticeable due to the inputs not being enormous. Both the programs we created did not give a minimal input back but did minimize the number of constraints, the difference being that some constraints could contain non-crucial parts of the bug. For example, a constraint "[15][variable1](...)" would give the exact same bug as constraint "[0, 0, 0, 0, 0, 0, 0, 0, 0, ... 0, 15][variable1](...)" but be clearer for the developer. To achieve a minimal input, we were planning to update our previously created programs, but CPMpy version 0.9.10 came out and contained a better MUS-finding\footnote{\url{https://github.com/CPMpy/cpmpy/blob/master/cpmpy/tools/mus.py}} program  suitable of finding MUS for all available solvers. Which was important since not all (sub)solvers would agree on the problem being satisfiable or not. And asking a solver to find an unsatisfiable subset in what it thinks is a satisfiable problem does not work for obvious reasons. 
+
+
+It was a similar case for crashes, for which we used a modified version of our simplification program. For obvious reasons the MUS-finders of CPMpy did not work for crashing programs. our simplification program would test if the model still had a crash with some missing constraints or not and continue analog to the MUS version. It would result in a minimal number of constraints but not in a minimal model. To get a minimal model some manual work was needed but that was not a significant amount of work. 
+
+%\section{Tested solver}
+%As a small side note not all solver within CPMpy are that usseefull if we wnat to find bug in CP languages 
+%\todo{focused solvers}
+%pySSD + PYsat: graph maker minder relevant omdat we CP fouten willen vinden 
+
 
 \section{Conclusion}
-\label{RQ:conclusion}
-In this short chapter we have seen the problem which to address and the research questions this dissertation will answer in order to do so.
+\label{impl:conclusion}
+In this chapter we discussed which software we used in tandem with the version's numbers and GitHub repositories where applicable for reproducibility. We showed how we turned Hakan's and CPMpy's examples into the seed files we used for our three techniques. After that we specified how we implemented our techniques to find bugs, this being the modification of STORM into CTORM, the creation of metamorphic relations and the comparing of the output of (sub)solvers in the differential testing. To finally  end with the tools used to minimize the input files once We found a bug.
+
 
 %%% Local Variables: 
 %%% mode: latex
