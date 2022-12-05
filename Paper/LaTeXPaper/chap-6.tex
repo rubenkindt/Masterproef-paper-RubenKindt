@@ -22,7 +22,7 @@ After that we ran all examples to test that the base examples do not crash on th
 
 %We extracted our seeds twice, a first time where we extract our model without any flattening of the constraints and a second time where we did flatten the constraints. While building up a model of the problem CPMpy allows for arbitrary complex compositions of constraints resulting in a nested tree of constraints. But not all solvers allow this nested tree as described by the documentations of CPMpy. It is for that reason that CPMpy flattens the constraints to what they call 'normal forms' as the similar definition of SAT but with a disclaimer that this does not exits to their knowledge with which we agree with. With this flattened form CPMpy can directly call the solvers or do some solver specific transformations on the flattened constraints to then send it to the solver. The reason we extracted our seeds with and without a flattening process is that \todo{aanvullen na vraag} a flattened version and the reason we did is without will become clear in the next section.
 
-\section{Modifying STORM}
+\section{Modifying STORM} \todo{CPMpy is in Alpha, check if it was spec otherwise in txt}
 \label{impl:modifyingSTROM}
 Our first technique of finding bugs is heavily based on STORM which we shortly discussed before in section \ref{fuzzing:testingWithFuzzers}, which we altered to be able to find bugs in constraint programming languages and specifically CPMpy. We started with downloading STORM from the repository\footnote{\url{https://github.com/Practical-Formal-Methods/storm}} on Tuesday 27th September.
 %https://github.com/Practical-Formal-Methods/storm/commit/55d091624523a0544112ffc339fe81103b3daa2b
@@ -35,7 +35,7 @@ Therefore, we decided to refactoring STORM to fit CPMpy, in order to do this, we
 
 
 We gave only non-flattened inputs to this solver since STORM used a recursive process to get all subformulas because we wanted to change as little as possible to the inner workings of STORM. Therefore, we hijacked the flatten process of CPMpy to also return all subformulas before returning the flattened constraints. This gave access to the more convoluted subformulas to use in the next steps of STORM before they are flattened. This flattening process was done before any modifications where made, so in the eyes of the fuzzer it got flattened seeds but with the knowledge of some more complex constraints just like STORM does. For each input the modified STORM combines adds 100 new constraints built from the existing constraints. This is repeated a hundred times to create a hundred models to then check if the result match with the original output in CPMpy.
-\todo{optional image of this STORM processes?}
+%\todo{optional image of this STORM processes?}
 
 %DUMB ideas:
 %Translating seeds from solver X to solver Y 

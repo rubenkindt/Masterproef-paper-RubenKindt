@@ -1,7 +1,7 @@
 #LaTeX files to ignore
 
 *.aux
-Template 21-22/template/*.aux
+
 
 *.fdb_latexmk
 *masterproef.fdb_latexmk
@@ -11,10 +11,9 @@ Template 21-22/template/*.aux
 *.bbl
 
 *.log
-Template 21-22/template/masterproef.log
 
 *.gz
-Template 21-22/template/masterproef.synctex.gz
+*.synctex.gz
 *masterproef.synctex.gz
 
 #todo files

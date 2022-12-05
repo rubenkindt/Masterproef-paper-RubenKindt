@@ -25,6 +25,9 @@ While fuzzing is often used for finding bugs in general, there are even fuzzers 
 With this dissertation we aim to be able to compare multiple know techniques for automatically finding bugs in constraint programming languages. As this type of language differs from most used programming languages not all techniques may work equally well. On top of that some bugs could have a big impact and are not always clear that they occurred.
 The techniques we will use will be a modified fuzzer originally used on SMT problems, a second will be apply satisfiable preserving changes to known inputs and test that the original input matches the known input. Our last technique will be taking advantage to the fact that CPMpy has a big library of solvers, which we will use to check that all the solvers agree on the solutions.
 
+\todo{add RQ's}
+\todo{change Modifies STORM to CPTORM + Bleukx found the name}
+
 \section{Modus operandi}
 This dissertation will create three techniques to detect bugs automatically for the constraint programming language, CPMpy. Starting from multiple examples we will extract all solvable models to then run each model through a technique to see if we can create a bug either from the original model or by modifying it. Afterwards, we will validate the found bugs and evaluate and evaluated the found bugs for each technique. To finally compare the results and see which techniques are able to find bugs in constraint programming languages.
 
