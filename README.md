@@ -1,5 +1,5 @@
 My master thesis for Computer science (ComputerWetenschappen) at the KU Leuven, 
-#Currently still in development
+# Currently still in development
 
 ECTS-fiche: https://onderwijsaanbod.kuleuven.be/syllabi/n/H04J4AN.htm#activetab=doelstellingen_idp922576
 At the faculty of Faculty of Engineering Science: https://eng.kuleuven.be/en
