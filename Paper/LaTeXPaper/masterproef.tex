@@ -143,26 +143,40 @@
 \begin{document}
 \todo{Thesis Title, does not have to be a '?'}
 \begin{preface}
-  \todo{turn this in to sentence}
-  professor Guns for the guidance % zou ik durven om die onder Ignace te zetten?
-  Ignace Bleukx for answering the many questions, the intensive thesis meetings, proofreading and the cleverness for coming up with CTORM
-  Jo Devriendt for finding bugs within our bug finder
-  the many other CPMpy bug solvers
-  friends for proofreading 
-  and family for the support during my studies 
-  
+Although, this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving it all interested me and I had not a single moment where I had to push my self to start working on it. But this thesis would not have been possible without the following people.
+
+
+\noindent Firstly, I would like to thank: 
+professor dr. Tias Guns for the guidance and the proposal of this fascinating topic,
+ir. Ignace Bleukx for answering many questions, intensive thesis meetings, proofreading and the cleverness for coming up with the name of CTORM, 
+Dr. ir. Jo Devriendt for finding bugs within our bug finder, 
+the many other CPMpy bug solvers, 
+Hakan Kjellerstrand for publishing significant amount examples which we used as seeds,
+friends for proofreading and 
+family for the support during my further studies.
+\todo{proofread}
 \end{preface}
 
-\todo{remove todo list}
 \listoftodos
+\todo{remove todo list}
 \tableofcontents*
 \setcounter{tocdepth}{5} % this works wow! Now I have a clean TOC but still the pdf outline in depth
 
 \begin{abstract}
+This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable to find bugs in constraint programming languages. 
+The first technique builds further on an existing paper to test SMT theories, which this paper converts to be able to test CPMpy with. 
+A second technique uses output preserving equivalent changes to see whether the original result differs from the result of the modified program.
+The final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs.
+
+voordelen automatisch bugs vinden?
+
+results
+
 	\todo{abstract}
-  Abstract 
   %The \texttt{abstract} environment contains a more extensive overview of
   %the work. But it should be limited to one page.
+  \todo{proofread}
+  \todo{add keywords}
 \end{abstract}
 
 \begin{abstract*}
@@ -172,12 +186,7 @@ State of the art
 'in deze masterproef stellen wij een vergelijkende studie voor om auto bugs te vinden in cpl met als voorbeeld taal de CPMpy written by Tia's Guns at al.
 Voordelen automatisch bugs (Tijdwinst, Safer programma)
 
-
-  %In dit \texttt{abstract} environment wordt een al dan niet uitgebreide
-  %Nederlandse samenvatting van het werk gegeven.
-  %Wanneer de tekst voor een Nederlandstalige master in het Engels wordt
-  %geschreven, wordt hier normaal een uitgebreide samenvatting verwacht,
-  %bijvoorbeeld een tiental bladzijden. 
+\todo{proofread}
 \end{abstract*}
 
 % Een lijst van figuren en tabellen is optioneel
@@ -248,6 +257,7 @@ Voordelen automatisch bugs (Tijdwinst, Safer programma)
 %\bibliographystyle{abbrv}
 %\bibliography{references}
 \nocite{MasterproefRubenKindt}
+%\nocite{75Chicken} % Easter egg ;)
 \printbibliography
 \end{document}
 

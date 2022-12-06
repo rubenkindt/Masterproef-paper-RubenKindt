@@ -23,7 +23,7 @@ While the techniques were running, we noticed that once a bug was found by any o
 \section{Results: found bugs}
 \label{res:bugs}
 %\todo{19 bugs is af h van welke definitie men volgt, met de onze komen we aan 19}
-In total we found 19 bugs, three of which were already known in one form or another as an issue. Of those bugs some of them were easy fixes, some were a bit harder and required more time to solve. Depending on the definition of a bug the number of found bugs would differ with the definition followed in this paper 19 bugs remain out of the the 22 submitted. At the time of writing not al bugs are resolved (some are just reported days ago), but we look in anticipation how those will be solved. For now, let us look at some of the most interesting bugs we found. In order to do this, we will work with the four components we defined earlier in subsection \ref{CP:CPMpy}, this being: the model, the transformations, the solver interface and the solvers themselves as seen in figure \ref{fig:4ComponentsOfCPMpy}.
+In total we found 19 bugs, three of which were already known in one form or another as an issue. Of those bugs some of them were easy fixes, some were a bit harder and required more time to solve. Depending on which definition of a bug used the number of found bugs will differ with the definition followed in this paper 19 bugs remain out of the the 22 submitted. At the time of writing not al bugs are resolved (some are just reported days ago), but we look in anticipation how those will be solved. For now, let us look at some of the most interesting bugs we found. In order to do this, we will work with the four components we defined earlier in subsection \ref{CP:CPMpy}, this being: the model, the transformations, the solver interface and the solvers themselves as seen in figure \ref{fig:4ComponentsOfCPMpy}.
 
 
 \subsection{Double Not}
@@ -160,10 +160,11 @@ Given that this problem is an installation problem, all techniques were able to 
 %\label{res:bug:solverLookup}
 %solverlookup() was during development of the tester = manual testing, 
 
-\todo{bug \href{https://github.com/CPMpy/cpmpy/issues/163}{163} would be a fun explanation for the thesis, but lacks a bug. atm it's a note in \ref{impl:Meta}}
+\todo{optional: bug \href{https://github.com/CPMpy/cpmpy/issues/163}{163} would be a fun explanation for the thesis, but lacks a bug. atm it's a note in \ref{impl:Meta}}
 
 
 \section{Classifications}
+\label{res:Classifications}
 Now that we have seen in depth explanations of some bugs let us give an overview of all found bugs by classifying them based on place, type of the bugs, which solver caused the bugs and which technique found the bugs. The bug number refers to the issue number on GitHub and is a hyperlink to that bug, the second column is a short description of the bug and then the table specific classification follows.
 
 % added above the text that refference it, to prevent tables being back to back
@@ -198,11 +199,13 @@ Now that we have seen in depth explanations of some bugs let us give an overview
 \end{table}
 
 %\subsection{Place of the bug}
+\label{res:PlaceOfBug}
 As can be seen in table \ref{tab:bug:placeComponent} the cause of which component failed is well spread out withing CPMpy. 
 With 4 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver interface and one a solver related bug. The one and only solver related bug we found was the one we discussed in subsection \ref{res:bug:MinizincZero}, which was already known by MiniZinc. We would have hoped to find more bugs in the solvers themselves and it was our aim with this thesis. But either these techniques are not sufficient or most bugs are already found before release or are already reported and solved.
 If we look at the reported issues withing the GitHub repository of Google's OR-Tools, we find no significant bugs towards the (un)satisfiability or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even have used the techniques used in this thesis. This last one is likely as Google created multiple own fuzzers, which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would probably lose reputation if their solver would be proven to not produce the correct result.
 
 %\subsection{What did the bug cause}
+\label{res:CauseOfBug}
 Like the authors of STORM, we focused with our techniques on the critical faults, this being the wrongly satisfiable, the wrongly unsatisfiable and the wrong number of solutions. Since these critical bugs are harder to detect for the final user than a crash, timeout or other bug. Out of the 19 bugs found 6 of them fall in our category of critical while the other 13 where all crashes as can be seen in table \ref{tab:bug:fault}. Most of those 6 critical bugs were situations where the solver wrongly outputted that a solution was unsatisfiable and there was only one bug where we could find both a wrongly satisfiable and wrongly unsatisfiable solution.
 
 \begin{table}[]
@@ -235,7 +238,8 @@ Like the authors of STORM, we focused with our techniques on the critical faults
 	\end{tabular}
 \end{table}
 
-%\subsection{Which solver was responcible for the bug}
+%\subsection{Which solver was responsible for the bug}
+\label{res:SolverResponsible}
 When looking at table \ref{tab:bug:Solver} we can see which bug was caused by which solver or if it was a solver independent bug. Were we see 5 bugs unrelated to any solver, that OR-tools only occurred together with Gurobi and that OR-Tools and Gurobi didn't share any bugs found with MiniZinc or PySAT. Meanly because OR-Tools and Gurobi share more transformation code than any other solver. We also see that Gurobi occurs the most among out our bugs, this often due to edge cases on Gurobi's implementation. Although, it could be coincidental that we found more Gurobi bug than any other we speculate that the software being proprietary makes it less clear-cut to be implemented in CPMpy.
 
 \begin{table}[]
@@ -269,7 +273,8 @@ When looking at table \ref{tab:bug:Solver} we can see which bug was caused by wh
 \end{table}
 
 %\subsection{Which technique found the bug}
-Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. CTORM found 10 bugs, metamorphic testing found the most bugs at 13 and differential testing found 11 out of the19 found bugs. This shows that none of the techniques are perfect on their own, but that metamorphic testing could come close if more work was put in creating metamorphic relations. Although, this does require creativity and manual labor instead of the other automated techniques.
+\label{res:TechniqueToFindBug}
+The last table \ref{tab:bug:Technique} shows the techniques finding which bug. CTORM found 10 bugs, metamorphic testing found the most bugs at 13 and differential testing found 11 out of the19 found bugs. This shows that none of the techniques are perfect on their own, in order to find all bugs a combination of techniques would be needed. As the industry's quality insurance processes do for finding bugs in other software packages, where they use a combination of tools as discussed in section \ref{intro:SoftwareDevelopmentCycle}. With a side note that metamorphic testing could come close if more work was put in creating metamorphic relations. Although, this does require creativity and manual labor instead of the other automated techniques.
 
 \begin{table}[]
 	\centering
@@ -303,6 +308,7 @@ Our last table \ref{tab:bug:Technique} shows the techniques finding which bug. C
 
 
 \section{Reception to the bugs} 
+\label{res:ReceptionToBug}
 As mentioned in section \ref{fuzzing:OpinionsAgainstFuzzing} there are multiple views on automated bug catching. We could have thrown all our found bugs on the issue page of GitHub without further context. Which would have meant more work for the CPMpy-team and then we could perhaps have seen some negative opinions on fuzzing. 
 Although, we submitted 22 bugs or questions withing a time span of 2 weeks with deobfuscating the inputs and some explanation of what happened to get the bug, we saw a grateful welcome. Similar to what was described in the second part of section \ref{fuzzing:OpinionsAgainstFuzzing}. 
 For example, the "double not"-bug\footnote{\url{https://github.com/CPMpy/cpmpy/issues/142}} was called a serious bug and a great find and 
