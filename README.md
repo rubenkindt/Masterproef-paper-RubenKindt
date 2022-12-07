@@ -1,13 +1,15 @@
-My master thesis for Computer science (ComputerWetenschappen) at the KU Leuven, 
-# Currently still in development
-but a first version of the thesis is readable at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Paper/LaTeXPaper/masterproef.pdf (if you give me some feedback on it)
+My master thesis for Computer science (ComputerWetenschappen) at the KU Leuven.
 
-ECTS-fiche: https://onderwijsaanbod.kuleuven.be/syllabi/n/H04J4AN.htm#activetab=doelstellingen_idp922576
-At the faculty of Faculty of Engineering Science: https://eng.kuleuven.be/en
+While still in development, a first version of the thesis can be found at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Paper/LaTeXPaper/masterproef.pdf. (If you give me some feedback on it;)
+
+<br/><br/>
+<br/><br/>
+
+European Credit Transfer and Accumulation System documentation can be found at https://onderwijsaanbod.kuleuven.be/syllabi/n/H04J4AN.htm#activetab=doelstellingen_idp922576 and the relevant faculty, Faculty of Engineering Science, at https://eng.kuleuven.be/en.
 This thesis is written in association with the research group of DTAI (https://wms.cs.kuleuven.be/dtai), with guidance of professor dr. Tias Guns (https://www.kuleuven.be/wieiswie/nl/person/00056117) and Ir. Ignace Bleukx (https://www.kuleuven.be/wieiswie/nl/person/00148750).
 
 
-
+<br/><br/>
 
 
 © Copyright KU Leuven
