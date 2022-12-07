@@ -6,7 +6,7 @@ While still in development, a first version of the thesis can be found at https:
 <br/><br/>
 
 European Credit Transfer and Accumulation System documentation can be found at https://onderwijsaanbod.kuleuven.be/syllabi/n/H04J4AN.htm#activetab=doelstellingen_idp922576 and the relevant faculty, Faculty of Engineering Science, at https://eng.kuleuven.be/en.
-This thesis is written in association with the research group of DTAI (https://wms.cs.kuleuven.be/dtai), with guidance of professor dr. Tias Guns (https://www.kuleuven.be/wieiswie/nl/person/00056117) and Ir. Ignace Bleukx (https://www.kuleuven.be/wieiswie/nl/person/00148750).
+This thesis is written in association with the research group of DTAI (https://wms.cs.kuleuven.be/dtai), with guidance of professor dr. Tias Guns (https://www.kuleuven.be/wieiswie/nl/person/00056117) and ir. Ignace Bleukx (https://www.kuleuven.be/wieiswie/nl/person/00148750).
 
 
 <br/><br/>
