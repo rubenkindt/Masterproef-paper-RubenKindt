@@ -1,5 +1,6 @@
 My master thesis for Computer science (ComputerWetenschappen) at the KU Leuven, 
 # Currently still in development
+but a first version of the thesis is readable at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Paper/LaTeXPaper/masterproef.pdf (if you give me some feedback on it)
 
 ECTS-fiche: https://onderwijsaanbod.kuleuven.be/syllabi/n/H04J4AN.htm#activetab=doelstellingen_idp922576
 At the faculty of Faculty of Engineering Science: https://eng.kuleuven.be/en
