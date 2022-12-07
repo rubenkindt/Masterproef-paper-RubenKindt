@@ -16,7 +16,7 @@ Fuzzing emerged in the academic literature at the start of the nineties, while t
 \section{Fuzzing and security}
 \label{intro:FussingSecurity}
 Fuzzing is a novel way for attempting to automate the finding of bugs and eventually some of these bugs will be security related. Depending on the application of the program and its environment it is either problem or not. But those security related bugs could be costly as discussed in the previous section, bugs become more costly the later you 
-catch them. With security bugs being seen as the pricier ones, i.e. you do not want your company to get hacked, sued or being featured in the news for being exploited on top of the normal cost of having to find and fix the bug. %\todo{could not find source that says security bugs are more costly}
+catch them. With security bugs being seen as the pricier ones, i.e., you do not want your company to get hacked, sued or being featured in the news for being exploited on top of the normal cost of having to find and fix the bug. %\todo{could not find source that says security bugs are more costly}
 Ideally a company should not have to spend time, energy and money into finding and fixing bugs, but there will be miscommunications, mistakes and more that will result in bugs. Therefore, companies will need to invest in prevention and (early) detection. Which is shown in the adoption of fuzzers that has gained speed due to its proven effectiveness in finding security related bugs. For example, ShellShock, Heartbleed, Log4Shell, Foreshadow and KRACK could have been found using fuzz testing as shown in multiple sources \cite{HeartbleedViaFuzzing, 34ForeshadowViaFuzz, ShellShockViaFuzzing, Log4ShellViaFuzzing} and fuzzing is even recommended by the authors to prevent similar exploits \cite{35ForeshadowFuzzRecom, 33KrackViaFuzz}.
 
 While fuzzing is often used for finding bugs in general, there are even fuzzers that have a focus on catching security vulnerabilities specifically. Fuzzers like Yuwei Li et al. \cite{32V-Fuzz} do this with their Vulnerability-Oriented Evolutionary Fuzzing tool.
@@ -24,11 +24,11 @@ While fuzzing is often used for finding bugs in general, there are even fuzzers 
 \section{Goals}
 \label{intro:Goals}
 With this thesis we aim to be able to compare multiple know techniques for automatically finding bugs in constraint programming languages. As this type of language differs from most used programming languages not all techniques may work equally well. On top of that some bugs could have a big impact and are not always clear that they occurred.
-The techniques we will use will be a modified fuzzer originally used on SMT problems, a second will be apply satisfiable preserving changes to known inputs and test that the original input matches the known input. Our last technique will be taking advantage to the fact that CPMpy has a big library of solvers, which we will use to check that all the solvers agree on the solutions.
+The techniques used will be a modified fuzzer originally used on SMT problems, a second will be apply satisfiable preserving changes to known inputs and test that the original input matches the known input. Our last technique will be taking advantage to the fact that CPMpy has a big library of solvers, which will be used to check that all the solvers agree on the solutions.
 
 \section{Research questions}
 \label{intro:RQ:RQ's}
-As the title of the thesis already may have spoiled it, we are trying out multiple fuzzing techniques out on CPMpy, with the goal of finding which technique works well for this specific type of programming language. This in order to give a push to identify ways of automatically discovering (and maybe solving) new bugs in constrain programming languages. We put forward two regions of research questions we will to focus on.
+As the title of the thesis already may have spoiled it, we are trying out multiple fuzzing techniques out on CPMpy, with the goal of finding which technique works well for this specific type of programming language. This in order to give a push to identify ways of automatically discovering (and maybe solving) new bugs in constrain programming languages. We put forward two regions of research questions this thesis will focus on.
 
 \subsection{Problem statement}
 \label{intro:ProblemStatment}
