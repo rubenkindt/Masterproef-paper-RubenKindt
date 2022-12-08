@@ -1,4 +1,4 @@
-My master thesis for Computer science (ComputerWetenschappen) at the KU Leuven.
+My master thesis around Fuzzing constraint programming languages for Computer science (ComputerWetenschappen) at the KU Leuven.
 
 While still in development, a first version of the thesis text can be found at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Paper/LaTeXPaper/masterproef.pdf. (If you give me some feedback on it;)
 
