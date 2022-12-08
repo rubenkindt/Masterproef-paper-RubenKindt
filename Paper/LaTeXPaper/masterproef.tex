@@ -2,15 +2,15 @@
 \documentclass[master=cws,masteroption=se,english]{kulemt} % oneside
 \setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
   inputenc=utf8,
-  title={The best master's thesis ever}, 
+  title={Fuzzing constraint programming languages}, 
   author={ing. Ruben Kindt},
   promotor={Prof.\, dr.\ Tias Guns},
   assessor={ },
   assistant={Ir. Ignace Bleukx}
 }
-%Which techniques are able to automatically find bugs in constraint programming languages?
-%How can bugs be detected in constraint programming languages?
-%Lifting combinatorial fuzz testing for constraint prog
+% Detecting bugs in constraint programming languages
+% Fuzz testing constraint programming languages
+% Lifting combinatorial fuzz testing for constraint programming languages
 
 
 % Verwijder de "%" op de volgende lijn als je de kaft wil afdrukken
@@ -23,11 +23,14 @@
 \setup{font=lm}
 
 % Hier kun je dan nog andere pakketten laden of eigen definities voorzien
-\usepackage{todonotes}
+%\usepackage{todonotes}
+\usepackage{xcolor}
 \usepackage{pifont}   % used for checkmarks
 \usepackage{listings} % used for code listings
 \usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
-\usepackage[tableposition=top]{caption} % caption above table
+%\usepackage[tableposition=top]{caption} % caption above table
+\usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash, tableposition=top]{caption}
+
 \usepackage{float}
 
 %thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
@@ -141,7 +144,6 @@
 % {\newcommand{\lipsum}[1][11-13]{\par Hier komt wat tekst: lipsum ##1.\par}}
 %%%%%%%
 \begin{document}
-\todo{Discuss a good thesis title}
 \begin{preface}
 Although this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving it all interested me and I had not a single moment where I had to push myself to start working on it. But this thesis would not have been possible without the following people.
 
@@ -156,8 +158,6 @@ friends for proofreading and
 family for the support during my further studies.
 \end{preface}
 
-\listoftodos
-\todo{remove todo list}
 \tableofcontents*
 \setcounter{tocdepth}{5} % this works wow! Now I have a clean TOC but still the pdf outline in depth
 
@@ -165,7 +165,7 @@ family for the support during my further studies.
 This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable to find bugs in constraint programming languages. 
 The first technique builds further on an existing paper to test SMT theories, which this paper converts to be able to test CPMpy with. 
 A second technique uses output preserving equivalent changes to see whether the original result differs from the result of the modified program and 
-the final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs. \todo{feels bad, unsure what to discuss which you can feel in the txt}
+the final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs. %\todo{feels bad, unsure what to discuss which you can feel in the txt}
 
 % voordelen automatisch bugs vinden? = not crusial info
 % results Abstrakt is suppost to be a sneak peek not a spoiler
@@ -256,6 +256,7 @@ Een tweede techniek maakt gebruikt van resultaatgebonden equivalente wijzigingen
 %\bibliographystyle{abbrv}
 %\bibliography{references}
 \nocite{MasterproefRubenKindt}
+%\nocite{ThisThesis}
 %\nocite{75Chicken} % Easter egg ;)
 \printbibliography
 \end{document}

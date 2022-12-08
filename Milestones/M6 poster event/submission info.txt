@@ -1,0 +1,7 @@
+During w10 popup for saving check tools next to the save button for best quality
+
+1) it looks OK in PDF, 
+2) your PDF is in A1 format (Properties -> tab Description -> Page Size, this should be A1 or 594mm x 841mm).
+
+You hand in your poster by submitting it on the DTAI thesis space on Toledo in the 'Documents' tab (more details on this will be communicated via email) 
+Additionally, you should put the poster on the Wiki page of your thesis.

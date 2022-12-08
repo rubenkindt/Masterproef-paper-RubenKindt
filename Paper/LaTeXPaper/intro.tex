@@ -1,5 +1,5 @@
 \chapter{Introduction}
-\label{cha:intro}
+\label{cha:1:intro}
 \label{intro:intro}
 There are a lot of causes for bugs software complexity, multiple people writing different parts, changing objective goals, misaligned assumptions and more. Most these things cannot be avoided during the creation of software but are the cause of program crashes, vulnerabilities or wrong outcomes. Multiple forms of prevention have been created like the various forms of software testing, documentation, automatic tests and code reviews. All with the aim to prevent the occurrence of bugs and to reduce the cost associated with them. While automatic test cases often evaluate the goals of software end evaluate previous known bugs, it can do much more. Fuzzing software is a part of those automatic tests, a technique that is popular in the security world for exploit prevention. This technique generates random input for a program under test (PUT) and monitors if the program crashes or not. This explanation was the original interpretation of fuzzing as performed by Miller \cite{4originalFuzzingUnixUtils}, today this technique is seen as random generation based black box fuzzing while the current fuzzing envelops a broader term, as Man\`es et al. \cite{13manes2019survey} put it nicely,
 \begin{quote}
@@ -32,7 +32,7 @@ As the title of the thesis already may have spoiled it, we are trying out multip
 
 \subsection{Problem statement}
 \label{intro:ProblemStatment}
-As described in at the introduction of  this chapter \ref{intro:intro}, bugs are practically unavoidable and always unwanted, especially when a user trusts a program to give a correct answer and it does not. With solvers surrounding constraint programming languages being executed more and more we would like to strongly avoid any bugs in the real world from arising. To this end it would be interesting to find bugs during development without much overhead, a modern approach would be the use of fuzzers. which we will try out on a constraint programming language.
+As described in at the introduction of  this chapter \ref{intro:intro}, bugs are practically unavoidable and always unwanted, especially when a user trusts a program to give a correct answer and it does not. With solvers surrounding constraint programming languages being executed more and more we would like to strongly avoid any bugs in the real world from arising. To this end it would be interesting to find bugs during development without much overhead, a modern approach would be the use of fuzzers. Which we will try out on a constraint programming language.
 
 \subsection{Main focus: fuzzing technique-focused}
 \label{intro:RQ:MainFocus}
@@ -67,8 +67,9 @@ A keen reader may wonder why we do not focus on efficiency, this would result in
 \section{Modus operandi}
 This thesis will create three techniques to detect bugs automatically for the constraint programming language, CPMpy. Starting from multiple examples we will extract all solvable models to then run each model through a technique to see if we can create a bug either from the original model or by modifying it. Afterwards, we will validate the found bugs and evaluate and evaluated the found bugs for each technique. To finally compare the results and see which techniques are able to find bugs in constraint programming languages.
 
-\todo{optional: section, written out text what each chapter is about}
 
+\section{Overview}
+In the next chapter \ref{cha:2:CS} we will go deeper in on CP, SAT and SMT-theories to then explain what fuzzing is in chapter \ref{cha:3:fuzzing} and how we can use it to find bugs. Once we found bugs we will need to find the relevant or crucial part related to the bug, which we will discuss in chapter \ref{cha:4:crucialParts}. We will also explain how we implemented the techniques to find the bugs in more detail in chapter \ref{cha:5:impl} and which ones we found in chapter \ref{cha:6:res}. To then end with a conclusion and future work in chapter \ref{cha:7:conclusion}.
 
 %\section{Conclusion} intro chapter doesn't need a conclusion.
 
