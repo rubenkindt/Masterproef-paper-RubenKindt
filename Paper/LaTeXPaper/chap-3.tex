@@ -23,7 +23,7 @@ A smart fuzzer referrers to the fuzzing techniques which have knowledge about th
 \label{fuzzing:BlackGrayWhiteFuzzing}
 On top of adding knowledge of the inputs' structure to the fuzzer, we can also add knowledge of the program under tests' structure to the fuzzer. Which brings us to black, gray and white box fuzzing. With black box fuzzing the fuzzer does not have any knowledge about the inner working of the PUT and we treat the PUT as a literal black box. We provide input and we look at what the PUT provides as output. With this minimal information the fuzzer then tries to improve its input creation. 
 Compared to black box fuzzing, gray box fuzzing usually comes with tools that give indirect information to the fuzzer. Tools like code coverage, timings, classes of errors as measurements are all used as feedback, but more measurements are possible. 
-Lastly, as you may have predicted, white box testing is the term used when the fuzzer has as much information available as possible. It will have access to the source code and can adjust their inputs to fuzz specific parts of the code. Directed fuzzing also falls under this term, here we guide the fuzzer to interesting locations for testing of specific parts of the PUT. White box fuzzing does have a higher computation cost due to having to reverse engineer the path to specific edge cases, meaning that it has a higher chance of finding more bugs per input but creating those inputs takes more time compared to black box fuzzing. 
+Lastly white box testing is the term used when the fuzzer has as much information available as possible. It will have access to the source code and can adjust their inputs to fuzz specific parts of the code. Directed fuzzing also falls under this term, here we guide the fuzzer to interesting locations for testing of specific parts of the PUT. White box fuzzing does have a higher computation cost due to having to reverse engineer the path to specific edge cases, meaning that it has a higher chance of finding more bugs per input but creating those inputs takes more time compared to black box fuzzing. 
 
 The differentiation between black, gray and white box fuzzing is not clear cut, most people would agree that white box fuzzing has full knowledge about the PUT, including the source code, that gray box fuzzing has some knowledge about the PUT and that black box fuzzing has little to no knowledge about the PUT. Going into more detail could become controversial, all we can say is that it is no longer a black-and-white situation and that the lines have become fuzzy.
 
@@ -34,7 +34,7 @@ Now that we know how we can classify fuzzers, let us look at some existing fuzze
 A couple of years later, KLEE \cite{8KLEE} was developed by Cadar et al. KLEE is a generation based white box fuzzing tool build with the idea that bugs could be on any code line and that testing should cover as code much as possible. A code coverage tool is used to test which lines of code are executed and this combined with the feedback KLEE received from the symbolic processor and the interpreter it can generate improved inputs. KLEE does this by symbolically executing the program executions, branching on all paths and searching for any dangerous operations. When it finds an error, it will convert the symbolic representation to a concrete representation based on the constraints it needed to get to the specific location. To then use this concrete representation to test the original program.
 With KLEE's stride to obtain a high code coverage it should be noted that covering a line of code does not mean that line of code has been found to contain no bugs, but not going over lines of code definitely means that the lines remain untested. Therefore, code coverage is sometimes used as a relative metric, checking if a specific test raises the code coverage, means that a test uses a new part of the code base that has not been tested yet. This combined with the fact that getting a high code coverage is a demanding task and does not easily gets to 100\% turns code coverage into a well-rounded measurement.
 
-\begin{figure}
+\begin{figure}[h]
 	\centering
     \begin{minipage}{0.45\textwidth}
 		\centering
@@ -83,7 +83,7 @@ Dominik Winterer et al. take a free variable from each of the equisatisfiable fo
 
 
 A last fuzzer we will discuss is Falcon, a fuzzer that extends the search space to also test the configuration of the SMT solvers. This fuzzer made by Peisen Yao et al. \cite{42FalconFuzzingConfigurationSettingsAndNormal} found quite the success by being the first to linking the configuration options to the operations and to then use this information to fuzz better.
-When using STORM as the underlying fuzzer with the knowledge of the configuration space the authors managed to increase the code coverage by 17.2 to 18.8\%. When knowing that SMT solver such as Z3 and CVC4 contain more than 700 000 and 100 000 lines of code respectively means that any percentage is a significant number of extra lines covered.
+When using STORM as the underlying fuzzer with the knowledge of the configuration space the authors managed to increase the code coverage by up to 18.8\%. When knowing that SMT solver such as Z3 and CVC4 contain more than 700,000 and 100,000 lines of code respectively means that any percentage is a significant number of extra lines covered.
 
 \section{Types of bugs}
 \label{fuzzing:TypesOfBugs}
@@ -95,7 +95,7 @@ For practical reasons we will be defining models that take more then 15 minutes 
 \subsection{Differential testing}
 \label{fuzzing:DifferentialTesting}
 As mentioned above a lot of fuzzers use crashes to detect that the PUT has failed to provide a correct output or when possible, use differential testing. This latter one uses a single or multiple analog programs to test if the PUT gave the same output as the analog programs. As Christian Klinger et al. did in their paper \cite{48klinger2019differentially} by applying "bugs-as-deviant-behavior" they try to find precision and soundness mistakes with input creation via seed files to compare the output to similar programs. 
-Unfortunately, neither crash based nor differential testing is ideal: crash based fuzzing will not trigger on wrong outputs and differential testing requires that one or multiple analog programs exits preferably with a different implementation to reduce overlapping bugs. The latter technique may therefore not always be possible due to the existence of those analog programs.
+Unfortunately, neither crash based nor differential testing is ideal, crash based fuzzing will not trigger on wrong outputs and differential testing requires that one or multiple analog programs exits preferably with a different implementation to reduce overlapping bugs. The latter technique may therefore not always be possible due to the existence of those analog programs.
 
 \subsection{Metamorphic testing}
 \label{fuzzing:MetamorphicTesting}
@@ -119,7 +119,7 @@ The oracle problem describes the issue of telling if a PUTs output was, given th
 	\newline
 	-Earl T. Barr et al. in "The Oracle Problem in Software Testing: A Survey" \cite{10barr2014oracleProblem}.
 \end{quote}
-In their paper they discuss four categories: specified test oracles, derived test oracles, implicit test oracles and the absence of test oracles. The biggest category would be the specified test oracles which contains all the possible encoding of specifications like modeling languages UML, Event-B and more. Their derived test oracles classification contains all forms of knowledge obtained from documentation on how the program should work or by knowledge of previous versions of the program. The last two oracles' categories come down to the use of knowing that crashes are always unwanted and the human oracle such as crowdsourcing respectively.
+In their paper they discuss four categories specified test oracles, derived test oracles, implicit test oracles and the absence of test oracles. The biggest category would be the specified test oracles which contains all the possible encoding of specifications like modeling languages UML, Event-B and more. Their derived test oracles classification contains all forms of knowledge obtained from documentation on how the program should work or by knowledge of previous versions of the program. The last two oracles' categories come down to the use of knowing that crashes are always unwanted and the human oracle such as crowdsourcing respectively.
 
 \subsection{Handling the oracle problem}
 \label{fuzzing:handelingOracelproblem}
