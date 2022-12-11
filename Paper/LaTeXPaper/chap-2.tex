@@ -39,8 +39,7 @@ On the first line of listing \ref{lst:SendMoreMoney} you can see the importing o
 We will not be spoiling the solution and will leave it up to you to find the solution but remember that you can check your answer with the program above.
 
 \begin{minipage}{0.948\textwidth}
-\label{lst:SendMoreMoney}
-\begin{lstlisting}[language=minizinc, caption={Solution to the puzzle "send more money" modified and taken from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}.}]
+\begin{lstlisting}[language=minizinc, label={lst:SendMoreMoney}, caption={Solution to the puzzle "send more money" modified and taken from \url{https://www.minizinc.org/doc-2.5.5/en/downloads/send-more-money.mzn}.}]
 	include "globals.mzn";
 	var 1..9: S; % 'S' is a starting character therfore limited from 1 to 9
 	var 0..9: E; % Other characters are limited from 0 to 9.
@@ -117,8 +116,8 @@ This thesis would have included an in-depth explanation on how CPMpy does its co
 
 Finally, to illustrate that both MiniZinc and CPMpy are not that far apart a CPMpy listing \ref{lst:SendMoreMoneyCPMpy} is included for the same problem as seen for MiniZinc in listing \ref{lst:SendMoreMoney}. After importing the relevant packages on line 9 and 10, the variables are created with lower bound of 0, an upper bound of 9 and since there are 8 variables an array of length 8 is generated. Next on line 14 an empty model is generated which is filled with constraints on lines 15 to 20. All letters are calculated with their corresponding units to for the summation constraint, the next line specifies that all unique letters must get a unique value assigned. To then limit the words starting with a zero by constraints on line 19 and 20. After a print of the model to show what has been modeled the model is solved on line 25 to then pretty print the output.
 
-\label{lst:SendMoreMoneyCPMpy}
-\begin{lstlisting}[language=python, caption={Solution to the puzzle "send more money". Modified from the example in the CPMpy repository \url{https://github.com/CPMpy/cpmpy/blob/master/examples/send_more_money.py}}]
+
+\begin{lstlisting}[language=python, label={lst:SendMoreMoneyCPMpy},  caption={Solution to the puzzle "send more money". Modified from the example in the CPMpy repository \url{https://github.com/CPMpy/cpmpy/blob/master/examples/send_more_money.py}}]
 	#!/usr/bin/python3
 	"""
 	Send more money in CPMpy

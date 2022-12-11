@@ -1,7 +1,7 @@
 \chapter{Detecting crucial parts in inputs}
 \label{cha:4:crucialParts}
 \label{inputReduction:intro}
-When detecting that the program under test crashes, wrongly satisfied, wrongly unsatisfied, hangs or gives the wrong solution on a given input, the first question asked is why it does that. What causes this unwanted output and on what line does the bug occurs. 
+When detecting that the program under test crashes, hangs, wrongly satisfied, wrongly unsatisfied or gives the wrong solution on a given input, the first question asked is why it would do that. What causes this unwanted output and on what line does the bug occur?. 
 With crashes, a stack trace and some luck this could be easy, but when a bug causes a crash in another place the developer may need to debug deep into the code to find the bug. 
 This with potential large inputs could be a tedious and long assignment, for this reason we would like to know what parts of the input are relevant for the bug. Which will be discussed further in this chapter, starting with deobfuscating inputs.
 

@@ -1,6 +1,6 @@
 from cpmpy import *
 
-X = intvar(lb=0, ub=9)
+X = intvar(lb=0, ub=9, name='X')
 m = Model()
 m += X == 3
 m += ~(~(X == 3))

@@ -18,13 +18,13 @@ The techniques almost achieved semi-automatic testing with the corresponding adv
 \label{con:Limitations}
 This problem of frequently finding the same bug is a problem, since it clogs the output with repeated or similar bugs, making it harder to find new bugs. The first solution proposed in this thesis was to deduplicate bugs with the technique seen in subsection \ref{inputReduction:Deduplication}. But during testing a preventative approach seemed  favorable compared to the reactive approach of filtering out known bugs. Although the filters currently in use work, they require the developer to run a tester see what the results are and add a try catch for the most occurring bugs. Ideally this manual creation of filters is done automatically by adding the knowledge of the already found bugs to the tester. 
 
-Another limitation to the testers is specifically with the metamorphic testing, in this technique metamorphic relations need to be manually created. These relations are then used to change constraints to an equivalent but different constraint. With more particular relations the technique would have been able to find at minimum the "double not"-bug and the power bug of Gurobi as well. But after implementing 30 metamorphic relations creativity for new relations starts to dwindle down. A second limitation will be that these relations will need to be updated or added after each new addition to CPMpy, which results in more work for the developer and another step away from automation.
+Another limitation to the testers is specifically with the metamorphic testing, in this technique metamorphic relations need to be manually created. These relations are then used to change constraints to an equivalent but different constraint. With more particular relations the technique would have been able to find at minimum the "double negation"-bug and the power bug of Gurobi as well. But after implementing 30 metamorphic relations creativity for new relations starts to dwindle down. A second limitation will be that these relations will need to be updated or added after each new addition to CPMpy, which results in more work for the developer and another step away from automation.
 
 %add exception once a bug is found for that specific bug and rerunning again manual work
 %-> best use during development instead of when a release is wanted. 
 %Which may not be a bad way of working.
 
-While working with seeds is the better than generating inputs the inputs themselves as discussed in subsection \ref{fuzzing:generationMutation}, it did bring limitations with it. Those limitations being the availability, complexity and diversity of the seeds. For example, the bug with the negation of global functions was not found using differential testing since none of the over nine thousand seed files had any negation of a global function. This was a limitation created by using seed files that originated from examples of CPMpy.
+While working with seeds is the better than generating inputs the inputs themselves as discussed in subsection \ref{fuzzing:generationMutation}, it did bring limitations with it. Those limitations being the availability, complexity and diversity of the seeds. For example, the bug with the negation of global constraints was not found using differential testing since none of the over nine thousand seed files had any negation of a global constraint. This was a limitation created by using seed files that originated from examples of CPMpy.
 
 %Another limitation is with the seeds, while we did discuss the advantages of working with self generating inputs compared to using existing inputs in  Where we working with seeds did limit us 
 %problems limited by global fucntions of used seeds (somewhat fine),
@@ -32,14 +32,14 @@ While working with seeds is the better than generating inputs the inputs themsel
 
 %\subsection{CTORM} NOT USED ATM !
 %STORM originated from as a SMT fuzzer, we changed it to be able to handle CP's 
-%but it still modified problem models like it was a SMT; With and's and not's
+%but it still modified problem models like it was a SMT; With conjunctions and negations
 %Techniques are best applied during development, since Ctorm of to often detects the already found bugs
 %only 'and' and 'not' combinations Just like STORM
 
 %\subsection{Metamorphic testing}
 %bug wrong bound would have been found if we logged the crashes of the original file 
 
-%did not find ~(~()) simply because we didn't think to check it specifically, we did check ~=0
+%did not find ~(~()) as we didn't think to check it specifically, we did check ~=0
 %all checks ? + combo-able
 
 %meta testing requires extra manual work
