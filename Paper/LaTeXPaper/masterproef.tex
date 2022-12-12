@@ -2,7 +2,7 @@
 \documentclass[master=cws,masteroption=se,english, oneside]{kulemt} % oneside
 \setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
   inputenc=utf8,
-  title={Fuzzing constraint programming languages}, 
+  title={Fuzz Testing of Constraint Programming}, 
   author={ing. Ruben Kindt},
   promotor={Prof.\, dr.\ Tias Guns},
   assessor={ },
@@ -145,7 +145,7 @@
 %%%%%%%
 \begin{document}
 \begin{preface}
-Although this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving it all interested me and I had not a single moment where I had to push myself to start working on it. But this thesis would not have been possible without the following people.
+Although this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving, it all interested me and I had not a single moment where I had to push myself to start working on it. Nevertheless, this thesis would not have been possible without the following people.
 
 
 \noindent Firstly, I would like to thank 
@@ -153,7 +153,7 @@ professor dr. Tias Guns for the guidance and the proposal of this fascinating to
 ir. Ignace Bleukx for answering many questions, intensive thesis meetings, proofreading and the cleverness for coming up with the name of CTORM, 
 dr. ir. Jo Devriendt for finding bugs within our bug finder, 
 the rest of the CPMpy-team, 
-Hakan Kjellerstrand for publishing significant amount examples which we used as seeds,
+Hakan Kjellerstrand for publishing a significant number of examples which we used as seeds,
 friends for proofreading and 
 family for the support during my further studies.
 \end{preface}
@@ -162,10 +162,14 @@ family for the support during my further studies.
 \setcounter{tocdepth}{5} % this works wow! Now I have a clean TOC but still the pdf outline in depth
 
 \begin{abstract}
-This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable to find bugs in constraint programming languages. 
-The first technique builds further on an existing paper to test SMT theories, which this paper converts to be able to test CPMpy with. 
+This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable to find bugs in constraint programming languages. With these languages 
+logical, optimization and other problems can be solved, which CPMpy extends with modeling of those problems in python. Here we will search for bugs where CPMpy may crash, hang or produce the wrong output. All of these are unwanted but the last ones do not show the user that a bug has occurred. 
+The first technique to find bugs builds further on an existing paper to test SMT theories, which this paper converts to be able to test CPMpy with. 
 A second technique uses output preserving equivalent changes to see whether the original result differs from the result of the modified program and 
-the final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs. %\todo{feels bad, unsure what to discuss which you can feel in the txt}
+the final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs.
+
+None of the techniques found every single bug, with the first one finding 10 bugs, the second 13 and the last one finding 11 out of the 19 found bugs. Resulting in no clear winner. With more development in constraint programming and CPMpy these techniques can help with finding future bugs. 
+
 
 % voordelen automatisch bugs vinden? = not crusial info
 % results Abstrakt is suppost to be a sneak peek not a spoiler
@@ -180,7 +184,9 @@ the final technique uses the concept of comparing the results of analog programs
 %
 Deze masterproef stelt een vergelijkende studie voor tussen drie manieren om bugs te vinden met CPMpy als voorbeeld. Dit om te onderzoeken welke technieken geschikt zijn om bugs te vinden in programmeertalen voor beperkingen.
 De eerste techniek bouwt verder op een bestaande paper om SMT-theorieën te testen via de tester STORM, deze paper converteert STORM naar een tester die om kan gaan met CPMpy om daar dan mee te kunnen testen.
-Een tweede techniek maakt gebruikt van resultaatgebonden equivalente wijzigingen om te evalueren of het oorspronkelijke resultaat verschilt van het resultaat van het gewijzigde programma. En ten slotte gebruikt de laatste techniek het concept van gelijkaardige programma's, om de resultaten hiervan te vergelijken om zo eventuele verschillen tussen de programma's te detecteren.
+Een tweede techniek maakt gebruikt van resultaatsgebonden equivalente wijzigingen om te evalueren of het oorspronkelijke resultaat verschilt van het resultaat van het gewijzigde programma. En ten slotte gebruikt de laatste techniek het concept van gelijkaardige programma's, om de resultaten hiervan te vergelijken om zo eventuele verschillen tussen de programma's te detecteren.
+
+Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevonden fouten. De eerste vond 10 fouten, de tweede 13 en de laatste 11 van de in totaal 19 gevonden fouten. Met verdere ontwikkelingen in CPMpy en de programmeertalen zullen nieuwe fouten gemaakt worden en hierbij zouden de technieken gebruikt kunnen worden om deze op te sporen.
 
 %State of the art 
 %'in deze masterproef stellen wij een vergelijkende studie voor om auto bugs te vinden in cpl met als voorbeeld taal de CPMpy written by Tia's Guns at al.
@@ -203,18 +209,18 @@ Een tweede techniek maakt gebruikt van resultaatgebonden equivalente wijzigingen
   \begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
   	
 %Alphabetic pls
-	CI/CD & Continuous Integration and Continuous Deployment, a pipeline for newly written code to repeatably be build, test, release, deploy and more. \\
-    CP & Constrain Programming language sometimes also referred to as CPL \\
-    CPL & Constrain Programming Language also referred to as CP \\
+	CI/CD & Continuous Integration and Continuous Deployment, a pipeline for newly written code to repeatedly be built, tested, released, deployed and more. \\
+    CP & Constraint Programming language sometimes also referred to as CPL \\
+    CPL & Constraint Programming Language also referred to as CP \\
     CNF & Conjunctive Normal Form, which is a boolean formula written using conjunctions of distinctions. \\
-    CSP & Constraint Satisfaction Problem is a problem with constraints and variable with a specific domain e.g., boolean, finite and others.\\
+    CSP & Constraint Satisfaction Problem is a problem with constraints and variables with a specific domain e.g., boolean, finite and others.\\
     CPMpy & Constraint Programming and Modeling language for Python.\\
     CVC & Cooperating Validity Checker a popular SMT-theorem prover \\
     PUT & Program Under Test, the piece of code, application of program that is tested on for potential bugs. \\
     LLVM & Although it looks like an abbreviation, it is not. LLVM is the name of a project focused on compiler and toolchain technologies. \\
     MIP & Mixed Integer Programming, theory where decision variables are allowed to be integers \\
     MUS & Minimal Unsatisfiable Subset, the smallest subset possible that is not satisfiable \\
-    NNF & Negation Normal Form, which is a boolean formula written using only  conjunctions, disjunctions and negations. With negations only occuring in literals. \\
+    NNF & Negation Normal Form, which is a boolean formula written using only  conjunctions, disjunctions and negations. With negations only occurring in literals. \\
     SMT & Satisfiability Modulo Theory \\
     SUT & Software under Test, analogue to PUT \\
   \end{tabularx}

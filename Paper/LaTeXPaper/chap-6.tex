@@ -12,31 +12,31 @@ In this chapter we discuss the results of all three of the techniques introduced
 \section{Running the tests}
 \label{res:RunningTests}
 \label{res:Specs}
-Although, the specifications are not crucial as we did not do any speed benchmarking. It does give you, the reader, an idea of the performance. All tests were executed on an Ubuntu 20.04.5 LTS with 8GB RAM, an Intel core i5-3380M capable of 2.90GHz and a V-NAND SSD of 500GB 860 EVO Model MZ-76E500 through a SATA 3 connection. Other software versions used can be found in the first section of the implementation chapter \ref{cha:5:impl}. With each technique taking around a day to three days to run more than the nine thousand seed files once. Note that processing a seed once can mean that variants of that seed were run up to 100 times depending on the technique used.
+All tests were executed on an Ubuntu 20.04.5 LTS with 8GB RAM, an Intel core i5-3380M capable of 2.90GHz and a V-NAND SSD of 500GB 860 EVO Model MZ-76E500 through a SATA 3 connection. Other software versions used can be found in the first section of the implementation chapter \ref{cha:5:impl}. With each technique taking around a day to three days to run more than the nine thousand seed files once. Note that processing a seed once can mean that variants of that seed were run up to 100 times depending on the technique used.
 
 %time when faults are found?
 
 \subsection{Preventing the same bug from occurring frequently}
 %these tools often gave the same error again causing the new bug to be hidden, se choice to catch some of the more prevelent bugs, If some one wishes to rerun (parts) It is best to remove those exceptions in order to see the full output
-After initial experimentation we noticed that once a bug was found by any of our techniques, the same bug would occur frequently, but in a different seed causing our resulting logs to be cluttered with duplicates bugs. Although we were well aware of the possibility these duplicate bugs could appear, we underestimated the severity of impact on our workflow. Whereas we planned on using a reactive deduplication technique in post-processing as described in subsection \ref{inputReduction:Deduplication}, after 10.000 occurrences of equivalent bugs, we changed to a preventative approach. 
+After initial experimentation we noticed that once a bug was found by any of our techniques, the same bug would occur frequently, but in a different seed causing our resulting logs to be cluttered with duplicate bugs. Although we were well aware of the possibility these duplicate bugs could appear, we underestimated the severity of impact on our workflow. Whereas we planned on using a reactive deduplication technique in post-processing as described in subsection \ref{inputReduction:Deduplication}, after 10.000 occurrences of equivalent bugs, we changed to a preventative approach. 
 
-Once a bug was noted, we tried to prevent it, for crashes this meant adding a try catch for the specific error. While for wrongly (un)satisfiable bugs we looked at special occurrences of keywords in the constraints we knew caused bugs, to then blacklist them. For example, a bug we will discuss in the next section had a specific string of characters, " == 0 == 0". Being able to check the string of characters with knowing that it resulted in wrongly unsatisfiable solutions made it able for us to filter that bug as well. 
+Once a bug was noted, we tried to prevent it, for crashes this meant adding a try catch for the specific error. While for wrongly (un)satisfiable bugs we looked at special occurrences of keywords in the constraints we knew caused bugs, to then blacklist them. For example, a bug we will discuss in the next section had a specific string of characters, " == 0 == 0". Being able to check the string of characters knowing that it resulted in wrongly unsatisfiable solutions made it possible for us to filter that bug as well. 
 
-Luckily, with these restrictions on the output logs we were able to filter out most duplicate bugs. Naturally this is not an ideal solution, but in this situation it worked well enough. The ideal solution would be that the fuzzer has knowledge of the already found bugs and reject them. Techniques like these do exist but would bring us to far from the scope of this thesis. Unfortunately, adding strings to blacklists and restarting the tests did result in extra manual overhead.
+Luckily, with these restrictions on the output logs we were able to filter out most duplicate bugs. Naturally this is not an ideal solution, but in this situation it worked well enough. The ideal solution would be that the fuzzer has knowledge of the already found bugs and rejects them. Techniques like these do exist but would bring us too far from the scope of this thesis. Unfortunately, adding strings to blacklists and restarting the tests did result in extra manual overhead.
 
 \section{Results: found bugs}
 \label{res:bugs}
 %\todo{19 bugs is af h van welke definitie men volgt, met de onze komen we aan 19}
-In total we found 19 bugs, three of which were already known in one form or another as an issue. Of those 19 bugs some of them were easy fixes, some were harder and required more time to solve. Depending on which definition of a bug used, the number of found bugs will differ. With the definition followed in this thesis, a crash, hang or wrong output, 19 bugs remain out of the 22 submitted. At the time of writing not al bugs are resolved (some are just reported days ago). But we are working actively with developers from the CPMpy library to resolve the open bug reports. For now let us look at what we deem to be the most interesting bugs. In order to do this, we will work with the four components we defined earlier in subsection \ref{CP:CPMpy}. This being the model, the transformations, the solver interface and the solvers themselves as seen in figure \ref{fig:4ComponentsOfCPMpy}.
+In total we found 19 bugs, three of which were already known in one form or another as an issue. Of those 19 bugs some of them were easy fixes, some were harder and required more time to solve. Depending on which definition of a bug is used, the number of found bugs will differ. With the definition followed in this thesis, a crash, hang or wrong output, 19 bugs remain out of the 22 submitted. At the time of writing not all bugs are resolved (some are just reported days ago). Nevertheless, we are working actively with developers from the CPMpy library to resolve the open bug reports. For now let us look at what we deem to be the most interesting bugs. In order to do this, we will work with the four components we defined earlier in subsection \ref{CP:CPMpy}. This being the model, the transformations, the solver interface and the solvers themselves as seen in figure \ref{fig:4ComponentsOfCPMpy}.
 
 
 \subsection{Double Negation}
 \label{res:bug:DoubleNot}
-The first bug we discovered was a bug involving a \emph{double negation}, a bug where we ask CPMpy to solve the equivalent constraints "X==3" and "not(not(X==3))" at the same time. Given the domain of 'X' contains 3 this solution is trivial. Set variable 'X' equal to 3 and the problem would be satisfied. However not all CPMpy solvers did agreed with this, both OR-Tools and Gurobi said that this problem was unsatisfiable through their corresponding CPMpy interface.
+The first bug we discovered was a bug involving a double negation, a bug where we ask CPMpy to solve the equivalent constraints "X==3" and "not(not(X==3))" at the same time. Given the domain of 'X' contains 3 this solution is trivial. Set variable 'X' equal to 3 and the problem would be satisfied. However not all CPMpy solvers did agree with this, both OR-Tools and Gurobi said that this problem was unsatisfiable through their corresponding CPMpy interface.
 
-This was due to a process within CPMpy responsible for creating a \emph{flat normal form}. As described by the documentation of CPMpy\footnote{\url{https://cpmpy.readthedocs.io/en/latest/behind_the_scenes.html}} not all solvers interfaced by CPMpy allow an arbitrary nesting of constraints.It is for this reason CPMpy flattens the constraints to what they call 'flat normal form' as the similar definition of negation normal form in SAT. But, with a disclaimer that this definition does not formally exists for CP languages to their knowledge, a statement which we agree with. With this flattened form, CPMpy is able to directly call the solvers or do the last changes needed for the specific solver via the solver interface on the flattened constraints to then send it to the respective solver \cite{CPMpyGithub}. 
+This was due to a process within CPMpy responsible for creating a flat normal form. As described by the documentation of CPMpy\footnote{\url{https://cpmpy.readthedocs.io/en/latest/behind_the_scenes.html}} not all solvers interfaced by CPMpy allow an arbitrary nesting of constraints.It is for this reason CPMpy flattens the constraints to what they call 'flat normal form'. With a disclaimer that this definition does not formally exist for CP languages to their knowledge, a statement which we agree with. With this flattened form, CPMpy is able to directly call the solvers or do the last changes needed for the specific solver via the solver interface on the flattened constraints to then send it to the respective solver \cite{CPMpyGithub}. 
 
-Those negations get translated to two comparisons with a zero "== 0", but in the normalizing process that a comparison withing a comparison was not handled correctly. Causing a disappearance of a single "not", which in turn resulted the original constraint converted to the not equivalent constraints "X==3 and not(X==3)". When this gets sent to OR-Tools or Gurobi they correctly answer with unsatisfiable. The other solvers, mainly MiniZinc's subsolvers, were not affected by this bug due to not using this normalizing process. Although, this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain hidden. This bug was only caught using CTORM, due to its frequent use of adding negations and conjunctions. But we believe it could have been caught in the metamorphic testing if we had thought of adding a relevant metamorphic transformation or in the differential testing if a seed had a double "not" in its constraints. 
+Within CPMpy all negations get translated to a comparison with a zero "== 0". Making the double negation turn into a double comparison with zero which was not handled correctly in the normalizing process. Causing a disappearance of a single "not", which in turn resulted in the original constraint converted to the not equivalent constraints "X==3 and not(X==3)". When this gets sent to OR-Tools or Gurobi they correctly answer with unsatisfiable. The other solvers, mainly MiniZinc's subsolvers were not affected by this bug due to not using this normalizing process. Although this normalizing process was subjected to unit tests, these tests contained an incorrect output causing the bug to remain hidden. This bug was only caught using CTORM, due to its frequent use of adding negations and conjunctions. Due to the lack of metamorphic relations containing a double negation this bug was not caught using the metamorphic testing. Neither differential testing caught the bug since no seed had a double "not" in its constraints. 
 
 A showcase of this "double negation" bug can be seen in listing \ref{lst:Bug:DoubleNot}, where a variable 'X' is created on line 3 with a lower bound (lb) of zero and an upper bound of 9 (ub). Then, add the constraint "X == 3" to a created model on line 5 with the "+=" and the same constraint with a double negation on the next line. Remember that CPMpy uses '$\sim$' as a negation. We then see the different solvers solve the same model with a different exit status, unsatisfiable for OR-Tools and Gurobi and feasible for a MiniZinc subsolver. Feasible is a differentiation made by CPMpy within satisfiable with the other option being optimal both explain themselves. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/142}{142}.
 
@@ -59,17 +59,43 @@ A showcase of this "double negation" bug can be seen in listing \ref{lst:Bug:Dou
 	print(m.status().exitstatus.name) # FEASIBLE	
 \end{lstlisting}
 
+The constraints of the Model can be seen in listing \ref{lst:Bug:DoubleNotModelBeforeNorm}. With the variable 'X' on line 2 and both constraints on line 4 and 5. After normalization we can see that we have lost a negation in listing \ref{lst:Bug:DoubleNotModelAfterNorm}. The remaining negation has been put into the equation of "X == 3".
+
+\begin{figure}[h]
+	\begin{minipage}{0.5\textwidth}
+		\centering
+\begin{lstlisting}[language=python, label={lst:Bug:DoubleNotModelBeforeNorm}, caption={The constraints of the "double negation"-bug \emph{before} the normalization process.}]
+	Variables:
+	X: 0..9
+	Constraints:
+	X == 3
+	X == 3 == 0 == 0
+	Objective: None
+\end{lstlisting}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\centering
+\begin{lstlisting}[language=python, label={lst:Bug:DoubleNotModelAfterNorm}, caption={The resulting constraints of the "double negation"-bug \emph{after} the normalization process.}]
+	Variables:
+	X: 0..9
+	Constraints:
+	X == 3
+	X != 3
+	Objective: None
+\end{lstlisting}
+	\end{minipage}
+\end{figure}
+
+
+
 \subsection{Negation of global constraints}
 \label{res:bug:NegatedGlobal}
-A second bug related to the use of negations were the crashes of the negated global constraints. Where negations of global constraints like \begin{verbatim}
-"not(AllDifferent(argList))" 	
-\end{verbatim}
-would crash with a recursion error. As the normalizing of a negated global constraint would be handled with adding a "== 0" to it. The action of adding a "== 0" to the constraint did not change anything causing the same to happen when the next normalization would be attempted on the global constraint. The solution was to negate the decomposition of the global constraint instead of negating the global constraint, which was suggested in the comments together with a commented out throw of a not-implemented error. The entire function was labeled as work in progress, but the CPMpy-team expected it to work for this use case as they used it in their reification process. The reason it worked in this process was due to a shortcut not being taken, which the negation of global constraints did do, therefore exposing the bug only in the latter case.
+A second bug related to the use of negations were the crashes of the negated global constraints. Where negations of global constraints like \texttt{not(AllDifferent(argList))} would crash with a recursion error. As the normalizing of a negated global constraint would be handled with adding a "== 0" to it. The action of adding a "== 0" to the constraint did not change anything causing the same to happen when the next normalization would be attempted on the global constraint. The solution was to negate the decomposition of the global constraint instead of negating the global constraint, which was suggested in the comments together with a commented out raising of a not-implemented error. The entire function was labeled as work in progress, but the CPMpy-team expected it to work for this use case as they used it in their reification process. The reason it worked in this process was due to a shortcut not being taken, which the negation of global constraints did do, therefore exposing the bug only in the latter case.
 
-It was again due to the normalizing not being used for MiniZinc's subsolvers that the bug only occurred when using OR-Tools and Gurobi as solvers. And this bug was quickly found by CTORM since it uses a significant number of negations. Due to the metamorphic relation of adding "!= 0" after some constraints the metamorphic tests managed to find it as well. However, it did not get found by our differential tests as no examples negated their global constraints.
+It was again due to the normalizing not being used for MiniZinc's subsolvers that the bug only occurred when using OR-Tools and Gurobi as solvers. Moreover, this bug was quickly found by CTORM since it uses a significant number of negations. Due to the metamorphic relation of adding "!= 0" after some constraints the metamorphic tests managed to find it as well. However, it did not get found by our differential tests as no examples negated their global constraints.
 
 
-A showcase of this bug can be seen in listing \ref{lst:Bug:NotGlobal}, where a variable "pos" is created on line 3 with a shape of 3 meaning that "pos" will be an array of length 3. After creating an empty model, a negation of a global constraint "AllDifferent" is added to a created model on line 5. By negating this constraint, we require the solver to find an assignment to the variables in the array "pos" where at least two have the same value. For example, array "[1 2 2]" would satisfy, but "[1 2 3]" would not. Subsequently, a MiniZinc subsolver is used to solve the problem which returns feasible on respectively line 7 and 8. However, when sending the same to Gurobi it will crash, analog with the next line if the previous one would not have crashed the program. This bug report can be found in the GitHub repository issue number  \href{https://github.com/CPMpy/cpmpy/issues/143}{143}.
+A showcase of this bug can be seen in listing \ref{lst:Bug:NotGlobal}, where a variable "pos" is created on line 3 with a shape of 3 meaning that "pos" will be an array of length 3. After creating an empty model, a negation of a global constraint "AllDifferent" is added to a created model on line 5. By negating this constraint, we require the solver to find an assignment to the variables in the array "pos" where at least two have the same value. For example, array "[1 2 2]" would satisfy, but "[1 2 3]" would not. Subsequently, a MiniZinc subsolver is used to solve the problem which returns feasible on respectively line 7 and 8. However, when sending the same to Gurobi it will crash, analogous with the next line if the previous one would not have crashed the program. This bug report can be found in the GitHub repository issue number  \href{https://github.com/CPMpy/cpmpy/issues/143}{143}.
 
 
 \begin{lstlisting}[language=python, label={lst:Bug:NotGlobal}, caption={The "negation of global constraints"-bug.}]
@@ -88,9 +114,12 @@ A showcase of this bug can be seen in listing \ref{lst:Bug:NotGlobal}, where a v
 
 \subsection{Power function of Gurobi}
 \label{res:bug:Power}
-Now that we have seen two bugs in the transformation part of CPMpy, which both fit in the transformation component of CPMpy. It is time to look at the solver interface and some bugs we found there. A first one was a bug where the solver Gurobi would crash if we gave a base variable in the power function which had a negative lower bound. Lower bound meaning that the variable was not permitted lower that that specific value. All other solver would be able to solve "pow(X, 2) == 9" with the variable 'X' defined with a lower bound of -5 and a higher bound of 5. But Gurobi did not allow this throwing an error as can be seen in listing \ref{lst:Bug:PowGurobi}. This error was then not caught by CPMpy and therefore could not be turned into an error exit status as a result.
+Now we have seen two bugs in the transformation part of CPMpy, which both fit in the transformation component of CPMpy. It is time to look at the solver interface and some bugs we found there. The first one was a bug where the solver Gurobi would crash if we gave a base variable in the power function which had a negative lower bound. Lower bound meaning that the variable was not permitted lower than that specific value. All other solvers would be able to solve "pow(X, 2) == 9" with the variable 'X' defined with a lower bound of -5 and a higher bound of 5. However, Gurobi did not allow this and raised an error as can be seen in listing \ref{lst:Bug:PowGurobi}. This error was then not caught by CPMpy and therefore could not be turned into an error exit status as a result.
 
-This bug was found with the CTORM implementation because there was a seed file which contained this power function with a negative lower bound in the base. However, the solver used to solve this problem was not Gurobi meaning that the bug was not discovered when the example was written. The original example can be found at the CPMpy repository's csplib examples\footnote{\url{https://github.com/CPMpy/cpmpy/blob/b60310d7962bc7631bcf0b9024140e47c1fb302e/examples/csplib/prob005_auto_correlation.py}}. We do not think that CTORM would have found this bug if it was not in the seed file to begin with. This because CTORM does not create new variables nor modifies any bounds of variables. The bug was also not found using the metamorphic tests, but we do believe that if we had written a metamorphic relation for the power function or one where we changed some bounds of variables that we could have found this bug. And since the problem was already in the seed file to begin with the differential testing did find the bug and logged it. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/149}{149}.
+This bug was found with the CTORM implementation because there was a seed file which contained this power function with a negative lower bound in the base. However, the solver used to solve this problem was not Gurobi meaning that the bug was not discovered when the example was written. The original example can be found at the CPMpy repository's csplib examples\footnote{\url{https://github.com/CPMpy/cpmpy/blob/b60310d7962bc7631bcf0b9024140e47c1fb302e/examples/csplib/prob005_auto_correlation.py}}. We do not think that CTORM would have found this bug if it was not in the seed file to begin with. This because CTORM does not create new variables nor modifies any bounds of variables. 
+
+The bug was also not found using the metamorphic tests, since no test covered the power function or changed any bounds of variables. Which is not a limitation of metamorphic testing but a limitation of added constraints by us. 
+Additionally, since the problem was already in the seed file to begin with, the differential testing did find the bug and logged it. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/149}{149}.
 
 \begin{lstlisting}[language=python, label={lst:Bug:PowGurobi}, caption={The "power function of Gurobi"-bug.}]
 	from cpmpy import *
@@ -106,13 +135,13 @@ This bug was found with the CTORM implementation because there was a seed file w
 
 \subsection{Wrong bound value Error}
 \label{res:bug:WrongBounds}
-A second bug we found in the solver interface was a missing check on the variable type, this time not in Gurobi but in the PySAT implementation. When checking if a sum of boolean variables matches a specific variable and that variable happens to be an integer instead of a boolean variable causing an error. In this specific case it was a follow-up function still within CPMpy that crashed. This with wrong bounds since it expected a bound of only two possibilities, a boolean variable, but got a larger bound. On all other places we could find a check with an error that would be reported. But on this spot, it was missed, which was quickly patched after reporting it.
+A second bug we found in the solver interface was a missing check on the variable type, this time not in Gurobi but in the PySAT implementation. When checking if a sum of boolean variables matches a specific variable and that variable happens to be an integer instead of a boolean variable causing an error. In this specific case it was a follow-up function still within CPMpy that crashed. This with wrong bounds since it expected a bound of only two possibilities, a boolean variable, but got a larger bound. In all other places we could find a check with an error that would be reported. However, on this spot it was missed, which was quickly patched after reporting it.
 
 Although, CTORM was run with PySAT's subsolvers, it did not find this bug simply due to a check of (un)satisfiability of the original problem at the start of the program. The technique would assume that the original seed was faulty to start with and continue with another solver or another seed. The same happened with the metamorphic tests where we needed to know the (un)satisfiability of the model before the changes, where it would crash again on the original model. Since those crashes were not logged in both techniques, we did not find it with these techniques. The bug did get discovered with the differential tester where each crash did get logged on top of all differences. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/150}{150}.
 
 %\subsection{Circuit of one} % remove this bug from the txt ?
 %\label{res:bug:Circuit}
-%On top of bugs related to specific solver or a group of solvers treated differently like the first two bugs. We also found bugs that would be thrown unrelated to which solver was used to solve the problem. Which brings us to the bug where we discovered that creating a global constraint, namely circuit, with only one entry would it crash with a not subscriptable error. This bug can be seen as an user caused error and be dismissed, but the CPMpy-team agreed saw it the same way. They marked it as a bug and added a small check.
+%On top of bugs related to specific solver or a group of solvers treated differently like the first two bugs. We also found bugs that would be raised unrelated to which solver was used to solve the problem. Which brings us to the bug where we discovered that creating a global constraint, namely circuit, with only one entry would it crash with a not subscriptable error. This bug can be seen as an user caused error and be dismissed, but the CPMpy-team agreed saw it the same way. They marked it as a bug and added a small check.
 %
 %\todo{which fuzzers found it?}
 %
@@ -120,19 +149,19 @@ Although, CTORM was run with PySAT's subsolvers, it did not find this bug simply
 
 \subsection{Naming variables}
 \label{res:bug:Naming+andImport}
-Now that we have seen bugs occur in both the transformations and the solver interface let us look at a bug we have found in the model component of CPMpy. 
+Now we have seen bugs occur in both the transformations and the solver interface. Let us look at a bug we have found in the model component of CPMpy. 
 
-CPMpy has multiple features like importing, exporting models, adding names variables (not to be confused with the local variables as seen on line 12 in listing \ref{lst:SendMoreMoneyCPMpy}) and more. The adding of the name is to make sure that after an export and import the given variable names are still remembered among other reasons, like to be able to give the solver the variable names. When the programmer does not give a name to a variable as we did on line 12 in listing \ref{lst:SendMoreMoneyCPMpy} with the missing "name=''" attribute in the "intvar" function. Then CPMpy adds a name to the variable without telling the programmer. these variables start with "BV" for boolean variables and "IV" with integer variables and each get appended with their respective incrementing number to prevent similar names. This because reusing variable names is dangerous as the solvers use this name to differentiate variables from each other.
-%\todo{is dit slecht uitgelegd?}
+CPMpy has multiple features like importing, exporting models, adding names variables (not to be confused with the local variables as seen on line 12 in listing \ref{lst:SendMoreMoneyCPMpy}) and more. The adding of the name is to make sure that after an export and import the given variable names are still remembered among other reasons, like to be able to give the solver the variable names. When the programmer does not give a name to a variable as we did on line 12 in listing \ref{lst:SendMoreMoneyCPMpy} with the missing \texttt{name=''} attribute in the \texttt{intvar()} function. Then CPMpy adds a name to the variable without telling the programmer. These variables start with "BV" for boolean variables and "IV" with integer variables and each get appended with their respective incrementing number to prevent similar names. This is because reusing variable names is dangerous as the solvers use this name to differentiate variables from each other.
+%\todo{is dit slecht uitgelegd?} Niemand klaagt dus het is leesbaar q:
 
-This brings us to the bug; it occurs when importing a model with automatic naming where those counters did not get updated. Meaning that when a new variable was created with automatic naming it would have an overlapping variable name with a variable that was previously imported. When a solver was then called it would treat both variables as the same resulting in potential wrongly unsatisfiable solutions. The use case is a bit farther from the normal use case a programmer would go through. Nevertheless, this was not considered a misuse of CPMpy according to the developers and at the time of writing a pull request got proposed in which the import function got extended to check the highest occurrence of the boolean and integer counter. This highest occurrence will then be used for the counters of new variables.
+This brings us to the bug; it occurs when importing a model with automatic naming where those counters did not get updated. Meaning that when a new variable was created with automatic naming it would have an overlapping variable name with a variable that was previously imported. When a solver was then called it would treat both variables as the same resulting in potential wrongly unsatisfiable solutions. The use case is a bit farther from the normal use case a programmer would go through. Nevertheless, this was not considered a misuse of CPMpy according to the developers and at the time of writing a pull request was proposed in which the import function got extended to check the highest occurrence of the boolean and integer counter. This highest occurrence will then be used for the counters of new variables.
 
-An almost related bug is in the naming of variables, when creating them starting with non-alphanumeric symbols like '+', '\%' or others some solvers would crash. Most solvers would happily solve with these names, but MiniZinc crashed with a syntax error when handling the input. This due to transformation of our model to the text-based Zinc for the subsolver, it can no longer differentiate between the variable name and the code. It therefore crashed when seeing anything that could be interpreted differently than a variable name. MiniZinc does state that identifiers are not allowed to contain special characters, which other solvers and CPMpy do allow. A solution is still being discussed at the time of writing.
+An almost related bug is in the naming of variables, when creating them starting with non-alphanumeric symbols like '+', '\%' or others some solvers would crash. Most solvers would happily solve with these names, but MiniZinc crashed with a syntax error when handling the input. Due to the transformation of our model to the text-based Zinc for the subsolver, it can no longer differentiate between the variable name and the code. It therefore crashed when seeing anything that could be interpreted differently than a variable name. MiniZinc does state that identifiers are not allowed to contain special characters, which other solvers and CPMpy do allow. A solution is still being discussed at the time of writing.
 
 
 In listing \ref{lst:Bug:+} this bug of non-alphanumeric symbols is showcased. With a variable 'i' being declared on line 3 with a lower and higher bound respectively 0 and 5. To then define a name manually and name it '+', this in contrast with the previous listings where CPMpy used automatically naming of the variables.  Due to this non-alphanumeric naming of variables MiniZinc will crash with a syntax error on line 13 while it solved the constraint fine on line 7. Lines 10 and 11 are only added to show what the MiniZinc solver receives which is visible in listing \ref{lst:Bug:+Zinc}. 
 
-\begin{lstlisting}[language=python, label={lst:Bug:+}, caption={A bug showcasing that the naming of CPMpy's varialbes is less strict than MiniZinc's.}]
+\begin{lstlisting}[language=python, label={lst:Bug:+}, caption={A bug showcasing that the naming of CPMpy's variables is less strict than MiniZinc's.}]
 	from cpmpy import *
 	
 	i = intvar(lb=0, ub=5, name="+")
@@ -148,9 +177,9 @@ In listing \ref{lst:Bug:+} this bug of non-alphanumeric symbols is showcased. Wi
 	m.solve(solver="minizinc:chuffed") # crash by syntax error
 \end{lstlisting}
 
-\noindent In this second listing we can clearly see that the '+' of line 4 and 5 are out of place syntactically. Which in turn causes the error.
+\noindent In this second listing (listing \ref{lst:Bug:+Zinc}) we can clearly see that the '+' of line 4 and 5 are out of place syntactically. Which in turn causes the error.
 
-\begin{lstlisting}[language=minizinc, label={lst:Bug:+Zinc}, caption={The resulting Zinc code from listing \ref{lst:Bug:+}.}]
+\begin{lstlisting}[language=minizinc, label={lst:Bug:+Zinc}, caption={The resulting Zinc code from listing \ref{lst:Bug:+} used by Minzinc.}]
 		% Generated by CPMpy
 		include "globals.mzn";
 		
@@ -158,7 +187,7 @@ In listing \ref{lst:Bug:+} this bug of non-alphanumeric symbols is showcased. Wi
 		constraint (+int) > 4;
 \end{lstlisting}
 
-Both of these bugs were not caught by CTORM nor the differential testing, since they do not create new variables. But did get caught by the metamorphic tests, the first bug was caught because we imported a seed file where automatic naming was done after which we created a variable too with this process, resulting in the bug. the second one is a bit more embarrassing to write down, as we created a bug in the metamorphic tester which resulted in the (unintentionally) creation of variables starting with a '+'. Our own bug caused us to find a bug in CPMpy. We still label it a caught bug because the automatic bug catcher did find it, although only by a fault we made. This bug reports can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/158}{158} and \href{https://github.com/CPMpy/cpmpy/issues/162}{162} respectively.
+Both of these bugs were not caught by CTORM nor the differential testing, since they do not create new variables. However, the bugs did get caught by the metamorphic testing, the first bug was caught because we imported a seed file where automatic naming was done after which we created a variable too with this process, resulting in the bug. The second one is a bit more embarrassing to write down, as we created a bug in the metamorphic tester which resulted in the (unintentionally) creation of variables starting with a '+'. Our own bug caused us to find a bug in CPMpy. We still label it a caught bug because the automatic bug catcher did find it, although only by a fault we made. These bug reports can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/158}{158} and \href{https://github.com/CPMpy/cpmpy/issues/162}{162} respectively.
 
 
 \subsection{MiniZinc returning zero}
@@ -183,7 +212,7 @@ Given that this problem is an installation problem, all techniques were able to 
 
 \section{Classifications}
 \label{res:Classifications}
-Now that we have seen in depth explanations of some bugs let us give an overview of all found bugs by classifying them based on place, type of the bugs, which solver caused the bugs and which technique found the bugs. The bug number refers to the issue number on GitHub and is a hyperlink to that bug, the second column is a short description of the bug and then the table specific classification follows.
+Now that we have seen in depth explanations of some bugs, let us give an overview of all found bugs by classifying them based on place, type of the bugs, which solver caused the bugs and which technique found the bugs. The bug number refers to the issue number on GitHub and is a hyperlink to that bug, the second column is a short description of the bug and then the table specific classification follows.
 
 % added above the text that refference it, to prevent tables being back to back
 \begin{table}[]
@@ -218,16 +247,17 @@ Now that we have seen in depth explanations of some bugs let us give an overview
 
 %\subsection{Place of the bug}
 \label{res:PlaceOfBug}
-As can be seen in table \ref{tab:bug:placeComponent} the cause of which component failed is well spread out withing CPMpy.
+As can be seen in table \ref{tab:bug:placeComponent} the cause of which component failed is well spread out within CPMpy.
 With 4 bugs in the model, 7 bugs in the general transformations, 7 bugs in the solver interface and one solver related bug. The one and only solver related bug we found was the one we discussed in subsection \ref{res:bug:MinizincZero}, which was already known by MiniZinc. We would have hoped to find more bugs in the solvers themselves and it was our aim with this thesis. However, either these techniques are not sufficient or most bugs are already found before release or are already reported and solved.
-If we look at the reported issues withing the GitHub repository of Google's OR-Tools, we find no significant bugs towards the (un)satisfiability or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even have used the techniques used in this thesis. This last one is likely as Google created multiple own fuzzers, which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would probably lose reputation if their solver would be proven to not produce the correct result.
+
+If we look at the reported issues within the GitHub repository of Google's OR-Tools, we find no significant bugs towards the (un)satisfiability or any wrong output by the solver. Which makes us speculate that Google does extensive testing on that front or even has used the techniques used in this thesis. This last one is likely as Google created multiple own fuzzers, which we discussed in subsection  \ref{fuzzing:OtherFuzzers}. Extensive testing is most likely also done by other solvers since they would probably lose reputation if their solver would be proven to not produce the correct result.
 
 %\subsection{What did the bug cause}
 \label{res:CauseOfBug}
 Like the authors of STORM, we focused with our techniques on the critical faults, this being the wrongly satisfiable, the wrongly unsatisfiable and the wrong number of solutions. Since these critical bugs are harder to detect for the final user than a crash, timeout or other bug. Out of the 19 bugs found 6 of them fall in our category of critical while the other 13 where all crashes as can be seen in table \ref{tab:bug:fault}. Most of those 6 critical bugs were situations where the solver wrongly outputted that a solution was unsatisfiable and there was only one bug where we could find both a wrongly satisfiable and wrongly unsatisfiable solution.
 
 \begin{table}[]
-	\caption{Table discussing what type of fault was caused by which the bugs.}
+	\caption{Table discussing what type of fault was caused by the bugs.}
 	\label{tab:bug:fault}
 	\centering
 	\begin{tabular}{lll}
@@ -258,7 +288,7 @@ Like the authors of STORM, we focused with our techniques on the critical faults
 
 %\subsection{Which solver was responsible for the bug}
 \label{res:SolverResponsible}
-When looking at table \ref{tab:bug:Solver} we can see which bug was caused by which solver or if it was a solver independent bug. Were we see 5 bugs unrelated to any solver, that OR-tools only occurred together with Gurobi and that OR-Tools and Gurobi didn't share any bugs found with MiniZinc or PySAT. Meanly because OR-Tools and Gurobi share more transformation code than any other solver pair. We also see that Gurobi occurs the most among out our bugs, this often due to edge cases on Gurobi's implementation. %Although, it could be coincidental that we found more Gurobi bug than any other we speculate that the software being proprietary makes it less clear-cut to be implemented in CPMpy.
+When looking at table \ref{tab:bug:Solver} we can see which bug was caused by which solver or if it was a solver independent bug. Where we see 5 bugs unrelated to any solver, that OR-tools only occurred together with Gurobi and that OR-Tools and Gurobi didn't share any bugs found with MiniZinc or PySAT. Mainly because OR-Tools and Gurobi share more transformation code than any other solver pair. We also see that Gurobi occurs the most among our bugs, this often due to edge cases on Gurobi's implementation. %Although, it could be coincidental that we found more Gurobi bug than any other we speculate that the software being proprietary makes it less clear-cut to be implemented in CPMpy.
 
 %\begin{minipage}[\textwidth]
 \begin{table}[]
@@ -267,7 +297,7 @@ When looking at table \ref{tab:bug:Solver} we can see which bug was caused by wh
 	\label{tab:bug:Solver}
 	\begin{tabular}{lll}
 		\hline
-		BugNr & Bug description                                           & Which solver caused it?\\ \toprule
+		BugNr & Bug description                                           & Which solver caused it\\ \toprule
 		\href{https://github.com/CPMpy/cpmpy/issues/142}{142} & double negation gives unsat                            & OR-Tools and Gurobi          \\
 		\href{https://github.com/CPMpy/cpmpy/issues/143}{143} & negating global constraints crashes                 & OR-Tools and Gurobi          \\
 		\href{https://github.com/CPMpy/cpmpy/issues/145}{145} & solvers lookup crashes                            & solver independent           \\
@@ -294,7 +324,7 @@ When looking at table \ref{tab:bug:Solver} we can see which bug was caused by wh
 
 %\subsection{Which technique found the bug}
 \label{res:TechniqueToFindBug}
-The last table \ref{tab:bug:Technique} shows the techniques finding which bug. CTORM found 10 bugs, metamorphic testing found the most bugs at 13 and differential testing found 11 out of the19 found bugs. This shows that none of the techniques are perfect on their own, in order to find all bugs a combination of techniques would be needed. As the industry's quality insurance processes do for finding bugs in other software packages, where they use a combination of tools as discussed in section \ref{intro:SoftwareDevelopmentCycle}. With a side note that metamorphic testing could come close if more work was put in creating metamorphic relations. Although, this does require creativity and manual labor instead of the other automated techniques.
+The last table \ref{tab:bug:Technique} shows the techniques finding which bug. CTORM found 10 bugs, metamorphic testing found the most bugs at 13 and differential testing found 11 out of the19 found bugs. This shows that none of the techniques are perfect on their own, in order to find all bugs a combination of techniques would be needed. As the industry's quality assurance processes do for finding bugs in other software packages, where they use a combination of tools as discussed in section \ref{intro:SoftwareDevelopmentCycle}. With a side note that metamorphic testing could come close if more work was put in creating metamorphic relations. Although, this does require creativity and manual labor instead of the other automated techniques.
 
 \begin{table}[]
 	\centering
@@ -330,7 +360,7 @@ The last table \ref{tab:bug:Technique} shows the techniques finding which bug. C
 \section{Reception to the bugs} 
 \label{res:ReceptionToBug}
 As mentioned in section \ref{fuzzing:OpinionsAgainstFuzzing} there are multiple views on automated bug catching. We could have reported all our found bugs on the issue page of GitHub without further context. Which would have meant more work for the CPMpy-team and then we could perhaps have seen some negative opinions on fuzzing. 
-Although, we submitted 22 bugs or questions withing a time span of 2 weeks with deobfuscating the inputs and some explanation of what happened to get the bug, we saw a grateful welcome. Similar to what was described in the second part of section \ref{fuzzing:OpinionsAgainstFuzzing}. 
+Although we submitted 22 bugs or questions within a time span of 2 weeks with deobfuscating the inputs and some explanation of what happened to get the bug, we saw a grateful welcome. Similar to what was described in the second part of section \ref{fuzzing:OpinionsAgainstFuzzing}. 
 For example, the "double negation"-bug\footnote{\url{https://github.com/CPMpy/cpmpy/issues/142}} was called a "serious bug and a great find" and 
 the "negation of global constraints"-bug\footnote{\url{https://github.com/CPMpy/cpmpy/issues/143}} was described as an unexpected bug and "another great find".
 %\todo{find out if this is useful addition of the thesis?}
@@ -341,8 +371,8 @@ the "negation of global constraints"-bug\footnote{\url{https://github.com/CPMpy/
 
 \section{Conclusion}
 \label{res:conclusion}
-In this chapter we have seen that the techniques frequently output already found bugs, since none of the techniques have knowledge of already found bugs. But after filtering previously found bugs the techniques perform well and found 19 bugs in CPMpy. 
-We have seen some bugs in detail with most of them already fixed, due to being easily fixable. That most bugs were related to the CPMpy code and only one responsible by an external solver. We suspect this lack of external solver bugs to be caused by well written and tested solvers. We have shown that we found crashes up to critical bugs like wrongly (un)satisfiable solutions and wrong number of solutions with over a variety of solvers. Of all the techniques used, metamorphic testing came just above the other two techniques with 13 found bugs while CTORM found 10 and the differential testing found 11 bugs out of 19. And finally, we noted the grateful welcome of bugs by the CPMpy-team.
+In this chapter we have seen that the techniques frequently output already found bugs, since none of the techniques have knowledge of already found bugs. However, after filtering previously found bugs the techniques performed well and found 19 bugs in CPMpy. 
+We have seen some bugs in detail with most of them already fixed, due to being easily fixable. Most bugs were related to the CPMpy code and only one was responsible for an external solver bug. We suspect this lack of external solver bugs to be caused by well written and tested solvers. We have shown that we found crashes up to critical bugs like wrongly (un)satisfiable solutions and wrong number of solutions with over a variety of solvers. Of all the techniques used, metamorphic testing came just above the other two techniques with 13 found bugs while CTORM found 10 and the differential testing found 11 bugs out of 19. Finally, we noted the grateful welcome of bugs by the CPMpy-team.
 
 %%% Local Variables: 
 %%% mode: latex
