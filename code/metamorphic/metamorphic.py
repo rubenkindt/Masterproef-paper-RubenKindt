@@ -216,7 +216,7 @@ def semanticFusionBoolBool(satModel, invOperation):
     return newcons
 
 def satMutation(metaModel):
-    metamorphicMutations = ["expandingAllDiff","AllDiff~(==)","expandAllEqual","AllEqual~(!=)","addNewVar2AllEqual",
+    metamorphicMutations = ["expandingAllDiff", "AllDiff~(==)", "expandAllEqual","AllEqual~(!=)", "addNewVar2AllEqual",
                             "TrueAndCons", "consAndCons2", "FalseOrCons", "xorCons", "==1",
                             "!=0", "==2>=|<=", ">=|<=2==", "sementicFusion+", "sementicFusion-",
                             "sementicFusion*", "sementicFusion^", "sementicFusion|", "sementicFusion&", "sementicFusion==",
