@@ -8,22 +8,23 @@
 	\newline
 	-Eugene C. Freuder in “In Pursuit of the Holy Grail” \cite{11freuder1997pursuitHolyGrail}.
 \end{quote}
-As the quote and the paper \cite{11freuder1997pursuitHolyGrail} from Eugene C. Freuder says, he and others believe that in the ideal world the user conveys any problem to a computer or a program and that the program will solve it. Which matches a coarse summary of what a constraint programming language (CP) can do in an ideal world. Though we do not live in an ideal world, problems need to be converted or split up into a representation that the solver can understand. 
-This is where constraints come into the picture, constraints are mathematical, logical or relational connections put on or between variables to form a model that hopefully satisfies all constraints after solving. This is sometimes combined with a final objective constraint to be minimized or maximized, for example finding a model where a postman visits all cities on a route but with a minimal distance traveled. 
+As the quote of Eugene C. Freuder says, he and others believe that in the ideal world the user conveys any problem to a computer or a program and that the program will solve it. Which matches a coarse summary of what a constraint programming language (CP) can do in an ideal world. Unfortunately, we do not live in an ideal world, problems need to be converted or split up into a representation that the solver can understand. 
+Here constraints come into the picture, constraints are mathematical, logical or relational connections put on or between variables to form a model that hopefully satisfies all constraints after solving. This is sometimes combined with a final objective constraint to be minimized or maximized, for example finding a model where a postman visits all cities on a route but with a minimal distance traveled. 
 With CP the focus lays more on solving high level problems with specialties around scheduling and planning \cite{52bartak1999constraint}. CP’s key feature being the global constraints, a set of “functions” that are aimed at a high level of solving. For example, the \texttt{alldifferent()} which makes sure that all variables within an array will be assigned a different value or \texttt{circuit()} that holds if the input forms a Hamiltonian circuit.
 
-A second field of research that we will discuss is the boolean satisfiability problem better known as SAT, where the focus lays on the boolean variant of constraints within the family of constraint solvers. This field of research has produced quite a lot of progress due to its age, resulting in efficient solving \cite{56bardin2019bringing}.
+A second field of research that we will discuss is that of the boolean satisfiability problem better known as SAT, where the focus lays on the boolean variant of constraints within the family of constraint solvers. This field of research has produced quite a lot of progress due to its age, resulting in efficient solving \cite{56bardin2019bringing}.
 
-Our last field is the satisfiability modulo theory (SMT) which builds further on SAT. This by including lists, arrays, strings, real numbers, integers and other more complex data structures and types. With SMT the focus lays more on static checking and program verification \cite{56bardin2019bringing, 54moura2008z3}.
+Finally, we will look at the satisfiability modulo theory (SMT), which builds further on SAT. This by including lists, arrays, strings, real numbers, integers and other more complex data structures and types. With SMT the focus lays more on static checking and program verification \cite{56bardin2019bringing, 54moura2008z3}.
 
 
 \section{Constraint programming}
 \label{CS:CP}
-As mentioned before CP’s are well versatile in the solving of constraints and especially when it comes to planning and scheduling. This by their efficient constraint propagation, backtracking and the linking of related constraints \cite{66WikiCP}. Originally CP’s can be linked back to constraint logic programming (CLP) where programming languages (mostly logic programming languages) were combined with constraints and ways to solve them. A notable version is that of Joxan Jaffart and Jean-Louis Lassez \cite{65jaffar1987constraint, 66WikiCP} with their extension in Prolog and thereby the creation of the category.
+As mentioned before CP’s are versatile in solving constraints, especially when it comes to planning and scheduling. This by their efficient constraint propagation, backtracking and the linking of related constraints \cite{66WikiCP}. Originally CP’s can be linked back to constraint logic programming (CLP) where programming languages (mostly logic programming languages) were combined with constraints and ways to solve them. A notable version is that of Joxan Jaffart and Jean-Louis Lassez \cite{65jaffar1987constraint, 66WikiCP} with their extension in Prolog and thereby the creation of the category.
 
-To further introduce you to constraint programming we will show a popular puzzle in the CP field “send more money”. which is a logic puzzle made by Henry Dudeney and published in Strand Magazine’s July 1924 edition \cite{sendMoreMoney}.
-In this puzzle each character represents a single digit between zero and nine (both included), meaning that the ‘e’ from “send” should be the same digit as the ‘e’ from “more” and the ‘e’ from “money”. The other rules go as follows, all different characters should have a different digit, any of the starting letters of each word cannot be zero and after replacing all characters with their corresponding digits the sum should be correct. 
+To further introduce constraint programming we will show a popular puzzle in the CP field “send more money” as seen below. It is a logic puzzle made by Henry Dudeney and published in Strand Magazine’s July 1924 edition \cite{sendMoreMoney}.
+In this puzzle each character represents a single digit between zero and nine (both included), meaning that the ‘e’ from “send” should be the same digit as the ‘e’ from “more” and the ‘e’ from “money”. The other rules are as follows, all different characters should have a different digit, any of the starting letters of each word cannot be zero and after replacing all characters with their corresponding digits the sum should be correct. 
 \begin{center}
+\label{prettySendMoreMoneyTXT}
 	\[$$
 	\; \; S E N D\\
 	+ M O R E\\
@@ -35,7 +36,7 @@ In this puzzle each character represents a single digit between zero and nine (b
 On top of showing the problem we will also use MiniZinc\footnote{\url{https://www.minizinc.org/}} as our constraint programming language to find the solution for this puzzle. By doing this we will show a possible representation of these types of problems using constraints so that a solver can find a solution.
 
 \label{sendMoreMoneyExplanation}
-On the first line of listing \ref{lst:SendMoreMoney} you can see the importing of the global constraints, which CPs are known for. Line 2 until 9 we can see the declarations of all possible characters to the possible digits, starting letters such as ‘S’ and ‘M’ are limited by their representation from 1 to 9 instead of using a constraint. The constraint on line 11 runs through until line 14, where it is closed by the semicolon. This constraint specifies the matching of the sum. At line 16 we use one of the imported global constraints namely \texttt{alldifferent()} which will satisfy if no duplicate values occur in the array. To then start solving for satisfiability at line 18, this in comparison of solving for minimization or maximization an objectify function, which does not apply here. Finally, after a solver has found a solution we print the result using a pretty-print from line 19 to 22.
+On the first line of Listing \ref{lst:SendMoreMoney} you can see the importing of the global constraints, which CPs are known for. On line 2 until 9 we can see the declarations of all possible characters to the possible digits: starting letters such as ‘S’ and ‘M’ are limited by their representation from 1 to 9 instead of using a constraint. The constraint on line 11 runs through until line 14, where it is closed by the semicolon. This constraint specifies the matching of the sum. At line 16 we use one of the imported global constraints namely \texttt{alldifferent()} which will satisfy if no duplicate values occur in the array. To then start solving for satisfiability at line 18, this in comparison of solving for minimization or maximization an objectify function, which does not apply here. Finally, after a solver has found a solution we print the result using a pretty-print from line 19 to 22.
 We will not be spoiling the solution and will leave it up to you to find the solution but remember that you can check your answer with the program above.
 
 \begin{minipage}{0.948\textwidth}
@@ -66,17 +67,21 @@ We will not be spoiling the solution and will leave it up to you to find the sol
 \end{minipage}
 
 
-The “alldifferent()” and the sum constraint also show us the power of CPs, with a single statement multiple relations are expressed \cite{53marriott1998programming}. Instead of needing to specify all possible relations of the last three characters of each word (\mbox{D + E = Y}, \mbox{Y - D = E} and \mbox{Y - E = D}) a single expression suffices. When knowing two values we can infer the third, imagine the work needed for the \texttt{alldifferent()} constraint. The developer would have to go over all possible combinations, this in combination of specific smart back-end solvers for this constraint makes MiniZinc and other CP-solvers so powerful. 
+The “alldifferent()” and the sum constraint also show us the power of CPs, as with a single statement multiple relations are expressed \cite{53marriott1998programming}. Instead of needing to specify all possible relations of the last three characters of each word (\mbox{D + E = Y}, \mbox{Y - D = E} and \mbox{Y - E = D}) a single expression suffices. When knowing two values we can infer the third. It saves significantly amounts of work for the developer, definitely when it comes to the bigger \texttt{alldifferent()} constraint. This in combination with the efficient back-end solvers for this constraint allows for a bigger abstraction and makes MiniZinc and other CP-solvers so powerful.
 
 \subsection{Origin}
-Within constraint programming we can distinguish two branches \cite{52bartak1999constraint}, one being constraint satisfaction. Which puts the focus on finding a model which satisfies all constraints. which can be done with generating values within the domain of the variables and testing them, also called generate and test but obviously this is not the fastest way. 
-On the other hand, we have constraint optimization, which covers an even harder problem. Instead of having to check if all constraints satisfy, here we want to know what model will give us the highest or lowest value. The function to optimize is often called the objective function and occurs more often than not in real life problems \cite{52bartak1999constraint}. 
+Within constraint programming we can distinguish two branches \cite{52bartak1999constraint}, one being constraint satisfaction. Which puts the focus on finding a model which satisfies all constraints. which can be done with generating values within the domain of the variables and testing them, also called generate and test but this is not the fastest way. 
+The second being constraint optimization, which covers an even harder problem. Instead of having to check if all constraints satisfy, we want to know what model will give us the highest or lowest value. The function to optimize is often called the objective function and it occurs often in real life problems \cite{52bartak1999constraint}, since:
+\begin{quote}
+	 “we do not want to find any solution but a good solution.” \newline
+	 -Roman Bart\'ak from “Constraint Programming: In Pursuit of the Holy Grail” \cite{52bartak1999constraint}
+\end{quote}
 Unfortunately depending on the problem, we regularly hit limitations due to NP-hardness. This has challenged the field and multiple different search strategies to gain a higher efficiency have been thought off. Popular approaches to finding solutions in both branches are the use of constraint propagation, backtracking, symmetry breaking, dynamic programming, techniques from the CP solvers like lazy clause generation and even heuristics such as local search, Tabu search, simulated annealing and more. 
 
 \subsection{MiniZinc}
-A keen observer will have noticed that we used “after \underline{a} solver has found satisfiability” in the explanation of “send more money” in section \ref{sendMoreMoneyExplanation}. 
-This is because MiniZinc is not a solver, it came to be from the lack of standard modeling language surrounding CP’s. Before MiniZinc, when you wanted to use another solver, you had to rewrite your problem again in that solver’s specific language. This is what Nicholas Nethercote et al. wanted to solve, they came up with MiniZinc, which is a modeling language for CPs that is not connected to a single specific solver \cite{57nethercote2007minizinc}. It originated from a modeling language focused on constraints, called Zinc \cite{68incbanda2006modelling} and as you can tell by its name MiniZinc, it is a subset of Zinc \cite{57nethercote2007minizinc}.
-In the words of Peter J. Stucke, a member of the MiniZinc team 
+A keen observer will have noticed that we used “after \underline{a} solver has found satisfiability” in the explanation of “send more money” in Section \ref{sendMoreMoneyExplanation}. 
+This is because MiniZinc is not a solver but a modeling language, it came to be from the lack of standard modeling languages surrounding CP’s. Before MiniZinc, when you wanted to use another solver, you had to rewrite your problem again in that solver’s specific language. This is what Nicholas Nethercote et al. \cite{57nethercote2007minizinc} wanted to solve when they came up with MiniZinc. A modeling language for CPs that is not connected to a single specific solver. It originated from a modeling language focused on constraints, called Zinc \cite{68incbanda2006modelling} of which MiniZinc is a subset of \cite{57nethercote2007minizinc}.
+In the words of Peter J. Stucke, a member of the MiniZinc team:
 
 \begin{quote}
 	“MiniZinc is high level enough to express most combinatorial optimization problems easily and in a largely solver-
@@ -85,7 +90,7 @@ In the words of Peter J. Stucke, a member of the MiniZinc team
 	-Peter J. Stuckey et al. in “The MiniZinc Challenge 2008-2013” \cite{58stuckey2014minizinc}.
 \end{quote} which shows the team’s vision of MiniZinc.
 
-MiniZinc transforms its inputs to FlatZinc by combining the model, data and solver specific features. Which then can be solved by a specific solver. The list of CP solvers that support MiniZinc, at the time of writing 17 solvers have FlatZinc interfaces.
+MiniZinc transforms its inputs combined with the model, data and solver specific features to FlatZinc, a intermediate language created for easier interpretation by solvers. Which then can be solved by a specific solver. The list of CP solvers that support MiniZinc, at the time of writing 17 solvers have FlatZinc interfaces.
 
 \subsubsection{MiniZinc Challenge}
 On top of maintaining and improving MiniZinc, its team also organizes a yearly challenge to compare and test what improvements have been made in the constraint solving world. Which they are able to do by having the benefit of a standardized constraint programming language to benchmark with. 
@@ -104,7 +109,7 @@ Being able to use these in combination with CPs would allow for both fields to g
 
 
 At the time of writing the CPMpy has support for multiple solvers like OR-tools, CP-SAT, Gurobi (for MIP problems), PySAT (which is a library that contains 13 different SAT solvers), PySSD which is a knowledge compiler and CPMpy has support for any CP-solver that support for the text-based MiniZinc language \cite{CPMpyDoc, CPMpyGithub} (resulting in at least 33 extra solvers). With potential future extensions to Microsoft’s Z3 theorem prover and others as new solvers.
-This thesis would have included an in-depth explanation on how CPMpy does its conversions from constraints to what is given to the solvers, but CPMpy being in development and with more changes potential coming this could become outdated quickly. We look forward to seeing CPMpy progress and the future paper(s) discussing it. What we can do is discuss it on a global level, where we see CPMpy existing out of four components. This being a model part (everything to do with creating a model of a problem), a transformation part (everything to do with changing constraints), solver interface (everything to do with restrictions the solver puts on CPMpy) and then the solver themselves (which solve the final model). With CPMpy having little to no control over the last one as can be seen in figure \ref{fig:4ComponentsOfCPMpy}.
+This thesis would have included an in-depth explanation on how CPMpy does its conversions from constraints to what is given to the solvers, but CPMpy being in development and with more changes potential coming this could become outdated quickly. We look forward to seeing CPMpy progress and the future paper(s) discussing it. What we can do is discuss it on a global level, where we see CPMpy existing out of four components. This being a model part (everything to do with creating a model of a problem), a transformation part (everything to do with changing constraints), solver interface (everything to do with restrictions the solver puts on CPMpy) and then the solver themselves (which solve the final model). With CPMpy having little to no control over the last one as can be seen in Figure \ref{fig:4ComponentsOfCPMpy}.
 
 \begin{figure}
 	\centering
@@ -113,7 +118,7 @@ This thesis would have included an in-depth explanation on how CPMpy does its co
 	\label{fig:4ComponentsOfCPMpy}
 \end{figure}
 
-Finally, to illustrate that both MiniZinc and CPMpy are not that far apart a CPMpy listing \ref{lst:SendMoreMoneyCPMpy} is included for the same problem as seen for MiniZinc in listing \ref{lst:SendMoreMoney}. After importing the relevant packages on line 9 and 10, the variables are created with a lower bound of 0, an upper bound of 9 and since there are 8 variables an array of length 8 is generated. Next on line 14 an empty model is generated which is filled with constraints on lines 15 to 20. All letters are calculated with their corresponding units to for the summation constraint, the next line specifies that all unique letters must get a unique value assigned. To then limit the words starting with a zero by constraints on line 19 and 20. After a print of the model to show what has been modeled the model is solved on line 25 to then pretty print the output.
+Finally, to illustrate that both MiniZinc and CPMpy are not that far apart a CPMpy Listing \ref{lst:SendMoreMoneyCPMpy} is included for the same problem as seen for MiniZinc in Listing \ref{lst:SendMoreMoney}. After importing the relevant packages on line 9 and 10, the variables are created with a lower bound of 0, an upper bound of 9 and since there are 8 variables an array of length 8 is generated. Next on line 14 an empty model is generated which is filled with constraints on lines 15 to 20. All letters are calculated with their corresponding units to for the summation constraint, the next line specifies that all unique letters must get a unique value assigned. To then limit the words starting with a zero by constraints on line 19 and 20. After a print of the model to show what has been modeled the model is solved on line 25 to then pretty print the output.
 
 
 \begin{lstlisting}[language=python, label={lst:SendMoreMoneyCPMpy},  caption={Solution to the puzzle “send more money”. Modified from the example in the CPMpy repository \url{https://github.com/CPMpy/cpmpy/blob/master/examples/send_more_money.py}}]
@@ -148,7 +153,7 @@ Finally, to illustrate that both MiniZinc and CPMpy are not that far apart a CPM
 	else:
 	   print("No solution found")
 \end{lstlisting}
-%We have shortly seen how a CPMpy looks like in listing \ref{lst:SendMoreMoneyCPMpy}, 
+%We have shortly seen how a CPMpy looks like in Listing \ref{lst:SendMoreMoneyCPMpy}, 
 %where we create a model, add constraints to it and then to solve the model. Everything up to the solving part is controlled by CPMpy, once the “solve()” is called 
 
 

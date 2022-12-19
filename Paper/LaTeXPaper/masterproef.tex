@@ -38,6 +38,7 @@
 % Syntax highlighting for MiniZinc in listings %
 %----------------------------------------------%
 \definecolor{ForestGreen}{RGB}{34,106,46}
+\definecolor{VeryLightGrey}{RGB}{230,230,230}
 \usepackage{color}
 \lstdefinelanguage{minizinc}{
 	morekeywords={
@@ -92,7 +93,7 @@
 %% Settings for listings
 %%
 \lstset{ %
-	backgroundcolor=\color{lightgray},  % choose the background color; you must add
+	backgroundcolor=\color{VeryLightGrey},  % choose the background color; you must add
 	% \usepackage{color} or \usepackage{xcolor}
 	basicstyle=\scriptsize\ttfamily,    % the size of the fonts that are used for the code
 	belowskip=0em,
@@ -154,21 +155,20 @@ ir. Ignace Bleukx for answering many questions, intensive thesis meetings, proof
 dr. ir. Jo Devriendt for finding bugs within our bug finder, 
 the rest of the CPMpy-team, 
 Hakan Kjellerstrand for publishing a significant number of examples which we used as seeds,
-friends for proofreading and 
-family for the support during my further studies.
+friends for proofreading even all the way back from industrial engineering like ing. Simon Vandevelde.
+Finally, I would like to thank my family for the support during my further studies.
 \end{preface}
 
 \tableofcontents*
 \setcounter{tocdepth}{5} % this works wow! Now I have a clean TOC but still the pdf outline in depth
 
 \begin{abstract}
-This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable to find bugs in constraint programming languages. With these languages 
-logical, optimization and other problems can be solved, which CPMpy extends with modeling of those problems in python. Here we will search for bugs where CPMpy may crash, hang or produce the wrong output. All of these are unwanted but the last ones do not show the user that a bug has occurred. 
-The first technique to find bugs builds further on an existing paper to test SMT theories, which this paper converts to be able to test CPMpy with. 
-A second technique uses output preserving equivalent changes to see whether the original result differs from the result of the modified program and 
-the final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs.
+This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable for finding bugs in constraint programming languages. With these languages, problems (including logical and optimization) can be modeled and solved. CPMpy extends the modeling part of these problems to be done in a for most familiar programming language python and allows for a close connection to NumPy and the solvers. In CPMpy we will search for bugs where it may crash, hang or produce the wrong output. All of these are unwanted but the last ones do not show the user that a bug has occurred. 
+The first technique to find bugs builds further on an existing paper to test solvers for SMT theories, which this paper converts to be able to test CPMpy with. 
+A second technique uses output preserving equivalent changes to see whether the original result differs from the result of the modified program.
+The final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs.
 
-None of the techniques found every single bug, with the first one finding 10 bugs, the second 13 and the last one finding 11 out of the 19 found bugs. Resulting in no clear winner. With more development in constraint programming and CPMpy these techniques can help with finding future bugs. 
+Of the 23 issues and questions submitted to the repository 19 turned to be bugs. The first technique finding 10 bugs, the second finding 13 bugs and the last one finding 11 out of the 19 found bugs. Resulting not a single technique able to find all bugs. With more development in constraint programming and CPMpy these techniques would help with finding bugs in the future. 
 
 
 % voordelen automatisch bugs vinden? = not crusial info
@@ -216,12 +216,12 @@ Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevon
     CSP & Constraint Satisfaction Problem is a problem with constraints and variables with a specific domain e.g., boolean, finite and others.\\
     CPMpy & Constraint Programming and Modeling language for Python.\\
     CVC & Cooperating Validity Checker a popular SMT-theorem prover \\
-    PUT & Program Under Test, the piece of code, application of program that is tested on for potential bugs. \\
     LLVM & Although it looks like an abbreviation, it is not. LLVM is the name of a project focused on compiler and toolchain technologies. \\
-    MIP & Mixed Integer Programming, theory where decision variables are allowed to be integers \\
+    MIP & Mixed Integer Programming, a theory where decision variables are allowed to be integers \\
     MUS & Minimal Unsatisfiable Subset, the smallest subset possible that is not satisfiable \\
-    NNF & Negation Normal Form, which is a boolean formula written using only  conjunctions, disjunctions and negations. With negations only occurring in literals. \\
-    SMT & Satisfiability Modulo Theory \\
+    NNF & Negation Normal Form, which is a boolean formula written using only  conjunctions, disjunctions and negations, with negations only occurring in literals. \\
+    PUT & Program Under Test, the piece of code, application of program that is tested on for potential bugs. \\
+    SMT & Satisfiability Modulo Theory, a generalization of SAT extend to more complex data forms like integers, strings and many more.\\
     SUT & Software under Test, analogue to PUT \\
   \end{tabularx}
 \end{flushleft}
@@ -230,12 +230,12 @@ Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevon
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
- 	$\sim$ & negation used by CPMpy\\
- 	$\&$ & and used by CPMpy\\
- 	$\vert$ & or used by CPMpy\\
-  	$\neg$ & logical negation \\
-  	$\land$ & logical and \\
-  	$\lor$  & logical or \\
+ 	$\sim$ & Representation for a negation used by CPMpy\\
+ 	$\&$ & Representation for a “and” used by CPMpy\\
+ 	$\vert$ & Representation for a “or” used by CPMpy\\
+  	$\neg$ & Mathematical representation for the logical negation \\
+  	$\land$ & Mathematical representation for the logical “and” \\
+  	$\lor$  & Mathematical representation for logical “or” \\
   \end{tabularx}
 \end{flushleft}
 

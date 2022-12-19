@@ -14,8 +14,8 @@ print(m.status().exitstatus.name) # UNSATISFIABLE
 m.solve(solver="minizinc:chuffed")
 print(m.status().exitstatus.name) # FEASIBLE
 
-mf = flatten_model(m)
 print(m)
+mf = flatten_model(m)
 print(mf)
 
 

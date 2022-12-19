@@ -19,7 +19,7 @@ When receiving a big input, the chance of it having parts unrelated to the bug i
 \subsection{Simplifying}
 \label{inputReduction:Simplifying}
 Simplification is the technique where we repeatedly remove parts of a failing input and check if it still fails and it is often done via a “delta-debugging” algorithm, which belongs to the divide-and-conquer family of algorithms \cite{2FuzzingAndDeltaDebuggingSMTSolvers}. 
-The algorithm can be seen in figure \ref{fig:ddmin} with 
+The algorithm can be seen in Figure \ref{fig:ddmin} with 
 ‘$ c_{\mbox{\ding{56}}} $’  %c_X
 meaning the failing input to be deobfuscated,
 ‘\ding{52}’ %checkmark 
@@ -29,7 +29,7 @@ failed with the given input,
 ‘$\Delta$’ and ‘$\nabla$’ being a subset of the input and the complement of the former and
 “1-minimal” meaning that not a single character can change without the input going from failing to passing. Firstly, we start the algorithm with the input and a split ’n’ of two. If we can find a subset that still fails on its own, then we continue with that subset else we look for a subset where the complement of the input still fails but where a subset is missing from the input. In the case where we split the input in two parts this would be the same as the previous. In case we do not find any smaller subset to continue, then we reduced the granularity of the split by two. To finally end when it is no longer possible to remove any part of the input, we then have obtained an input where all parts are necessary to expose the bug. This input is at the same time also the shortest possible input to trigger this bug making finding the bug for the developer easier than in the original input filled with unrelated parts. 
 
-An example of delta-debugging to minimize input can be found in figure \ref{fig:ddminExample}. In the first two steps no removal of any part nor complement was possible therefore we reduced the granularity, after which a removal of parts 3 and 4 was found possible. To then use some previous knowledge (lines 9, 10 and 11) with 2 new tests to remove parts 5 and 6. To then decrease the granularity again, repeat our possible steps and reach a minimal input.
+An example of delta-debugging to minimize input can be found in Figure \ref{fig:ddminExample}. In the first two steps no removal of any part nor complement was possible therefore we reduced the granularity, after which a removal of parts 3 and 4 was found possible. To then use some previous knowledge (lines 9, 10 and 11) with 2 new tests to remove parts 5 and 6. To then decrease the granularity again, repeat our possible steps and reach a minimal input.
 
 \begin{figure}
 	\centering
@@ -41,7 +41,7 @@ An example of delta-debugging to minimize input can be found in figure \ref{fig:
 \begin{figure}
 	\centering
 	\includegraphics[width=1.0\textwidth]{images/ddminExampleFromPaper5}
-	\caption{A minimizing delta-debugging example as shown in “Simplifying and isolating failure-inducing input” by Andreas Zeller and Ralf Hildebrandt \cite{5zeller2002simplifyingIsolatingFailure-inducing} with an input that is deobfuscated with the ddmin() algorithm from figure \ref{fig:ddmin}.}
+	\caption{A minimizing delta-debugging example as shown in “Simplifying and isolating failure-inducing input” by Andreas Zeller and Ralf Hildebrandt \cite{5zeller2002simplifyingIsolatingFailure-inducing} with an input that is deobfuscated with the ddmin() algorithm from Figure \ref{fig:ddmin}.}
 	\label{fig:ddminExample}
 \end{figure}
 
@@ -74,14 +74,14 @@ A last alternative approach would be retrying fuzzing the same seed after that s
 A subject we glossed over so far is the chuck size, the size to remove while trying to find the critical parts of the inputs. 
 The previously seen techniques will work well on the original fuzz testing by Miller et al. \cite{4originalFuzzingUnixUtils} since those random generated symbols were independent from each other. However, when testing more complex words such as function names, we no longer can split on all possible places, since the input would most likely no longer parse. 
 
-In figure \ref{fig:simplificationIsolation} we conveniently took one-eighth of the input as the chuck sizes for the ease of the example. For performance reasons we hope we can keep our chuck sizes as big as possible to be able to discard larger unrelated parts of the inputs. When this is not possible, we will need to decrease the granularity of the chuck sizes.
+In Figure \ref{fig:simplificationIsolation} we conveniently took one-eighth of the input as the chuck sizes for the ease of the example. For performance reasons we hope we can keep our chuck sizes as big as possible to be able to discard larger unrelated parts of the inputs. When this is not possible, we will need to decrease the granularity of the chuck sizes.
 For example, to be able to find the critical parts of an input of the form “XXooXooXXoo” (with ‘o’ being the critical parts and the ‘X’ being unrelated to the bug) we should always search further with same granularity while the removed parts are already removed until all options with that granularity are searched \cite{bookZellerwhyProgramsFail}. This will make sure that we eliminate all unrelated parts with the specific granularity and get “ooXoooo” instead of “ooXooXXoo”. 
 
-For more complex inputs we can apply techniques seen in section \ref{fuzzing:InputStructure} where we discussed the creation of randomly and smarter created inputs. Instead of removing unrelated parts based purely on where the part sits in the input, we can use knowledge of the input structure or knowledge of the PUT to guide us in the removal \cite{bookZellerwhyProgramsFail}. Both lexical (the meaning of words) and syntactic knowledge (the meaning of word combinations) can be used to help us in deobfuscating complex inputs. Where syntactic knowledge would help us remove the most since it is the bigger of the two.
+For more complex inputs we can apply techniques seen in Section \ref{fuzzing:InputStructure} where we discussed the creation of randomly and smarter created inputs. Instead of removing unrelated parts based purely on where the part sits in the input, we can use knowledge of the input structure or knowledge of the PUT to guide us in the removal \cite{bookZellerwhyProgramsFail}. Both lexical (the meaning of words) and syntactic knowledge (the meaning of word combinations) can be used to help us in deobfuscating complex inputs. Where syntactic knowledge would help us remove the most since it is the bigger of the two.
 
 \subsection{Preserving satisfiability}
 \label{inputReduction:preservingSat}
-With the techniques as mentioned in section \ref{fuzzing:handelingOracelproblem}, “satisfiable by construction” formed inputs will need to take the extra complexity of preserving the ground truth in mind when deobfuscating inputs. When the ground truth says that an input should be unsatisfiable and the PUT says it is a satisfiable problem with the following output, then we cannot remove constraints to retest if that specific constraint was the cause without knowing the new ground truth. As potential change could switch the original input from an unsatisfiable to a satisfiable problem. We could use a trusted solver to make sure that we do not change the ground truth by retesting each change as Brummayer and Biere \cite{2FuzzingAndDeltaDebuggingSMTSolvers} did.
+With the techniques as mentioned in Section \ref{fuzzing:handelingOracelproblem}, “satisfiable by construction” formed inputs will need to take the extra complexity of preserving the ground truth in mind when deobfuscating inputs. When the ground truth says that an input should be unsatisfiable and the PUT says it is a satisfiable problem with the following output, then we cannot remove constraints to retest if that specific constraint was the cause without knowing the new ground truth. As potential change could switch the original input from an unsatisfiable to a satisfiable problem. We could use a trusted solver to make sure that we do not change the ground truth by retesting each change as Brummayer and Biere \cite{2FuzzingAndDeltaDebuggingSMTSolvers} did.
 Or as done by  Muhammad Numair Mansur et al. \cite{1mansur2020detecting} try to fuzz the same seed in the hope to find a smaller input that gives the same bug. 
 
 
