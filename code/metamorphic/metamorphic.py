@@ -162,13 +162,13 @@ def semanticFusionIntInt(satModel, operation, invOperation):
     newcons += [(firstCons) & (secCons)]
 
     # replace some X, Y by xr, yr
-    for j, cons in enumerate(newcons):
-        if hasattr(cons, "args"):
-            for i, arg in enumerate(cons.args):
-                if hasattr(arg, "name") and arg.name == x.name and random.random() < 0.5:
-                    cons.args[i] = xr
-                if hasattr(arg, "name") and arg.name == y.name and random.random() < 0.5:
-                    cons.args[i] = yr
+    # for j, cons in enumerate(newcons): # could cause cyclic expressions
+    #     if hasattr(cons, "args"):
+    #         for i, arg in enumerate(cons.args):
+    #             if hasattr(arg, "name") and arg.name == x.name and random.random() < 0.5:
+    #                 cons.args[i] = xr
+    #             if hasattr(arg, "name") and arg.name == y.name and random.random() < 0.5:
+    #                 cons.args[i] = yr
     return newcons
 
 def semanticFusionBoolBool(satModel, invOperation):
@@ -206,13 +206,13 @@ def semanticFusionBoolBool(satModel, invOperation):
     newcons += [(firstCons) & (secCons)]
 
     # replace some X, Y by xr, yr
-    for j, cons in enumerate(newcons):
-        if hasattr(cons, "args"):
-            for i, arg in enumerate(cons.args):
-                if hasattr(arg, "name") and arg.name == x.name and random.random() < 0.5:
-                    cons.args[i] = xr
-                if hasattr(arg, "name") and arg.name == y.name and random.random() < 0.5:
-                    cons.args[i] = yr
+    # for j, cons in enumerate(newcons):  # could cause cyclic expressions 
+    #     if hasattr(cons, "args"):
+    #         for i, arg in enumerate(cons.args):
+    #             if hasattr(arg, "name") and arg.name == x.name and random.random() < 0.5:
+    #                 cons.args[i] = xr
+    #             if hasattr(arg, "name") and arg.name == y.name and random.random() < 0.5:
+    #                 cons.args[i] = yr
     return newcons
 
 def satMutation(metaModel):
