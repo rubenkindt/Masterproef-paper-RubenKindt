@@ -1,10 +1,9 @@
-\chapter{Detecting crucial parts in inputs}
+\chapter{Detecting crucial parts of inputs}
 \label{cha:4:crucialParts}
 \label{inputReduction:intro}
-When detecting that the program under test crashes, hangs, wrongly satisfied, wrongly unsatisfied or gives the wrong solution on a given input, the first question asked is why it would do that. What causes this unwanted output and on what line does the bug occur?. 
+When detecting that the program under test crashes, hangs, wrongly satisfied, wrongly unsatisfied or gives the wrong number of solutions on a given input, the first question asked is why it would do that. What causes this unwanted output and on what line does the bug occur?. 
 With crashes, a stack trace and some luck this could be easy, but when a bug causes a crash in another place the developer may need to debug deep into the code to find the bug. 
-This with potential large inputs could be a tedious and long assignment, for this reason we would like to know what parts of the input are relevant for the bug, which will be discussed further in this chapter, starting with deobfuscating inputs.
-
+Finding the bug in potential large inputs could be a tedious and long assignment, for this reason we would like to know what parts of the input are relevant for the bug, which will be discussed further in this chapter, starting with deobfuscating inputs.
 
 
 \section{Deobfuscating inputs}
@@ -14,11 +13,11 @@ This with potential large inputs could be a tedious and long assignment, for thi
 	\newline
 	-Richard Stallman and Ralf Hildebrandt in “Simplifying and Isolating Failure-Inducing Input” \cite{5zeller2002simplifyingIsolatingFailure-inducing}.
 \end{quote} 
-When receiving a big input, the chance of it having parts unrelated to the bug is almost guaranteed, we will call these inputs (unintentionally) obfuscated inputs. Deobfuscating those inputs can take a lot of trial and error to see which variations still reveal the bug or having to walk through the execution to find the bug. Both take a while if we want to go to absolute minimal inputs, but for developers it is not needed to go to that extreme. As long as the bulk of the unrelated parts of inputs are gone it will help the developer to find the bug faster, with these techniques we can also group similar bugs and duplicate errors (more on that later) which is also useful information for developers. To find crucial parts of inputs, it is often achieved either with simplification or isolation. 
+When receiving a big input, the chance of it having parts unrelated to the bug is almost guaranteed, we will call these inputs (unintentionally) obfuscated inputs. Deobfuscating those inputs can take a lot of trial and error to see which variations still reveal the bug or having to walk through the execution to find the bug. Both take time and if we want to go to absolute minimal inputs, but for developers it is not needed to go to that extreme. As long as the bulk of the unrelated parts of inputs are gone it will help the developer to find the bug faster, with these techniques we can also group similar bugs and duplicate errors (more on that later in Subsection \ref{inputReduction:Deduplication}) which is also useful information for developers. To find crucial parts of inputs, it is often achieved either with simplification or isolation. 
 
 \subsection{Simplifying}
 \label{inputReduction:Simplifying}
-Simplification is the technique where we repeatedly remove parts of a failing input and check if it still fails and it is often done via a “delta-debugging” algorithm, which belongs to the divide-and-conquer family of algorithms \cite{2FuzzingAndDeltaDebuggingSMTSolvers}. 
+Simplification is the technique where we repeatedly remove parts of a failing input and check if it still fails, which is often done via the “delta-debugging” algorithm, which belongs to the divide-and-conquer family of algorithms \cite{2FuzzingAndDeltaDebuggingSMTSolvers}. 
 The algorithm can be seen in Figure \ref{fig:ddmin} with 
 ‘$ c_{\mbox{\ding{56}}} $’  %c_X
 meaning the failing input to be deobfuscated,
@@ -26,10 +25,11 @@ meaning the failing input to be deobfuscated,
 meaning that a test passed with the given input,
 ‘\ding{56}’ %cross 
 failed with the given input, 
-‘$\Delta$’ and ‘$\nabla$’ being a subset of the input and the complement of the former and
-“1-minimal” meaning that not a single character can change without the input going from failing to passing. Firstly, we start the algorithm with the input and a split ’n’ of two. If we can find a subset that still fails on its own, then we continue with that subset else we look for a subset where the complement of the input still fails but where a subset is missing from the input. In the case where we split the input in two parts this would be the same as the previous. In case we do not find any smaller subset to continue, then we reduced the granularity of the split by two. To finally end when it is no longer possible to remove any part of the input, we then have obtained an input where all parts are necessary to expose the bug. The input is then at the same time also the shortest possible input to trigger this bug making finding the bug for the developer easier than in the original input filled with unrelated parts. 
+‘$\Delta$’ and ‘$\nabla$’ being a subset of the input and the complement of the former.
+Lastly, “1-minimal” means that not a single character can change without the input going from failing to passing. 
+We start the algorithm with the input and split it into two. If we can find a subset that still fails on its own, then we continue with that subset else we look for a subset where the complement of the input still fails but where a subset is missing from the input. In the case where we split the input in two parts this would be the same as the previous result. In case we do not find any smaller subset to continue, then we reduced the granularity of the split by a factor of two. To finally end when it is no longer possible to remove any part of the input. We then have obtained an input where all parts are necessary to expose the bug. The input is then the shortest possible input to trigger this bug, making finding the bug for the developer easier than in the original input filled with unrelated parts. 
 
-An example of delta-debugging to minimize input can be found in Figure \ref{fig:ddminExample}. In the first two steps no removal of any part nor complement was possible therefore we reduced the granularity, after which a removal of parts 3 and 4 was found possible. To then use some previous knowledge (lines 9, 10 and 11) with 2 new tests to remove parts 5 and 6. To then decrease the granularity again, repeat our possible steps and reach a minimal input.
+An example of delta-debugging to minimize input can be found in Figure \ref{fig:ddminExample}. In the first two steps no removal of any part nor complement was possible therefore we reduced the granularity ‘n’, after which a removal of parts 3 and 4 was found possible. To then use some previous knowledge (lines 9, 10 and 11) with 2 new tests to remove parts 5 and 6. To then decrease the granularity again, repeat our possible steps and reach a minimal input.
 
 \begin{figure}
 	\centering
@@ -47,9 +47,9 @@ An example of delta-debugging to minimize input can be found in Figure \ref{fig:
 
 \subsection{Isolation}
 \label{inputReduction:Isolation}
-The second technique, isolation, is a technique where instead of minimizing the input we try to find the smallest difference between an input that shows the bug versus an input that does not show the bug. Fortunately, this comes with the advantage that no matter if we find the bug or not the difference will diminish, either the maximum input will shrink or the minimum input will grow. 
-This technique brings extra complexity with the tracking of multiple inputs and bigger inputs often take longer to process, but according to Andreas Zeller et al. \cite{5zeller2002simplifyingIsolatingFailure-inducing} this is the faster one to the two techniques. 
-Figure \ref{fig:simplificationIsolation} shows the difference between simplifying and isolation both finding the critical part of the input, with simplification the critical part is indicated by the last test in the figure while with isolation it is the difference of the last passed and last failed tests. Additionally, the ‘*’ indicates that the result is already known and does not need to be recalculated.
+The second technique, isolation, is a technique where instead of minimizing the input we try to find the smallest difference between an input that shows the bug versus an input that does not show it. Fortunately, this comes with the advantage that no matter if we find the bug or not the difference will diminish, either the maximum input will shrink or the minimum input will grow. 
+This technique brings extra complexity by tracking of multiple inputs and bigger inputs often take longer to process. However, according to Andreas Zeller et al. \cite{5zeller2002simplifyingIsolatingFailure-inducing} this technique is the fastest one of the two techniques. 
+Figure \ref{fig:simplificationIsolation} shows the difference between simplifying and isolation both finding the critical part of the input, with simplification the critical part is indicated by the last test in the figure while with isolation it is the difference of the last passed and last failed tests. Additionally, the  asterisk ‘*’ indicates that the result is already known and does not need to be recalculated.
 \begin{figure}
 	\centering
 	\includegraphics[width=1.0\textwidth]{images/simplificationIsolation}
@@ -57,17 +57,16 @@ Figure \ref{fig:simplificationIsolation} shows the difference between simplifyin
 	\label{fig:simplificationIsolation}
 \end{figure}
 
-\subsection{Connection with minimal unsatisfiable subset and maximally satisfiable subsets}
+\subsection{Connection with minimal unsatisfiable subset and maximally satisfiable subset}
 \label{inputReduction:MUS/MSS}
-For readers that are familiar with the SMT of constraint solving-world will have noticed that these techniques feels similar to a way of finding the minimal unsatisfiable subset (MUS), which it is in the case of a solver wrongly stating that an input is unsatisfiable. 
-With MUS you try to find the smallest subset of formulas or constraints that will result in an unsatisfiable solution while with 
-MSS you would be trying to find the biggest subset of formulas or constraints that would result in a satisfiable solution. Both are an iterative process and can be applied in the simplification or the isolation process. However, searching which combination of formulas results in the smallest subset is a computationally intensive process. Fortunately, a lot of thought has already been put in it to improve it, for example Mark H. Liffiton et al. have proposed multiple “Algorithms for Computing minimal unsatisfiable subsets of Constraints” \cite{51liffiton2008algorithms}. In which they discuss their novel sound and complete algorithms for finding all minimal unsatisfiable subsets. Again, we should note that a minimal input is not needed as we aim to reduce the input to help the developer find the error faster, a difference between a smaller and the absolute minimum will cause a big computational difference in practice.
+For readers that are familiar with the SMT or constraint solving-world will have noticed that these techniques feels similar to the way of finding the minimal unsatisfiable subset (MUS), which it is, in the case of a solver wrongly stating that an input is unsatisfiable. 
+With MUS we try to find the smallest subset of formulas or constraints that will result in an unsatisfiable solution while with maximally satisfiable subset (MSS) we would be trying to find the biggest subset of formulas or constraints that would result in a satisfiable solution. Both are an iterative process and can be applied in the simplification and/or the isolation process. However, searching combinations of formulas results in a smallest subset is a computationally intensive process. Fortunately, a lot of thought has already been put in it to improve it, for example Mark H. Liffiton et al. have proposed multiple “Algorithms for Computing minimal unsatisfiable subsets of Constraints” \cite{51liffiton2008algorithms}. In which they discuss their novel sound and complete algorithms for finding all minimal unsatisfiable subsets. Again, we should note that a smallest subset is not needed as we aim to reduce the input to help the developer find the error faster, a difference between a smaller and the absolute smallest subset is a big computational difference in practice.
 
-\subsection{Alternative approach}
+\subsection{Alternative approach to deobfuscating}
 \label{inputReduction:alt2deobfuscating}
-An alternative approach compared to the already mentioned techniques is one by Alexandra Bugariu and Peter M\"uller \cite{9bugariu2020automaticallyTestingStringSolvers}. In which they forgo the need of deobfuscating inputs by generating inputs “small by construction”. 
-Because the smaller the inputs are the less space there is for remaining stuff to obfuscate the input. On the other hand, the chance of finding bigger bugs with multiple constraints interacting with each other will become harder.
-A last alternative approach would be retrying fuzzing the same seed after that seed has produced an unwanted input with adding an increasing size limitation in order to find the same bug with a smaller input as done by Muhammad Numair Mansur et al. in “Detecting Critical Bugs in SMT Solvers Using Blackbox Mutational Fuzzing” \cite{1mansur2020detecting}.
+An alternative approach compared to the already mentioned techniques is one proposed by Alexandra Bugariu and Peter M\"uller \cite{9bugariu2020automaticallyTestingStringSolvers}. In which they forgo the need of deobfuscating inputs by generating inputs “small by construction”. 
+Because the smaller the inputs are, the less space there is for remaining formulas or constraints to obfuscate the input. On the other hand, the chance of finding bigger bugs with multiple constraints interacting with each other will become smaller.
+A last alternative approach would be retrying fuzzing the same seed after that specific seed has produced an input resulting in a bug, this by adding an increasing size limitation in order to find the same bug with a smaller and smaller input, as done by Muhammad Numair Mansur et al. in “Detecting Critical Bugs in SMT Solvers Using Blackbox Mutational Fuzzing” \cite{1mansur2020detecting}.
 
 \section{What size to change}
 \label{inputReduction:Chucksize}
