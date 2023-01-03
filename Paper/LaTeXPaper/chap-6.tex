@@ -161,7 +161,7 @@ An almost related bug is in the naming of variables, when creating them starting
 
 In Listing \ref{lst:Bug:+} this bug of non-alphanumeric symbols is showcased, with a variable ‘i’ being declared on line 3 with a lower and higher bound respectively 0 and 5. To then define a name manually and name it ‘+’, this in contrast with the previous listings where CPMpy used automatically naming of the variables. Due to this non-alphanumeric naming of variables MiniZinc will crash with a syntax error on line 13 while it solved the constraint fine on line 7. Lines 10 and 11 are only added to show what the MiniZinc solver receives which is visible in Listing \ref{lst:Bug:+Zinc}. 
 
-\begin{lstlisting}[language=python, label={lst:Bug:+}, caption={A bug showcasing that the naming of CPMpy’s variables is less strict than MiniZinc’s.}]
+\begin{lstlisting}[language=python, label={lst:Bug:+}, caption={A bug showcasing that the naming of CPMpy’s variables is less strict than MiniZinc’s naming.}]
 	from cpmpy import *
 	
 	i = intvar(lb=0, ub=5, name="+")
@@ -192,7 +192,7 @@ Both of these bugs were not caught by CTORM nor the differential testing, since 
 
 \subsection{MiniZinc returning zero}
 \label{res:bug:MinizincZero}
-Our last bug we will discuss in detail was a bug we found with a solver themselves, namely with some MiniZinc subsolver, while solving certain problems with MiniZinc’s subsolvers Gecode and others it would sometimes crash with the error that it stopped without output. After reporting it turned out to be a known bug in the MiniZinc Python repository for Windows operating systems and was fixable with setting some path variables correctly, which CPMpy may solve by adding a warning when this happens or by documenting it.
+Our last bug we will discuss in detail was a bug we found with a solver themselves, namely with some MiniZinc subsolver, while solving certain problems with MiniZinc’s subsolvers Gecode and others would sometimes crash with the error that it stopped without output. After reporting it turned out to be a known bug in the MiniZinc Python repository for Windows operating systems and was fixable with setting some path variables correctly, which CPMpy may solve by adding a warning when this happens or by documenting it.
 Given that this problem is an installation problem, all techniques were able to find the bug. This bug report can be found in the GitHub repository issue number \href{https://github.com/CPMpy/cpmpy/issues/156}{156}.
 
 %\subsection{Unsatisfiable Gurobi} % boring bug

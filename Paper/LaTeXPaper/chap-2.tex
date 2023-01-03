@@ -67,7 +67,7 @@ We will not be spoiling the solution and will leave it up to you to find the sol
 \end{minipage}
 
 
-The “alldifferent()” and the sum constraint also show us the power of CPs, as with a single statement multiple relations are expressed \cite{53marriott1998programming}. Instead of needing to specify all possible relations of the last three characters of each word (\mbox{D + E = Y}, \mbox{Y - D = E} and \mbox{Y - E = D}) a single expression suffices. When knowing two values we can infer the third. It saves significantly amounts of work for the developer, definitely when it comes to the bigger \texttt{alldifferent()} constraint. This in combination with the efficient back-end solvers for this constraint allows for a bigger abstraction and makes MiniZinc and other CP-solvers so powerful.
+The “alldifferent()” and the sum constraint also show us the power of CPs, as with a single statement multiple relations are expressed \cite{53marriott1998programming}. Instead of needing to specify all possible relations of the last three characters of each word (\mbox{D + E = Y}, \mbox{Y - D = E} and \mbox{Y - E = D}) a single expression suffices. When knowing two values we can infer the third. It saves a significant amount of work for the developer, definitely when it comes to the bigger \texttt{alldifferent()} constraint. This in combination with the efficient back-end solvers for this constraint allows for a bigger abstraction and makes MiniZinc and other CP-solvers so powerful.
 
 \subsection{Origin}
 Within constraint programming we can distinguish two branches \cite{52bartak1999constraint}, one being constraint satisfaction, which puts the focus on finding a model which satisfies all constraints. This can be solved with generating values within the domain of the variables and testing them, also called generate and test but this is not the fastest way. 
@@ -90,7 +90,7 @@ In the words of Peter J. Stucke, a member of the MiniZinc team:
 	-Peter J. Stuckey et al. in “The MiniZinc Challenge 2008-2013” \cite{58stuckey2014minizinc}.
 \end{quote} which shows the team’s vision of MiniZinc.
 
-MiniZinc transforms its inputs combined with the model, data and solver specific features to FlatZinc, a intermediate language created for easier interpretation by solvers. Which then can be solved by a specific solver.
+MiniZinc transforms its inputs combined with the model, data and solver specific features to FlatZinc, an intermediate language created for easier interpretation by solvers. Which then can be solved by a specific solver.
 
 
 \subsubsection{MiniZinc Challenge}
@@ -164,7 +164,7 @@ Finally, to illustrate that both MiniZinc and CPMpy are not that far apart a CPM
 \section{SAT}
 \label{CS:SAT}
 Now that we discussed CPs, let us step back to boolean satisfiability problems (SAT). Here we are focused on checking the satisfiability of boolean formulas. SAT has been successful in the hardware design and verification. With a lot of research in improving SAT-solvers, they have become significantly efficient on large problems \cite{56bardin2019bringing}.
-These efficiency improvements coming from the DPLL algorithm to conflict-driven clause learning (CDCL) move combined with the addition of non-chronological back jumps. Whereas, better propagation, lazy clause generation (LCG), data structures and the introduction of heuristics assisted significantly to the process. Heuristics often include clause deletion to decrease the number of unused clauses, variable state independent decaying sum (VSIDS) where we add a decaying weight (the sum) to select which literal we prioritize, random restarts where we try to avoid large search trees by restarting with the learned clauses, among other heuristics \cite{61MCSMarcDenecker, 60katebi2011empirical, 67stuckey2010lazyClauseGeneration}.
+These efficiency improvements come from the DPLL algorithm to conflict-driven clause learning (CDCL) combined with the addition of non-chronological back jumps. Whereas, better propagation, lazy clause generation (LCG), data structures and the introduction of heuristics assisted significantly to the process. Heuristics often include clause deletion to decrease the number of unused clauses, variable state independent decaying sum (VSIDS) where we add a decaying weight (the sum) to select which literal we prioritize, random restarts where we try to avoid large search trees by restarting with the learned clauses, among other heuristics \cite{61MCSMarcDenecker, 60katebi2011empirical, 67stuckey2010lazyClauseGeneration}.
 %more techniques: branching, unit propagation, backtracking, 2 watched literals, heuristics: detpth, breadth first, Variable state independent decaying sum/VSIDS, dynamic largest individual sum (DLIS), clause deletion, random restarts
 
 %\todo{example?}
