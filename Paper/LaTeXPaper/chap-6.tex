@@ -217,7 +217,7 @@ Now that we have seen in depth explanations of some bugs, let us give an overvie
 % added above the text that refference it, to prevent tables being back to back
 \begin{table}[]
 	\centering
-	\caption{Table discussing in which CPMpy component the bug was found, with 4 bugs in the model, 7 bugs in the transformations, 7 bugs in the solver interface and one solver bug was found.}
+	\caption{Table discussing in which CPMpy components the bugs were found, with 4 bugs in the model, 7 bugs in the transformations, 7 bugs in the solver interface and one solver bug was found.}
 	\label{tab:bug:placeComponent}
 	\begin{tabular}{lll}
 		\hline
@@ -257,7 +257,7 @@ If we look at the reported issues within the GitHub repository of Google’s OR-
 Like the authors of STORM, we focused with our techniques on the critical faults, this being the wrongly satisfiable, the wrongly unsatisfiable and the wrong number of solutions. Since these critical bugs are harder to detect for the final user than a crash, timeout or other bug. Out of the 19 bugs found 6 of them fall in our category of critical while the other 13 where all crashes as can be seen in Table \ref{tab:bug:fault}. Most of those 6 critical bugs were situations where the solver wrongly outputted that a solution was unsatisfiable and there was only one bug where we could find both a wrongly satisfiable and wrongly unsatisfiable solution.
 
 \begin{table}[]
-	\caption{Table discussing what type of fault was caused by the bugs.}
+	\caption{Table discussing what types of faults were caused by the bugs.}
 	\label{tab:bug:fault}
 	\centering
 	\begin{tabular}{lll}
@@ -293,7 +293,7 @@ When looking at Table \ref{tab:bug:Solver} we can see which bug was caused by wh
 %\begin{minipage}[\textwidth]
 \begin{table}[]
 	\centering
-	\caption{Table discussing which bug was caused by which solver or if it was a solver independent bug.}
+	\caption{Table discussing which bugs were caused by which solvers or if it was a solver independent bug.}
 	\label{tab:bug:Solver}
 	\begin{tabular}{lll}
 		\hline
@@ -328,7 +328,7 @@ The last Table \ref{tab:bug:Technique} shows which technique found which bug. CT
 
 \begin{table}[]
 	\centering
-	\caption{Table discussing which technique found the bug. CTORM found 10 bugs, metamorphic testing found the most bugs at 13 and differential testing found 11 out of the 19 found bugs.}
+	\caption{Table discussing which techniques found which bugs. CTORM found 10 bugs, metamorphic testing found the most bugs at 13 and differential testing found 11 out of the 19 found bugs.}
 	\label{tab:bug:Technique}
 	\begin{tabular}{lllll}
 		\hline

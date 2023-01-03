@@ -25,8 +25,11 @@
 % Hier kun je dan nog andere pakketten laden of eigen definities voorzien
 %\usepackage{todonotes}
 \usepackage{xcolor}
+\usepackage{kulemtx}
+%\headstyles{kulemtman}
 \usepackage{pifont}   % used for checkmarks
 \usepackage{listings} % used for code listings
+\renewcommand{\lstlistlistingname}{List of Listings}
 \usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
 %\usepackage[tableposition=top]{caption} % caption above table
 \usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash, tableposition=top]{caption}
@@ -144,6 +147,7 @@
 % {\usepackage{lipsum}\setlipsumdefault{11-13}}%
 % {\newcommand{\lipsum}[1][11-13]{\par Hier komt wat tekst: lipsum ##1.\par}}
 %%%%%%%
+\kulemtmanToC
 \begin{document}
 \begin{preface}
 Although this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving, it all interested me and I had not a single moment where I had to push myself to start working on it. Nevertheless, this thesis would not have been possible without the following people.
@@ -195,14 +199,14 @@ Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevon
 \end{abstract*}
 
 % Een lijst van figuren en tabellen is optioneel
-%\listoffigures
-%\listoftables
+\listoffigures
+\listoftables
 % Bij een beperkt aantal figuren en tabellen gebruik je liever het volgende:
-\listoffiguresandtables
+%\listoffiguresandtables
 \lstlistoflistings
 % De lijst van symbolen is eveneens optioneel.
 % Deze lijst moet wel manueel aangemaakt worden, bv. als volgt:
-\chapter{List of Abbreviations and Symbols}
+\chapter{List of Abbreviations}
 \section*{Abbreviations}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
@@ -222,10 +226,10 @@ Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevon
     NNF & Negation Normal Form, which is a boolean formula written using only  conjunctions, disjunctions and negations, with negations only occurring in literals. \\
     PUT & Program Under Test, the piece of code, application of program that is tested on for potential bugs. \\
     SMT & Satisfiability Modulo Theory, a generalization of SAT extends to more complex data forms like integers, strings and many more.\\
-    SUT & Software under Test, analogue to PUT \\
   \end{tabularx}
 \end{flushleft}
 
+\chapter{List of Symbols}
 \section*{Symbols}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
@@ -249,8 +253,8 @@ Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevon
 %\include{chap-5RQ} % Research questions
 \include{chap-5} % Implementation
 \include{chap-6} % results
-\include{chap-7} % conclustion
-%\include{chap-x} % futher work ?
+\include{chap-7} % conclustion and futher work
+%\include{chap-x} % 
 
 % Indien er bijlagen zijn:
 %\appendixpage*          % indien gewenst

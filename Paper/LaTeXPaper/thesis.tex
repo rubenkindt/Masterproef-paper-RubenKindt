@@ -1,11 +1,12 @@
-\documentclass[master=eelt,masteroption=ec]{kulemt}
-\setup{% Remove the "%" on the next line when using UTF-8 character encoding
-  %inputenc=utf8,
-  title={The best master's thesis ever},
-  author={First Author\and Second Author},
-  promotor={Prof.\,dr.\,ir.\ Knows Better},
-  assessor={Ir.\,Kn. Owsmuch\and K. Nowsrest},
-  assistant={Ir.\ An~Assistent \and A.~Friend}}
+\documentclass[master=cws, masteroption=se, english, oneside]{kulemt} % oneside
+\setup{% Verwijder de "%" op de volgende lijn bij UTF-8 karakterencodering
+	inputenc=utf8,
+	title={Wrong file! Try the masterproef.pdf}, 
+	author={ing. Ruben Kindt},
+	promotor={Prof.\, dr.\ Tias Guns},
+	assessor={ },
+	assistant={Ir. Ignace Bleukx}
+}
 % Remove the "%" on the next line for generating the cover page
 %\setup{coverpageonly}
 % Remove the "%" before the next "\setup" to generate only the first pages
@@ -16,91 +17,255 @@
 \setup{font=lm}
 
 % If you want to include other LaTeX packages, do it here. 
+%\usepackage{todonotes}
+\usepackage{xcolor}
+\usepackage{kulemtx}
+%\headstyles{kulemtman}
+\usepackage{pifont}   % used for checkmarks
+\usepackage{listings} % used for code listings
+\renewcommand{\lstlistlistingname}{List of Listings}
+\usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
+%\usepackage[tableposition=top]{caption} % caption above table
+\usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash, tableposition=top]{caption}
+
+\usepackage{float}
+
+%thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
+%----------------------------------------------%
+% Syntax highlighting for MiniZinc in listings %
+%----------------------------------------------%
+\definecolor{ForestGreen}{RGB}{34,106,46}
+\definecolor{VeryLightGrey}{RGB}{230,230,230}
+\usepackage{color}
+\lstdefinelanguage{minizinc}{
+	morekeywords={
+		%% MiniZinc keywords
+		%%
+		ann, annotation, any, array, assert,
+		bool,
+		constraint,
+		else, elseif, endif, enum, exists,
+		float, forall, function,
+		if, in, include, int,
+		list,
+		minimize, maximize,
+		of, op, output,
+		par, predicate,
+		record,
+		set, solve, string,
+		test, then, tuple, type,
+		var,
+		where,
+		%% MiniZinc functions
+		%%
+		abort, abs, acosh, array_intersect, array_union,
+		array1d, array2d, array3d, array4d, array5d, array6d, asin, assert, atan,
+		bool2int,
+		card, ceil, combinator, concat, cos, cosh,
+		dom, dom_array, dom_size, dominance,
+		exp,
+		fix, floor,
+		index_set, index_set_1of2, index_set_2of2, index_set_1of3, index_set_2of3, index_set_3of3,
+		int2float, is_fixed,
+		join,
+		lb, lb_array, length, let, ln, log, log2, log10,
+		min, max,
+		pow, product,
+		round,
+		set2array, show, show_int, show_float, sin, sinh, sqrt, sum,
+		tan, tanh, trace,
+		ub, and ub_array,
+		%% Search keywords
+		%%
+		bool_search, int_search, seq_search, priority_search,
+		%% MiniSearch keywords
+		%%
+		minisearch, search, while, repeat, next, commit, print, post, sol, scope, time_limit, break, fail
+	},
+	sensitive=true, % are the keywords case sensitive
+	morecomment=[l][\em\color{ForestGreen}]{\%},
+	%morecomment=[s]{/*}{*/},
+	morestring=[b]",
+}
+%% Settings for listings
+%%
+\lstset{ %
+	backgroundcolor=\color{VeryLightGrey},  % choose the background color; you must add
+	% \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\scriptsize\ttfamily,    % the size of the fonts that are used for the code
+	belowskip=0em,
+	breakatwhitespace=false,            % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                    % sets automatic line breaking
+	captionpos=b,                       % sets the caption-position to bottom
+	commentstyle=\color{ForestGreen},   % comment style
+	%deletekeywords={...},              % if you want to delete keywords from the given language
+	escapeinside={\%*}{*)},             % if you want to add LaTeX within your code
+	extendedchars=true,                 % lets you use non-ASCII characters; for 8-bits
+	% encodings only, does not work with UTF-8
+	frame=single,                       % adds a frame around the code
+	keepspaces=true,                    % keeps spaces in text, useful for keeping indentation
+	% of code (possibly needs columns=flexible)
+	keywordstyle=\bfseries\color{blue}, % keyword style
+	language=minizinc,                  % the language of the code
+	%morekeywords={*,...},              % if you want to add more keywords to the set
+	numbers=left,                       % where to put the line-numbers; possible values are (none, left, right)
+	%numbersep=5pt,                     % how far the line-numbers are from the code
+	%numberstyle=\tiny\color{Gray},     % the style that is used for the line-numbers
+	rulecolor=\color{black},            % if not set, the frame-color may be changed
+	% on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                   % show spaces everywhere adding particular
+	% underscores; it overrides 'showstringspaces'
+	showstringspaces=false,             % underline spaces within strings only
+	showtabs=false,                     % show tabs within strings adding particular underscores
+	%stepnumber=1,                      % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{purple},            % string literal style
+	tabsize=2,                          % sets default tabsize to 2 spaces
+	title=\lstname                      % show the filename of files included with \lstinputlisting;
+	% also try caption instead of title
+}
+
+%\nocite{*}  % cite all ref, for finding unused ref
+\usepackage{biblatex}
+\bibliography{references}
 
 % Finally the hyperref package is used for pdf files.
 % This can be commented out for printed versions.
 \usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
+\hypersetup{allcolors = black}
 
 %%%%%%%
 % The lipsum package is used to generate random text.
 % You never need this in a real master's thesis text!
-\IfFileExists{lipsum.sty}%
- {\usepackage{lipsum}\setlipsumdefault{11-13}}%
- {\newcommand{\lipsum}[1][11-13]{\par And some text: lipsum ##1.\par}}
-%%%%%%%
+%\IfFileExists{lipsum.sty}%
+% {\usepackage{lipsum}\setlipsumdefault{11-13}}%
+% {\newcommand{\lipsum}[1][11-13]{\par And some text: lipsum ##1.\par}}
+%%%%%%%%
 
-%\includeonly{chap-n}
+\kulemtmanToC
 \begin{document}
-
 \begin{preface}
-  I would like to thank everybody who kept me busy the last year,
-  especially my promoter and my assistants. I would also like to thank the
-  jury for reading the text. My sincere gratitude also goes to my wive and
-  the rest of my family.
+	Although this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving, it all interested me and I had not a single moment where I had to push myself to start working on it. Nevertheless, this thesis would not have been possible without the following people.
+	
+	
+	\noindent Firstly, I would like to thank 
+	professor dr. Tias Guns for the guidance and the proposal of this fascinating topic,
+	ir. Ignace Bleukx for answering many questions, intensive thesis meetings, proofreading and the cleverness for coming up with the name of CTORM, 
+	dr. ir. Jo Devriendt for finding bugs within our bug finder, 
+	the rest of the CPMpy-team, 
+	Hakan Kjellerstrand for publishing a significant number of examples which we used as seeds,
+	friends for proofreading even all the way back from industrial engineering on campus De Nayer like ing. Simon Vandevelde.
+	Finally, I would like to thank my family for the support during my further studies.
 \end{preface}
 
 \tableofcontents*
+\setcounter{tocdepth}{5} % this works wow! Now I have a clean TOC but still the pdf outline in depth
 
 \begin{abstract}
-  The \texttt{abstract} environment contains a more extensive overview of
-  the work. But it should be limited to one page.
-
-  \lipsum[1]
+	This thesis presents a comparative study between three ways of finding bugs in CPMpy as a use case to examine which techniques are suitable for finding bugs in constraint programming languages. With these languages, problems (including logical and optimization) can be modeled and solved. CPMpy extends the modeling part of these problems to be done in a for most familiar programming language python and allows for a close connection to NumPy and the solvers. In CPMpy we will search for bugs where it may crash, hang or produce the wrong output. All of these are unwanted but the last ones do not show the user that a bug has occurred. 
+	The first technique to find bugs builds further on an existing paper to test solvers for SMT theories, which this paper converts to be able to test CPMpy with. 
+	A second technique uses output preserving equivalent changes to see whether the original result differs from the result of the modified program.
+	The final technique uses the concept of comparing the results of analog programs in order to detect any differentiations between any of the programs.
+	
+	Of the 23 issues and questions submitted to the repository 19 turned out to be bugs. The first technique found 10 bugs, the second found 13 bugs and the last one found 11 out of the 19 found bugs. Resulting not a single technique able to find all bugs. With more development in constraint programming and CPMpy these techniques would help with finding bugs in the future. 
+	
+	
+	% voordelen automatisch bugs vinden? = not crusial info
+	% results Abstrakt is suppost to be a sneak peek not a spoiler
+	%The \texttt{abstract} environment contains a more extensive overview of
+	%the work. But it should be limited to one page.
+	\vspace*{\fill}
+	\noindent
+	\textbf{Keywords:} constraint programming, CPMpy, fuzz testing, bugs, STORM, metamorphic testing, differential testing
 \end{abstract}
 
+\begin{abstract*}
+		%
+		Deze masterproef stelt een vergelijkende studie voor tussen drie manieren om bugs te vinden met CPMpy als voorbeeld. Dit om te onderzoeken welke technieken geschikt zijn om bugs te vinden in programmeertalen voor beperkingen.
+		De eerste techniek bouwt verder op een bestaande paper om SMT-theorieën te testen via de tester STORM, deze paper converteert STORM naar een tester die om kan gaan met CPMpy om daar dan mee te kunnen testen.
+		Een tweede techniek maakt gebruik van resultaatsgebonden equivalente wijzigingen om te evalueren of het oorspronkelijke resultaat verschilt van het resultaat van het gewijzigde programma. En ten slotte gebruikt de laatste techniek het concept van gelijkaardige programma's, om de resultaten hiervan te vergelijken om zo eventuele verschillen tussen de programma's te detecteren.
+		
+		Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevonden fouten. De eerste vond 10 fouten, de tweede 13 en de laatste 11 van de in totaal 19 gevonden fouten. Met verdere ontwikkelingen in CPMpy en de programmeertalen zullen nieuwe fouten gemaakt worden en hierbij zouden de technieken gebruikt kunnen worden om deze op te sporen.
+		
+		%State of the art 
+		%'in deze masterproef stellen wij een vergelijkende studie voor om auto bugs te vinden in cpl met als voorbeeld taal de CPMpy written by Tia's Guns at al.
+		%Voordelen automatisch bugs (Tijdwinst, Safer programma)
+		
+	\end{abstract*}
+
+
+
 % A list of figures and tables is optional
-%\listoffigures
-%\listoftables
+\listoffigures
+\listoftables
 % If you only have a few figures and tables you can use the following instead
-\listoffiguresandtables
+%\listoffiguresandtables
+\lstlistoflistings
 % The list of symbols is also optional.
 % This list must be created manually, e.g., as follows:
-\chapter{List of Abbreviations and Symbols}
+\chapter{List of Abbreviations}
 \section*{Abbreviations}
 \begin{flushleft}
-  \renewcommand{\arraystretch}{1.1}
-  \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
-    LoG   & Laplacian-of-Gaussian \\
-    MSE   & Mean Square error \\
-    PSNR  & Peak Signal-to-Noise ratio \\
-  \end{tabularx}
-\end{flushleft}
-\section*{Symbols}
-\begin{flushleft}
-  \renewcommand{\arraystretch}{1.1}
-  \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
-    42    & ``The Answer to the Ultimate Question of Life, the Universe,
-            and Everything'' according to \cite{h2g2} \\
-    $c$   & Speed of light \\
-    $E$   & Energy \\
-    $m$   & Mass \\
-    $\pi$ & The number pi \\
-  \end{tabularx}
+	\renewcommand{\arraystretch}{1.1}
+	\begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
+		
+		%Alphabetic pls
+		CI/CD & Continuous Integration and Continuous Deployment, a pipeline for newly written code to repeatedly be built, tested, released, deployed and more. \\
+		CP & Constraint Programming language sometimes also referred to as CPL \\
+		CPL & Constraint Programming Language also referred to as CP \\
+		CNF & Conjunctive Normal Form, which is a boolean formula written using conjunctions of distinctions. \\
+		CSP & Constraint Satisfaction Problem is a problem with constraints and variables with a specific domain e.g., boolean, finite and others.\\
+		CPMpy & Constraint Programming and Modeling language for Python.\\
+		CVC & Cooperating Validity Checker a popular SMT-theorem prover \\
+		LLVM & Although it looks like an abbreviation, it is not. LLVM is the name of a project focused on compiler and toolchain technologies. \\
+		MIP & Mixed Integer Programming, a theory where decision variables are allowed to be integers \\
+		MUS & Minimal Unsatisfiable Subset, the smallest subset possible that is not satisfiable \\
+		NNF & Negation Normal Form, which is a boolean formula written using only  conjunctions, disjunctions and negations, with negations only occurring in literals. \\
+		PUT & Program Under Test, the piece of code, application of program that is tested on for potential bugs. \\
+		SMT & Satisfiability Modulo Theory, a generalization of SAT extends to more complex data forms like integers, strings and many more.\\
+	\end{tabularx}
 \end{flushleft}
 
-% Now comes the main text
+\chapter{List of Symbols}
+\section*{Symbols}
+\begin{flushleft}
+	\renewcommand{\arraystretch}{1.1}
+	\begin{tabularx}{\textwidth}{@{}p{14mm}X@{}}
+		$\sim$ & Representation for a negation used by CPMpy\\
+		$\&$ & Representation for a “and” used by CPMpy\\
+		$\vert$ & Representation for a “or” used by CPMpy\\
+		$\neg$ & Mathematical representation for the logical negation \\
+		$\land$ & Mathematical representation for the logical “and” \\
+		$\lor$  & Mathematical representation for logical “or” \\
+	\end{tabularx}
+\end{flushleft}
+
+% Nu begint de eigenlijke tekst
 \mainmatter
 
 \include{intro}
-\include{chap-1}
-\include{chap-2}
-% ... and so on until
-\include{chap-n}
-\include{conclusion}
+\include{chap-2} % CP, SAT and SMT 
+\include{chap-3} % Fuzzing
+\include{chap-4} % Detecting crucial parts in inputs
+%\include{chap-5RQ} % Research questions
+\include{chap-5} % Implementation
+\include{chap-6} % results
+\include{chap-7} % conclustion and futher work
+%\include{chap-x} % 
 
-% If you have appendices:
-\appendixpage*          % if wanted
-\appendix
-\include{app-A}
-% ... and so on until
-\include{app-n}
+% Indien er bijlagen zijn:
+%\appendixpage*          % indien gewenst
+%\appendix
+%\include{app-A}
 
 \backmatter
-% The bibliography comes after the appendices.
-% You can replace the standard "abbrv" bibliography style by another one.
-\bibliographystyle{abbrv}
-\bibliography{references}
-
+% Na de bijlagen plaatst men nog de bibliografie.
+% Je kan de  standaard "abbrv" bibliografiestijl vervangen door een andere.
+%\bibliographystyle{abbrv}
+%\bibliography{references}
+\nocite{MasterproefRubenKindt}
+%\nocite{ThisThesis}
+%\nocite{75Chicken} % Easter egg ;)
+\printbibliography
 \end{document}
 
 %%% Local Variables: 
