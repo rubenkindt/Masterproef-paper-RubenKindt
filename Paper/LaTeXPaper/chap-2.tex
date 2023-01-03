@@ -71,15 +71,15 @@ The “alldifferent()” and the sum constraint also show us the power of CPs, a
 
 \subsection{Origin}
 Within constraint programming we can distinguish two branches \cite{52bartak1999constraint}, one being constraint satisfaction, which puts the focus on finding a model which satisfies all constraints. This can be solved with generating values within the domain of the variables and testing them, also called generate and test but this is not the fastest way. 
-The second being constraint optimization, which covers an even harder problem. Instead of having to check if all constraints satisfy, we want to know what model will give us the highest or lowest value. The function to optimize is often called the objective function and it occurs often in real life problems \cite{52bartak1999constraint}, since:
+The second being constrained optimization, which covers an even harder problem. Instead of having to check if all constraints satisfy, we want to know what model will give us the highest or lowest value. The function to optimize is often called the objective function and it occurs often in real life problems \cite{52bartak1999constraint}, since:
 \begin{quote}
-	 “we do not want to find any solution but a good solution.” \newline
+	 “(...) we do not want to find any solution but a good solution.” \newline
 	 -Roman Bart\'ak from “Constraint Programming: In Pursuit of the Holy Grail” \cite{52bartak1999constraint}
 \end{quote}
 Unfortunately depending on the problem, we regularly hit limitations due to NP-hardness. This has challenged the field and multiple different search strategies to gain a higher efficiency have been thought off. Popular approaches to finding solutions in both branches are the use of constraint propagation, backtracking, symmetry breaking, dynamic programming, techniques from the CP solvers like lazy clause generation and even heuristics such as local search, Tabu search, simulated annealing and more. 
 
 \subsection{MiniZinc}
-A keen observer will have noticed that we used “after \underline{a} solver has found satisfiability” in the explanation of “send more money” in Section \ref{sendMoreMoneyExplanation}. 
+A keen observer will have noticed that we used “after \underline{a} solver has found a solution” in the explanation of “send more money” in Section \ref{sendMoreMoneyExplanation}. 
 This is because MiniZinc is not a solver but a modeling language, it came to be from the lack of standard modeling languages surrounding CP’s. Before MiniZinc, when you wanted to use another solver, you had to rewrite your problem again in that solver’s specific language. This is what Nicholas Nethercote et al. \cite{57nethercote2007minizinc} wanted to solve when they came up with MiniZinc. A modeling language for CPs that is not connected to a single specific solver. It originated from a modeling language focused on constraints, called Zinc \cite{68incbanda2006modelling} of which MiniZinc is a subset of \cite{57nethercote2007minizinc}.
 In the words of Peter J. Stucke, a member of the MiniZinc team:
 
