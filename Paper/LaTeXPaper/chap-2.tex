@@ -90,7 +90,8 @@ In the words of Peter J. Stucke, a member of the MiniZinc team:
 	-Peter J. Stuckey et al. in “The MiniZinc Challenge 2008-2013” \cite{58stuckey2014minizinc}.
 \end{quote} which shows the team’s vision of MiniZinc.
 
-MiniZinc transforms its inputs combined with the model, data and solver specific features to FlatZinc, a intermediate language created for easier interpretation by solvers. Which then can be solved by a specific solver. The list of CP solvers that support MiniZinc, at the time of writing 17 solvers have FlatZinc interfaces.
+MiniZinc transforms its inputs combined with the model, data and solver specific features to FlatZinc, a intermediate language created for easier interpretation by solvers. Which then can be solved by a specific solver.
+
 
 \subsubsection{MiniZinc Challenge}
 On top of maintaining and improving MiniZinc, its team also organizes a yearly challenge to compare and test what improvements have been made in the constraint solving world, which they are able to do by having the benefit of a standardized constraint programming language to benchmark with. 
@@ -99,7 +100,7 @@ In this yearly challenge each solver gets fifteen minutes to solve a hundred sel
 It is due to this MiniZinc challenge that a better connection has formed between CP solvers and SAT solvers. By attracting SAT solvers to the challenge, tools such as fzn2smt \cite{72bofill2010system} and BEE \cite{69BEEmetodi2012compiling} arose. These tools are able to translate FlatZinc to SAT-LIB and conjunctive normal form (CNF) respectively. 
 With BEE producing CNF, Amit Metodi and Michael Codish were then able to let a SAT solver solve the problem \cite{69BEEmetodi2012compiling}. Although the latter is limited to finite domain constraint problems, it allows utilization of large and swift SAT-solvers on top of bringing the field of research closer to each other.
 
-On top of being a great way to benchmark comparative solvers the MiniZinc challenge, it also results in more solver implementing the FlatZinc as an input and, due to the competitive nature of academics, brings the motivation to stride forwards \cite{59stuckey2010philosophy}.
+On top of being a great way to benchmark comparative solvers, the challenge also results in more solvers that implement the FlatZinc as an input and, due to the competitive nature of academics, brings the motivation to stride forwards \cite{59stuckey2010philosophy}.
 
 \subsection{CPMpy}
 \label{CP:CPMpy}

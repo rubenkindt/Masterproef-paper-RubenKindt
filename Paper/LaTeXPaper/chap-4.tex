@@ -1,7 +1,7 @@
 \chapter{Detecting crucial parts of inputs}
 \label{cha:4:crucialParts}
 \label{inputReduction:intro}
-When detecting that the program under test crashes, hangs, wrongly satisfied, wrongly unsatisfied or gives the wrong number of solutions on a given input, the first question asked is why it would do that. What causes this unwanted output and on what line does the bug occur?. 
+When detecting that the program under test crashes, hangs, wrongly satisfied, wrongly unsatisfied or gives the wrong number of solutions on a given input, the first question to ask is why it would do that. What causes this unwanted output and on what line does the bug occur?. 
 With crashes, a stack trace and some luck this could be easy, but when a bug causes a crash in another place the developer may need to debug deep into the code to find the bug. 
 Finding the bug in potential large inputs could be a tedious and long assignment, for this reason we would like to know what parts of the input are relevant for the bug, which will be discussed further in this chapter, starting with deobfuscating inputs.
 
@@ -13,7 +13,7 @@ Finding the bug in potential large inputs could be a tedious and long assignment
 	\newline
 	-Richard Stallman and Ralf Hildebrandt in “Simplifying and Isolating Failure-Inducing Input” \cite{5zeller2002simplifyingIsolatingFailure-inducing}.
 \end{quote} 
-When receiving a big input, the chance of it having parts unrelated to the bug is almost guaranteed, we will call these inputs (unintentionally) obfuscated inputs. Deobfuscating those inputs can take a lot of trial and error to see which variations still reveal the bug or having to walk through the execution to find the bug. Both take time and if we want to go to absolute minimal inputs, but for developers it is not needed to go to that extreme. As long as the bulk of the unrelated parts of inputs are gone it will help the developer to find the bug faster, with these techniques we can also group similar bugs and duplicate errors (more on that later in Subsection \ref{inputReduction:Deduplication}) which is also useful information for developers. To find crucial parts of inputs, it is often achieved either with simplification or isolation. 
+When receiving a big input, the chance of it having parts unrelated to the bug is almost guaranteed, we will call these inputs (unintentionally) obfuscated inputs. Deobfuscating those inputs on the other hand, can take a lot of trial and error to see which variations still reveal the bug or having to walk through the execution to find the bug. Both take time and if we want to go to absolute minimal inputs, but for developers it is not needed to go to that extreme. As long as the bulk of the unrelated parts of inputs are gone it will help the developer to find the bug faster, with these techniques we can also group similar bugs and duplicate errors (more on that later in Subsection \ref{inputReduction:Deduplication}) which is also useful information for developers. To find crucial parts of inputs, it is often achieved either with simplification or isolation. 
 
 \subsection{Simplifying}
 \label{inputReduction:Simplifying}
