@@ -60,7 +60,7 @@ All these metamorphic relations individually were quite simple and should be han
 
 \section{Differential testing}
 \label{impl:diff}
-With differential testing we stepped a bit further away from the fuzzing world since we did not edit the input files.
+With differential testing we stepped a bit further away from the fuzzing world since we did not change the input files.
 With this last technique we put the (sub)solvers against each other, if solver A said that the problem is unsatisfiable and all other solvers said that the same problem was satisfiable we can say that we found a bug and that the bug was most likely to be in solver A, which differs from the previous techniques where we knew the correct solution in advance.
 
 %This test could easily be integrated in one (or both) previous fuzzers 

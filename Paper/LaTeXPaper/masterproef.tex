@@ -4,9 +4,9 @@
   inputenc=utf8,
   title={Fuzz Testing of Constraint Programming}, 
   author={ing. Ruben Kindt},
-  promotor={Prof.\, dr.\ Tias Guns},
-  assessor={ },
-  assistant={Ir. Ignace Bleukx}
+  promotor={Prof.\, dr.\ T. Guns},
+  assessor={Dr. ir. S. Kolb \and Prof. dr. ir. G. Janssens},
+  assistant={Ir. I. Bleukx}
 }
 % Detecting bugs in constraint programming languages
 % Fuzz testing constraint programming languages
@@ -33,7 +33,7 @@
 \usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
 %\usepackage[tableposition=top]{caption} % caption above table
 \usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash, tableposition=top]{caption}
-
+\usepackage[final]{pdfpages} % poster as appendix
 \usepackage{float}
 
 %thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
@@ -147,7 +147,6 @@
 % {\usepackage{lipsum}\setlipsumdefault{11-13}}%
 % {\newcommand{\lipsum}[1][11-13]{\par Hier komt wat tekst: lipsum ##1.\par}}
 %%%%%%%
-\kulemtmanToC
 \begin{document}
 \begin{preface}
 Although this thesis was finished with a strict planning I put onto myself, it was immensely fun to work on. From the destructive nature of fuzzing bugs to the fascinating topic of constraint solving, it all interested me and I had not a single moment where I had to push myself to start working on it. Nevertheless, this thesis would not have been possible without the following people.
@@ -160,7 +159,7 @@ dr. ir. Jo Devriendt for finding bugs within our bug finder,
 the rest of the CPMpy-team, 
 Hakan Kjellerstrand for publishing a significant number of examples which we used as seeds,
 friends for proofreading even all the way back from industrial engineering on campus De Nayer like ing. Simon Vandevelde.
-Finally, I would like to thank my family for the support during my further studies.
+Lastly, I would like to thank my family for the support during my further studies.
 \end{preface}
 
 \tableofcontents*
@@ -257,9 +256,9 @@ Geen van de gebruikte technieken resulteerde in een perfecte score rond de gevon
 %\include{chap-x} % 
 
 % Indien er bijlagen zijn:
-%\appendixpage*          % indien gewenst
-%\appendix
-%\include{app-A}
+\appendixpage*          % indien gewenst
+\appendix
+\include{app-Poster}
 
 \backmatter
 % Na de bijlagen plaatst men nog de bibliografie.
