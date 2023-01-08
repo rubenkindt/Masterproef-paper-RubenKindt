@@ -719,7 +719,7 @@
       \kulemt@filingcard
     \fi
   \fi}
-\newenvironment{preface}[1][\@author]%
+\newenvironment{preface}[1][Ruben Kindt]%
  {\chapter\prefacename
   \def\kulemt@preface@{#1}}%
  {\par
