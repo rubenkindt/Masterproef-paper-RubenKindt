@@ -78,3 +78,6 @@ code/results/*
 code/differentialTesting/killedByOOMKiller.txt
 Milestones/*/*.png
 Milestones/*/*.jpg
+
+# intellectual property
+Paper/Literatuur/*
