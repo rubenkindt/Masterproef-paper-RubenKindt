@@ -1,7 +1,7 @@
 My master thesis around Fuzz Testing of Constraint Programming for Computer science (ComputerWetenschappen) at the KU Leuven.
 
 The thesis text can be found at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Paper/LaTeXPaper/masterproef.pdf. <br>
-A stand-alone poster can be found at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Milestones/M6%20poster%20event/poster.pdf
+A stand-alone poster can be found at https://github.com/rubenkindt/Masterproef-paper-RubenKindt/blob/main/Milestones/M6%20poster%20event/poster.pdf.
 
 ```
 @thesis{FuzzingConstraintProgrammingLanguages,
