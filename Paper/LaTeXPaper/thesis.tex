@@ -4,7 +4,7 @@
 	title={Wrong file! Try the masterproef.pdf}, 
 	author={ing. Ruben Kindt},
 	promotor={Prof.\, dr.\ Tias Guns},
-	assessor={ },
+	assessor={Dr. ir. S. Kolb \and Prof. dr. ir. G. Janssens},
 	assistant={Ir. Ignace Bleukx}
 }
 % Remove the "%" on the next line for generating the cover page
@@ -27,7 +27,7 @@
 \usepackage{csquotes} % makes sure that the quotes follow the same typeset as the rest of the text
 %\usepackage[tableposition=top]{caption} % caption above table
 \usepackage[margin=10pt,font=small,labelfont=bf,labelsep=endash, tableposition=top]{caption}
-
+\usepackage[final]{pdfpages} % poster as appendix
 \usepackage{float}
 
 %thanks to https://github.com/youngkd/MSPSP-InstLib/blob/master/format-description.tex
@@ -255,7 +255,7 @@
 % Indien er bijlagen zijn:
 %\appendixpage*          % indien gewenst
 %\appendix
-%\include{app-A}
+%\include{app-Poster}
 
 \backmatter
 % Na de bijlagen plaatst men nog de bibliografie.
@@ -263,7 +263,7 @@
 %\bibliographystyle{abbrv}
 %\bibliography{references}
 \nocite{MasterproefRubenKindt}
-%\nocite{ThisThesis}
+%\nocite{FuzzingConstraintProgrammingLanguages}
 %\nocite{75Chicken} % Easter egg ;)
 \printbibliography
 \end{document}
