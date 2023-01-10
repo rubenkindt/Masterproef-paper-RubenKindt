@@ -76,3 +76,5 @@ code/deobfuscator/*.txt
 #to many output files
 code/results/*
 code/differentialTesting/killedByOOMKiller.txt
+Milestones/*/*.png
+Milestones/*/*.jpg

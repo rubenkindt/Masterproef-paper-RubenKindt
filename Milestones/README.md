@@ -23,3 +23,5 @@ M9: Submit Thesis Submit the thesis via the appropriate channels.
 M10: Defend Thesis The academic secretary will schedule the defense time and location. This occurs at the end of June. 
 
 The default is to submit and defend in June. If you plan to deviate from this (and alternatively plan to defend in September), you must discuss this with your daily supervisor at least two weeks prior to the deadline. You must inform Lenny Verkoelen when you plan to submit the thesis. Refer to the faculty (Faculty of Engineering Science, Faculty of Science) and departmental (CW, CS, MTI) guidelines for the exact date of submission.
+
+M4, M5 have become redundant due to sumbitting in January
